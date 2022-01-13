@@ -1,6 +1,4 @@
 {
-  "devDependencies": {
-  },
   "name": "rdf-props-summarizer",
   "version": "0.0.1",
   "description": "Extract a property summary from an RDF graph",
@@ -16,6 +14,7 @@
   "author": "André Santos",
   "license": "ISC",
   "dependencies": {
-    "graphdb": "2.0.0"
+    "graphdb": "2.0.0",
+    "sparqljs": "3.5.1"
   }
 }
