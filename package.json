@@ -1,0 +1,21 @@
+{
+  "devDependencies": {
+  },
+  "name": "rdf-props-summarizer",
+  "version": "0.0.1",
+  "description": "Extract a property summary from an RDF graph",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "RDF",
+    "graph",
+    "GraphDB",
+    "SPARQL"
+  ],
+  "author": "André Santos",
+  "license": "ISC",
+  "dependencies": {
+    "graphdb": "2.0.0"
+  }
+}
