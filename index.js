@@ -1,5 +1,5 @@
 const Store = require('./lib/Store');
-const {Query, COUNT} = require('./lib/QueryBuilder');
+const {Query, COUNT, URI} = require('./lib/QueryBuilder');
 const store = new Store();
 
 const s2a = async (stream) => {
@@ -33,7 +33,11 @@ const randomWalks = async (seeds, props, len) => {
 const randomWalk = async (s, p, len, acc) => {
   if(len === 0){ return {nodes: Array.from(acc), status: 'finished'}; }
 
-  const stream =  await store.select(`select ?o where { <${s}> <${p}> ?o }`);
+  const query = new Query()
+                    .select('o')
+                    .where([[URI(s), URI(p), 'o']])
+                    .toSparql();
+  const stream =  await store.select(query);
   const os = await s2a(stream);
   if(!os.length){ return {nodes: Array.from(acc), status: 'finished_early'}; }
   const i = Math.floor(Math.random() * os.length);
@@ -49,11 +53,11 @@ async function run(){
     //for await (const bindings of stream){
     //    console.log(bindings);
     //}
-    getProps().then(console.log);
-    //randomWalks(
-    //  ['http://wordnet-rdf.princeton.edu/id/02572262-n'],
-    //  ['http://wordnet-rdf.princeton.edu/ontology#hypernym'],
-    //  10);
+    //getProps().then(console.log);
+    randomWalks(
+      ['http://wordnet-rdf.princeton.edu/id/02572262-n'],
+      ['http://wordnet-rdf.princeton.edu/ontology#hypernym'],
+      10);
 
 }
 
