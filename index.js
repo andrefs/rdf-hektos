@@ -1,7 +1,16 @@
 const Store = require('./lib/Store');
 const {Query, COUNT, URI, RAND} = require('./lib/QueryBuilder');
 const store = new Store();
-const progress = require('progressbar');
+const cliProgress = require('cli-progress');
+const multibar = new cliProgress.MultiBar({
+    stopOnComplete: true,
+    clearOnComplete: true,
+    hideCursor: true,
+    barSize: 30,
+    format: ' {bar} {percentage}% | {value}/{total} {task}'
+}, cliProgress.Presets.shades_grey);
+
+let walksBar;
 
 
 const s2a = async (stream) => {
@@ -28,13 +37,12 @@ const getProps = async () => {
 const randomWalks = async (prop, nodes, len) => {
   //const res = await randomWalk(prop, nodes[0], len, new Set());
   const walks = {};
-  const pb = progress.create().step(prop);
-  pb.setTotal(nodes.length);
+  const pb = multibar.create(nodes.length, 0, {task: 'nodes'});
   for (const n of nodes){
-    pb.addTick();
+    pb.increment();
     walks[n] = await randomWalk(prop, n, len, new Set());
   }
-  pb.finish();
+  multibar.remove(pb);
   return walks;
 };
 
@@ -73,21 +81,19 @@ const randSelectSubjects = async (p, howMany) => {
 
 
 const calcRandomWalks = async (props) => {
-  const pb = progress.create().step('Performing random walks');
-  pb.setTotal(Object.keys(props).length);
+  const pb = multibar.create(Object.keys(props).length, 0, {task: 'props'});
   const pctg = 1; // %
   const walkLength = 100;
   const walks = [];
   console.warn(`  doing random walks (${Object.keys(props).length} props, ${pctg}% of paths, length ${walkLength})`);
   for (const p of Object.keys(props)){
-    pb.addTick();
+    pb.increment();
     const total = props[p].count;
     const subjs = await randSelectSubjects(p, Math.ceil(total*pctg/100));
     const ws = await randomWalks(p, subjs, walkLength);
     walks.push([p, ws]);
   }
-  pb.finish();
-  console.warn('    done');
+  multibar.remove(pb);
   return walks;
 };
 
@@ -120,17 +126,16 @@ const calcInOutRatios = async (props) => {
 
 const calcLoops = async (props) => {
   const loops = [];
-  const pb = progress.create().step('Counting loops');
-  pb.setTotal(Object.keys(props).length);
+  const pb = multibar.create(Object.keys(props).length, 0, {task: 'loops'});
   for(const p of Object.keys(props)){
-    pb.addTick();
+    pb.increment();
     const query = `SELECT (COUNT(?s) AS ?loops)
                    WHERE { ?s <${p}>+ ?s .}`;
     const stream = await store.select(query);
     const lc = await s2a(stream);
     loops.push([p, lc]);
   }
-  pb.finish();
+  multibar.remove(pb);
   return loops;
 }
 
@@ -162,6 +167,7 @@ async function run(){
   console.warn('Starting');
   console.warn('  getting props');
   let props = await getProps();
+
 
   const walks = await calcRandomWalks(props);
   for(const [p, w] of walks){
