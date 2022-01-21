@@ -1,5 +1,6 @@
 const Store = require('./lib/Store');
 const {Query, COUNT, URI, RAND} = require('./lib/QueryBuilder');
+const flattenObj = require('./lib/flattenObj');
 const store = new Store();
 const cliProgress = require('cli-progress');
 const multibar = new cliProgress.MultiBar({
@@ -39,8 +40,8 @@ const randomWalks = async (prop, nodes, len) => {
   const walks = {};
   const pb = multibar.create(nodes.length, 0, {task: 'nodes'});
   for (const n of nodes){
-    pb.increment();
     walks[n] = await randomWalk(prop, n, len, new Set());
+    pb.increment();
   }
   multibar.remove(pb);
   return walks;
@@ -87,11 +88,11 @@ const calcRandomWalks = async (props) => {
   const walks = [];
   console.warn(`  doing random walks (${Object.keys(props).length} props, ${pctg}% of paths, length ${walkLength})`);
   for (const p of Object.keys(props)){
-    pb.increment();
     const total = props[p].count;
     const subjs = await randSelectSubjects(p, Math.ceil(total*pctg/100));
     const ws = await randomWalks(p, subjs, walkLength);
     walks.push([p, ws]);
+    pb.increment();
   }
   multibar.remove(pb);
   return walks;
@@ -128,12 +129,12 @@ const calcLoops = async (props) => {
   const loops = [];
   const pb = multibar.create(Object.keys(props).length, 0, {task: 'loops'});
   for(const p of Object.keys(props)){
-    pb.increment();
     const query = `SELECT (COUNT(?s) AS ?loops)
                    WHERE { ?s <${p}>+ ?s .}`;
     const stream = await store.select(query);
     const lc = await s2a(stream);
     loops.push([p, lc]);
+    pb.increment();
   }
   multibar.remove(pb);
   return loops;
@@ -149,19 +150,42 @@ const summarize = (props) => {
     res[p].count = props[p].count;
     let len = 0;
     const walks = {};
-    if(!props[p].walks){ continue; }
+    console.warn('XXXXXXXXXXXXXXX',p, JSON.stringify(props[p].walks, null, 2));
+    //if(!props[p].walks){ continue; }
     for(const w of Object.values(props[p].walks)){
       len += w.nodes.length;
       walks[w.status] = walks[w.status] || 0;
       walks[w.status] ++;
     }
     res[p].walks = walks;
-    res[p].avgLen = props[p].walks?.length ?
-                        len/props[p].walks.length :
-                        0;
+
+    const walksCount = Object.keys(props[p].walks).length;
+
+    res[p].avgLen = walksCount ? len/walksCount : 0;
   }
   return res;
 }
+
+const prettyPrint = (data) => {
+  const table = [];
+  const keys = {};
+  for(const x of Object.values(data)){
+    for(const k of Object.keys(x)){
+      keys[k] = true;
+    }
+  }
+  table.push(['Property', ...Object.keys(keys)]);
+  for(const [prop,info] of Object.entries(data)){
+    const row = [prop];
+    for(const k of table[0].slice(1)){
+      row.push(info[k] || '');
+    }
+    table.push(row);
+  }
+
+  console.log(table.map(x => x.join('\t')).join('\n'));
+
+};
 
 async function run(){
   console.warn('Starting');
@@ -181,7 +205,17 @@ async function run(){
 
   //await calcLoops(props);
 
-  console.log(JSON.stringify(summarize(props), null, 2));
+
+  const sum  = summarize(props);
+  //const flat = flattenObj(summarize(props));
+  const flat = Object.keys(sum)
+                     .reduce((previous, key) => {
+                       previous[key] = flattenObj(sum[key]);
+                       return previous;
+                     }, {});
+  prettyPrint(flat);
+
+  //console.log(JSON.stringify(flat, null, 2));
 }
 
 run();
