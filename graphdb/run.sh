@@ -1,14 +1,4 @@
-
-#  #docker build -t graphdb-kgs --force-rm .
-#  docker-compose  up -d --build --force-recreate
-#  
-#  CONTAINER_ID=`docker-compose ps -q graphdb`
-#  # /opt/graphdb/dist/bin/preload --force   -q /tmp -c /opt/graphdb/graphdb-repo-config.ttl /opt/graphdb/home/graphdb-import/wordnet.nt
-#  
-#  
-#  
-#  #/opt/graphdb/dist/bin/graphdb -Dgraphdb.home=/opt/graphdb/home
-
+#!/bin/bash
 
 echo Starting GraphDB preload container
 docker-compose  up -d --build --force-recreate > run.log
@@ -21,7 +11,8 @@ for kg in $(ls ./data/kgs); do
   docker exec graphdb-kgs /opt/graphdb/dist/bin/preload --force --recursive \
                                 -q /tmp \
                                 -c /opt/graphdb/config/$KG_NAME.ttl \
-                                /opt/graphdb/home/graphdb-import/$KG_NAME
+                                /opt/graphdb/home/graphdb-import/$KG_NAME \
+                                >/dev/null 2>&1
 
 done
 
