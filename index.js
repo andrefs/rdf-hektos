@@ -1,17 +1,20 @@
 const Store = require('./lib/Store');
 const {Query, COUNT, URI, RAND} = require('./lib/QueryBuilder');
 const flattenObj = require('./lib/flattenObj');
-const store = new Store();
+const Promise = require('bluebird');
+const repo = process.argv[2];
+const store = new Store({repo, port: 7201});
 const cliProgress = require('cli-progress');
 const multibar = new cliProgress.MultiBar({
     stopOnComplete: true,
     clearOnComplete: true,
     hideCursor: true,
     barSize: 30,
-    format: ' {bar} {percentage}% | {value}/{total} {task}'
+    format: ' {bar} {percentage}% | {value}/{total} {task} | {tid}'
 }, cliProgress.Presets.shades_grey);
 
 let walksBar;
+
 
 
 const s2a = async (stream) => {
@@ -32,16 +35,23 @@ const getProps = async () => {
   const stream = await store.select(query);
   const res = await s2a(stream);
   const props = {};
-  return Object.fromEntries(res.map(r => [r.p.id, {count: Number(r.total.value)}]));
+  return Object.fromEntries(res.map(r => [
+    r.p.id,
+    {
+      count: Number(r.total.value),
+      node: r.p
+    }
+  ]));
 };
 
 const randomWalks = async (prop, nodes, len) => {
   //const res = await randomWalk(prop, nodes[0], len, new Set());
   const walks = {};
-  const pb = multibar.create(nodes.length, 0, {task: 'nodes'});
+  const pb = multibar.create(nodes.length, 0, {task: 'nodes', tid: ''});
   for (const n of nodes){
-    walks[n] = await randomWalk(prop, n, len, new Set());
-    pb.increment();
+    pb.increment({task: 'nodes', tid: n.id});
+    walks[n.id] = await randomWalk(prop, n, len, new Set());
+    //pb.increment();
   }
   multibar.remove(pb);
   return walks;
@@ -53,17 +63,23 @@ const randomWalk = async (p, s, len, acc) => {
 
   const query = new Query()
                     .select('o')
-                    .where([[URI(s), URI(p), 'o']])
+                    .where([[s, p, 'o']])
                     .toSparql();
+
   const stream =  await store.select(query);
   const os = await s2a(stream);
-  if(!os.length){ return {nodes: Array.from(acc), status: 'finished_early'}; }
+  if(!os.length){
+    return {
+      nodes: Array.from(acc),
+      status: 'finished_early'
+    };
+  }
   const i = Math.floor(Math.random() * os.length);
   if(os[i].o.termType === 'Literal'){
     return {nodes: Array.from(acc), status: 'found_literal'}; r
   }
-  const o = os[i].o.id;
-  if(acc.has(o)){ return {nodes: Array.from(acc), status: 'loop'}; }
+  const o = os[i].o;
+  if(acc.has(o.id)){ return {nodes: Array.from(acc), status: 'loop'}; }
 
   return randomWalk(p, o, len-1, acc.add(s));
 }
@@ -71,31 +87,31 @@ const randomWalk = async (p, s, len, acc) => {
 const randSelectSubjects = async (p, howMany) => {
   const query = new Query()
                     .select('s')
-                    .where([['s', URI(p), 'o']])
+                    .where([['s', p, 'o']])
                     .orderBy(RAND())
-                    .limit(howMany)
+                    .limit(howMany);
   const q = query.toSparql();
   const stream = await store.select(q);
   const subjs = await s2a(stream);
-  return subjs.map(s => s.s.id)
+  return subjs.map(s => s.s);
 }
 
 
 const calcRandomWalks = async (props) => {
-  const pb = multibar.create(Object.keys(props).length, 0, {task: 'props'});
+  const pb = multibar.create(Object.keys(props).length, 0, {task: 'props', tid: ''});
   const pctg = 1; // %
   const walkLength = 100;
-  const walks = [];
-  console.warn(`  doing random walks (${Object.keys(props).length} props, ${pctg}% of paths, length ${walkLength})`);
-  for (const p of Object.keys(props)){
-    const total = props[p].count;
-    const subjs = await randSelectSubjects(p, Math.ceil(total*pctg/100));
-    const ws = await randomWalks(p, subjs, walkLength);
-    walks.push([p, ws]);
-    pb.increment();
-  }
+  console.warn(`  doing random walks (${Object.keys(props).length} ` +
+    `props, ${pctg}% of paths, length ${walkLength})`);
+  const ws = await Promise.map(Object.keys(props), async p => {
+    console.warn('XXXX');
+      pb.increment({task: 'props', tid: p});
+      const total = props[p].count;
+      const subjs = await randSelectSubjects(props[p].node, Math.ceil(total*pctg/100));
+      return randomWalks(props[p].node, subjs, walkLength);
+    });
   multibar.remove(pb);
-  return walks;
+  return Object.keys(props).map((p,i) => [p, ws[i]]);
 };
 
 const calcInOutRatios = async (props) => {
@@ -119,7 +135,9 @@ const calcInOutRatios = async (props) => {
   const stream = await store.select(query);
   const res = await s2a(stream);
   for(const r of res){
-    props[r.p.id].ratio = Number(r.avg.value);
+    if(props[r.p.id]){
+      props[r.p.id].ratio = Number(r.avg.value);
+    }
   }
 
   return res.map(r => [r.p.id, r.avg.value]);
@@ -127,7 +145,7 @@ const calcInOutRatios = async (props) => {
 
 const calcLoops = async (props) => {
   const loops = [];
-  const pb = multibar.create(Object.keys(props).length, 0, {task: 'loops'});
+  const pb = multibar.create(Object.keys(props).length, 0, {task: 'loops', tid: ''});
   for(const p of Object.keys(props)){
     const query = `SELECT (COUNT(?s) AS ?loops)
                    WHERE { ?s <${p}>+ ?s .}`;
@@ -150,7 +168,7 @@ const summarize = (props) => {
     res[p].count = props[p].count;
     let len = 0;
     const walks = {};
-    console.warn('XXXXXXXXXXXXXXX',p, JSON.stringify(props[p].walks, null, 2));
+    //console.warn('XXXXXXXXXXXXXXX',p, JSON.stringify(props[p].walks, null, 2));
     //if(!props[p].walks){ continue; }
     for(const w of Object.values(props[p].walks)){
       len += w.nodes.length;
@@ -192,7 +210,10 @@ async function run(){
   console.warn('  getting props');
   let props = await getProps();
 
-
+  //let p = 'http://www.w3.org/ns/lemon/ontolex#writtenRep';
+  let p = 'http://www.w3.org/2000/01/rdf-schema#label';
+  props = {[p]: props[p]};
+  
   const walks = await calcRandomWalks(props);
   for(const [p, w] of walks){
     props[p].walks = w;
@@ -200,20 +221,22 @@ async function run(){
 
   //const ratios = await calcInOutRatios(props);
   //for(const [p, r] of ratios){
-  //  props[p].ratio = r;
+  //  if(props[p]){
+  //    props[p].ratio = r;
+  //  }
   //}
 
   //await calcLoops(props);
 
 
-  const sum  = summarize(props);
-  //const flat = flattenObj(summarize(props));
-  const flat = Object.keys(sum)
-                     .reduce((previous, key) => {
-                       previous[key] = flattenObj(sum[key]);
-                       return previous;
-                     }, {});
-  prettyPrint(flat);
+  //const sum  = summarize(props);
+  ////const flat = flattenObj(summarize(props));
+  //const flat = Object.keys(sum)
+  //                   .reduce((previous, key) => {
+  //                     previous[key] = flattenObj(sum[key]);
+  //                     return previous;
+  //                   }, {});
+  //prettyPrint(flat);
 
   //console.log(JSON.stringify(flat, null, 2));
 }

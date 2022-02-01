@@ -4,7 +4,7 @@ echo Starting GraphDB preload container
 docker-compose  up -d --build --force-recreate > run.log
 
 echo Loading KGs
-for kg in $(ls ./data/kgs); do
+for kg in $(ls ./data/kgs | grep -vP '\.baseUrl'); do
   KG_NAME=`basename $kg`
   echo -e "\t$KG_NAME"
   KG_NAME=$KG_NAME envsubst < data/config.ttl.template > data/config/$KG_NAME.ttl
