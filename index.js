@@ -11,6 +11,23 @@ import rdf from '@rdfjs/data-model';
 import { SELECT } from '@tpluscode/sparql-builder';
 
 
+const OptionParser = require('option-parser');
+const parser = new OptionParser();
+
+let showProgBar = true;
+let quiet = false;
+
+parser.addOption('h', 'help', 'Display this help message')
+      .action(parser.helpAction());
+parser.addOption('q', 'quiet', 'No output other than results')
+      .action(() => quiet = true);
+parser.addOption('b', 'no-progress-bar', 'Remove progress bar')
+      .action(() => showProgBar = false);
+
+parser.parse();
+
+if(quiet){ showProgBar = false; }
+
 let walksBar;
 
 const summarize = (props) => {
