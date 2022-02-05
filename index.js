@@ -1,13 +1,16 @@
-const Store = require('./lib/Store');
-const {Query, COUNT, URI, RAND} = require('./lib/QueryBuilder');
-const flattenObj = require('./lib/flattenObj');
+import Store from './lib/Store.js';
+import {Query, COUNT, URI, RAND} from './lib/QueryBuilder.js';
+import flattenObj from './lib/flattenObj.js';
 const repo = process.argv[2];
-const store = new Store({repo, port: 7201});
-const Promise = require('bluebird');
-const cliProgress = require('cli-progress');
+const host = 'http://localhost';
+const port = '7201';
+const endpointUrl = `${host}:${port}/repositories/${repo}`;
+const store = new Store({endpointUrl});
+import Promise from 'bluebird';
+import cliProgress from 'cli-progress';
 const multibar = new cliProgress.MultiBar({
     stopOnComplete: true,
-    clearOnComplete: true,
+    clearOnComplete: false,
     hideCursor: true,
     barSize: 30,
     format: ' {bar} {percentage}% | {value}/{total} {task} | {tid}'
@@ -35,13 +38,14 @@ const getProps = async () => {
   const stream = await store.select(query);
   const res = await s2a(stream);
   const props = {};
-  return Object.fromEntries(res.map(r => [
-    r.p.id,
+  return Object.fromEntries(res.map(r => {
+    return [
+    r.p.value,
     {
       count: Number(r.total.value),
       node: r.p
     }
-  ]));
+  ];}));
 };
 
 const randomWalks = async (prop, nodes, len) => {
@@ -49,12 +53,12 @@ const randomWalks = async (prop, nodes, len) => {
   const walks = {};
   const pb = multibar.create(nodes.length, 0, {task: 'nodes', tid: ''});
   const ws = await Promise.map(nodes, n => {
-    pb.increment({task: 'nodes', tid: n.id});
+    pb.increment({task: 'nodes', tid: n.value});
     return randomWalk(prop, n, len, {});
   }, {concurrency: 5});
 
   for (const [i,n] of nodes.entries()){
-    walks[n.id] = ws[i];
+    walks[n.value] = ws[i];
   }
   multibar.remove(pb);
   return walks;
@@ -84,10 +88,10 @@ const randomWalk = async (p, s, len, acc) => {
     return {nodes: Object.keys(acc), status: 'found_literal'}; r
   }
   const o = os[0].o;
-  if(acc[o.id]){
+  if(acc[o.value]){
     return {nodes: Object.keys(acc), status: 'loop'};
   }
-  acc[s.id] = true;
+  acc[s.value] = true;
 
   return randomWalk(p, o, len-1, acc);
 }
@@ -107,8 +111,8 @@ const randSelectSubjects = async (p, howMany) => {
 
 const calcRandomWalks = async (props) => {
   const pb = multibar.create(Object.keys(props).length, 0, {task: 'props', tid: ''});
-  const pctg = 1; // %
-  const walkLength = 100;
+  const pctg = 0.11; // %
+  const walkLength = 10;
   const walks = [];
   console.warn(`  doing random walks (${Object.keys(props).length} ` +
     `props, ${pctg}% of paths, length ${walkLength})`);
@@ -144,12 +148,12 @@ const calcInOutRatios = async (props) => {
   const stream = await store.select(query);
   const res = await s2a(stream);
   for(const r of res){
-    if(props[r.p.id]){
-      props[r.p.id].ratio = Number(r.avg.value);
+    if(props[r.p.value]){
+      props[r.p.value].ratio = Number(r.avg.value);
     }
   }
 
-  return res.map(r => [r.p.id, r.avg.value]);
+  return res.map(r => [r.p.value, r.avg.value]);
 };
 
 const calcLoops = async (props) => {
@@ -177,8 +181,6 @@ const summarize = (props) => {
     res[p].count = props[p].count;
     let len = 0;
     const walks = {};
-    //console.warn('XXXXXXXXXXXXXXX',p, JSON.stringify(props[p].walks, null, 2));
-    //if(!props[p].walks){ continue; }
     for(const w of Object.values(props[p].walks)){
       len += w.nodes.length;
       walks[w.status] = walks[w.status] || 0;
@@ -224,6 +226,7 @@ async function run(){
   //let p = 'http://wordnet-rdf.princeton.edu/ontology#similar';
   //let p = 'http://www.w3.org/2002/07/owl#sameAs';
   //props = {[p]: props[p]};
+  //props = Object.fromEntries(Object.entries(props).slice(0,2));
   
   const walks = await calcRandomWalks(props);
   for(const [p, w] of walks){

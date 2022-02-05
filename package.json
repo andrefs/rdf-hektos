@@ -5,6 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "type": "module",
   "keywords": [
     "RDF",
     "graph",
@@ -18,6 +19,8 @@
     "cli-progress": "3.10.0",
     "graphdb": "2.0.0",
     "option-parser": "1.0.2",
+    "rdf-data-factory": "1.1.0",
+    "sparql-http-client": "2.4.0",
     "sparqljs": "3.5.1"
   }
 }
