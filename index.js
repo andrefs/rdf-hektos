@@ -1,17 +1,8 @@
-//import {Query, COUNT, URI, RAND} from './lib/QueryBuilder.js';
-import {Query, COUNT, V, N, B, L, RAND} from './lib/QueryBuilder.js';
 import GraphOperations from './lib/GraphOperations.js';
 import flattenObj from './lib/flattenObj.js';
-//const repo = process.argv[2];
-//const host = 'http://localhost';
-//const port = '7201';
-//const endpointUrl = `${host}:${port}/repositories/${repo}`;
-//const store = new Store({endpointUrl});
-import rdf from '@rdfjs/data-model';
-import { SELECT } from '@tpluscode/sparql-builder';
 
 
-const OptionParser = require('option-parser');
+import OptionParser from 'option-parser';
 const parser = new OptionParser();
 
 let showProgBar = true;
@@ -28,7 +19,6 @@ parser.parse();
 
 if(quiet){ showProgBar = false; }
 
-let walksBar;
 
 const summarize = (props) => {
   const res = {};
@@ -76,7 +66,8 @@ const prettyPrint = (data) => {
 async function run(){
   console.warn('Starting');
   console.warn('  getting props');
-  const graph = await new GraphOperations('wordnet');
+  const graph = new GraphOperations('wordnet', {showProgBar});
+  await graph.init();
   let props = await graph.getProps();
 
   const walks = await graph.calcRandomWalks(props, 0.01, 5);
