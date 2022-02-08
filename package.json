@@ -15,6 +15,8 @@
   "author": "André Santos",
   "license": "ISC",
   "dependencies": {
+    "@rdfjs/data-model": "2.0.0",
+    "@rdfjs/namespace": "2.0.0",
     "bluebird": "3.7.2",
     "cli-progress": "3.10.0",
     "graphdb": "2.0.0",
