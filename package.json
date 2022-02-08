@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Extract a property summary from an RDF graph",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "yarn node --experimental-vm-modules $(yarn bin jest)"
   },
   "type": "module",
   "keywords": [
@@ -24,5 +24,8 @@
     "rdf-data-factory": "1.1.0",
     "sparql-http-client": "2.4.0",
     "sparqljs": "3.5.1"
+  },
+  "devDependencies": {
+    "jest": "27.5.1"
   }
 }
