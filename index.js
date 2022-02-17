@@ -3,6 +3,7 @@ import {summProps, ppMatrix, flattenObjValues} from './lib/utils.js'
 
 
 import OptionParser from 'option-parser';
+import Store from './lib/Store.js';
 const parser = new OptionParser();
 
 let showProgBar = true;
@@ -23,8 +24,13 @@ if(quiet){ showProgBar = false; }
 async function run(){
   console.warn('Starting');
   console.warn('  getting props');
-  const graph = new GraphOperations('wordnet', {showProgBar});
-  await graph.init();
+
+  const host = 'http://localhost';
+  const port = '7201';
+  const repo = 'wordnet';
+  const endpointUrl = `${host}:${port}/repositories/${repo}`;
+  const store = new Store({endpointUrl})
+  const graph = new GraphOperations(store, {showProgBar});
   let props = await graph.getProps();
 
   const walks = await graph.calcRandomWalks(props, 0.01, 10);
