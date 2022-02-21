@@ -71,7 +71,7 @@ COPY docker-entrypoint.sh /
 RUN chmod 755 /docker-entrypoint.sh
 
 # SeCo extensions
-COPY silk-arq-1.0.0-SNAPSHOT-with-dependencies.jar /javalibs/
+#COPY silk-arq-1.0.0-SNAPSHOT-with-dependencies.jar /javalibs/
 
 # Fuseki config
 ENV ASSEMBLER $FUSEKI_BASE/configuration/assembler.ttl
