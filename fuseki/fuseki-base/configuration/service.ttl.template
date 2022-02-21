@@ -1,0 +1,17 @@
+
+<#${KG_NAME}-service> rdf:type fuseki:Service ;
+    fuseki:name              "${KG_NAME}" ;       # http://host:port/${KG_NAME}
+    fuseki:serviceQuery      "sparql" ;           # SPARQL query service
+    fuseki:serviceUpdate     "update" ;           # SPARQL update service
+    fuseki:serviceUpload     "upload" ;           # Non-SPARQL upload service
+    fuseki:serviceReadWriteGraphStore "data" ;    # SPARQL Graph store protocol
+    fuseki:dataset           <#${KG_NAME}-dataset> ;
+    .
+
+<#${KG_NAME}-dataset> rdf:type tdb:DatasetTDB2 ;
+    rdf:type ja:RDFDataset;
+    tdb:location "/fuseki-base/databases/${KG_NAME}" ;
+    # Query timeout on this dataset (1s, 1000 milliseconds)
+    #ja:context [ ja:cxtName "arq:queryTimeout" ;  ja:cxtValue "30000" ] ;
+     .
+
