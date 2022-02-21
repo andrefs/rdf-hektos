@@ -3,3 +3,6 @@ graphdb/data/home/
 graphdb/data/kgs/
 results
 coverage
+fuseki/fuseki-base/configuration/assembler.ttl
+fuseki/fuseki-base/databases
+fuseki/data

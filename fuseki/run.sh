@@ -17,7 +17,7 @@ for kg in $(ls ./data/kgs | grep -vP '\.baseUrl'); do
     tdb2.tdbloader --loc fuseki-base/databases/$KG_NAME ./data/kgs/$kg/$kg.nt
   fi
     KG_NAME=$KG_NAME envsubst < fuseki-base/configuration/service.ttl.template >> fuseki-base/configuration/assembler.ttl
-  chmod 777 fuseki-base/databases/$KG_NAME
+  chmod -R 777 fuseki-base/databases/$KG_NAME
 done
 
 echo Starting Fuseki
