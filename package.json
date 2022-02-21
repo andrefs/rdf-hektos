@@ -15,6 +15,9 @@
   "author": "André Santos",
   "license": "ISC",
   "dependencies": {
+    "@comunica/actor-http-proxy": "2.0.1-alpha.9.0",
+    "@comunica/actor-init-sparql": "1.22.3",
+    "@comunica/logger-pretty": "1.22.0",
     "@rdfjs/data-model": "2.0.0",
     "@rdfjs/namespace": "2.0.0",
     "bluebird": "3.7.2",
@@ -26,6 +29,7 @@
     "sparqljs": "3.5.1"
   },
   "devDependencies": {
-    "jest": "27.5.1"
+    "jest": "27.5.1",
+    "n3": "1.13.0"
   }
 }
