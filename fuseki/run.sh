@@ -25,7 +25,7 @@ done
 echo Starting Fuseki
 docker build -t fuseki-kgs .
 
-docker run --rm -it -p 3030:3030 --name fuseki \
+docker run --rm -d -p 3030:3030 --name fuseki \
   --mount type=bind,source="$(pwd)"/fuseki-base/databases,target=/fuseki-base/databases \
   --mount type=bind,source="$(pwd)"/fuseki-base/configuration,target=/fuseki-base/configuration \
   fuseki-kgs
