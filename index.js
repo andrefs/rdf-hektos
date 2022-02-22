@@ -8,6 +8,7 @@ const parser = new OptionParser();
 
 let showProgBar = true;
 let quiet = false;
+let outputFile;
 
 parser.addOption('h', 'help', 'Display this help message')
       .action(parser.helpAction());
@@ -15,11 +16,13 @@ parser.addOption('q', 'quiet', 'No output other than results')
       .action(() => quiet = true);
 parser.addOption('b', 'no-progress-bar', 'Remove progress bar')
       .action(() => showProgBar = false);
+parser.addOption('o', 'output', 'Send output to file')
+      .argument('FILE')
+      .action((value) => outputFile = value);
 
 parser.parse();
 
 if(quiet){ showProgBar = false; }
-
 
 async function run(){
   console.warn('Starting');
@@ -49,9 +52,9 @@ async function run(){
 
   //await calcLoops(props);
 
-
   const sum = summProps(props);
-  ppMatrix(flattenObjValues(sum));
+
+  ppMatrix(flattenObjValues(sum), outputFile);
 }
 
 run();
