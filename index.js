@@ -35,23 +35,23 @@ async function run(){
   const graph = new GraphOperations(store, {showProgBar});
   let props = await graph.getProps();
 
-  const walks = await graph.calcRandomWalks(props, 0.01, 10);
+  const walks = await graph.calcRandomWalks(props, 1, 10);
   for(const [p, w] of walks){
     props[p].walks = w;
   }
 
-  //const ratios = await graph.calcInOutRatios(props);
-  //for(const [p, r] of ratios){
-  //  if(props[p]){
-  //    props[p].ratio = r;
-  //  }
-  //}
+  const ratios = await graph.calcInOutRatios(props);
+  for(const [p, r] of ratios){
+    if(props[p]){
+      props[p].ratio = r;
+    }
+  }
 
-  ////await calcLoops(props);
+  //await calcLoops(props);
 
 
-  //const sum = summProps(props);
-  //ppMatrix(flattenObjValues(sum));
+  const sum = summProps(props);
+  ppMatrix(flattenObjValues(sum));
 }
 
 run();
