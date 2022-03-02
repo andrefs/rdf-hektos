@@ -39,8 +39,9 @@ async function run(){
   let props = await graph.getProps();
 
   const walks = await graph.calcRandomWalks(props, 1, 10);
-  for(const [p, w] of walks){
-    props[p].walks = w;
+  for(const [p, sampledWalks, ws] of walks){
+    props[p].sampledWalks = sampledWalks;
+    props[p].walks = ws;
   }
 
   const ratios = await graph.calcInOutRatios(props);

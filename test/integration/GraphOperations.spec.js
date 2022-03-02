@@ -1,35 +1,33 @@
-import {jest} from '@jest/globals';
 import GraphOperations from '../../lib/GraphOperations.js';
-import {Readable} from 'stream';
 import rdf from '@rdfjs/data-model';
 import N3 from 'n3';
 import {newEngine} from '@comunica/actor-init-sparql';
 const myEngine = newEngine();
-
+const NN = rdf.namedNode;
 const pf = 'http://example.org/andrefs';
-const xml = 'http://www.w3.org/2001/XMLSchema';
 const n3 = new N3.Store();
-n3.addQuad(rdf.namedNode(`${pf}/N1`),  rdf.namedNode(`${pf}/R1`), rdf.namedNode(`${pf}/N3`)); 
-n3.addQuad(rdf.namedNode(`${pf}/N3`),  rdf.namedNode(`${pf}/R1`), rdf.namedNode(`${pf}/N4`)); 
-n3.addQuad(rdf.namedNode(`${pf}/N4`),  rdf.namedNode(`${pf}/R1`), rdf.namedNode(`${pf}/N2`)); 
-n3.addQuad(rdf.namedNode(`${pf}/N2`),  rdf.namedNode(`${pf}/R1`), rdf.namedNode(`${pf}/N1`)); 
-n3
-n3.addQuad(rdf.namedNode(`${pf}/N3`),  rdf.namedNode(`${pf}/R4`), rdf.namedNode(`${pf}/N11`)); 
-n3.addQuad(rdf.namedNode(`${pf}/N11`), rdf.namedNode(`${pf}/R4`), rdf.namedNode(`${pf}/N12`)); 
-n3
-n3.addQuad(rdf.namedNode(`${pf}/N4`),  rdf.namedNode(`${pf}/R2`), rdf.namedNode(`${pf}/N5`)); 
-n3.addQuad(rdf.namedNode(`${pf}/N4`),  rdf.namedNode(`${pf}/R2`), rdf.namedNode(`${pf}/N6`)); 
-n3
-n3.addQuad(rdf.namedNode(`${pf}/N5`),  rdf.namedNode(`${pf}/R2`), rdf.namedNode(`${pf}/N7`)); 
-n3.addQuad(rdf.namedNode(`${pf}/N5`),  rdf.namedNode(`${pf}/R2`), rdf.namedNode(`${pf}/N8`)); 
-n3.addQuad(rdf.namedNode(`${pf}/N7`),  rdf.namedNode(`${pf}/R3`), rdf.literal("L1")); 
-n3.addQuad(rdf.namedNode(`${pf}/N8`),  rdf.namedNode(`${pf}/R2`), rdf.namedNode(`${pf}/N13`)); 
-n3.addQuad(rdf.namedNode(`${pf}/N13`), rdf.namedNode(`${pf}/R2`), rdf.namedNode(`${pf}/N15`)); 
-n3
-n3.addQuad(rdf.namedNode(`${pf}/N6`),  rdf.namedNode(`${pf}/R2`), rdf.namedNode(`${pf}/N9`)); 
-n3.addQuad(rdf.namedNode(`${pf}/N6`),  rdf.namedNode(`${pf}/R2`), rdf.namedNode(`${pf}/N10`)); 
-n3.addQuad(rdf.namedNode(`${pf}/N9`),  rdf.namedNode(`${pf}/R2`), rdf.namedNode(`${pf}/N14`)); 
-n3.addQuad(rdf.namedNode(`${pf}/N14`), rdf.namedNode(`${pf}/R2`), rdf.namedNode(`${pf}/N16`)); 
+
+n3.addQuad(NN(`${pf}/N1`),  NN(`${pf}/R1`), NN(`${pf}/N3`)); 
+n3.addQuad(NN(`${pf}/N3`),  NN(`${pf}/R1`), NN(`${pf}/N4`)); 
+n3.addQuad(NN(`${pf}/N4`),  NN(`${pf}/R1`), NN(`${pf}/N2`)); 
+n3.addQuad(NN(`${pf}/N2`),  NN(`${pf}/R1`), NN(`${pf}/N1`)); 
+
+n3.addQuad(NN(`${pf}/N3`),  NN(`${pf}/R4`), NN(`${pf}/N11`)); 
+n3.addQuad(NN(`${pf}/N11`), NN(`${pf}/R4`), NN(`${pf}/N12`)); 
+
+n3.addQuad(NN(`${pf}/N4`),  NN(`${pf}/R2`), NN(`${pf}/N5`)); 
+n3.addQuad(NN(`${pf}/N4`),  NN(`${pf}/R2`), NN(`${pf}/N6`)); 
+
+n3.addQuad(NN(`${pf}/N5`),  NN(`${pf}/R2`), NN(`${pf}/N7`)); 
+n3.addQuad(NN(`${pf}/N5`),  NN(`${pf}/R2`), NN(`${pf}/N8`)); 
+n3.addQuad(NN(`${pf}/N7`),  NN(`${pf}/R3`), rdf.literal("L1")); 
+n3.addQuad(NN(`${pf}/N8`),  NN(`${pf}/R2`), NN(`${pf}/N13`)); 
+n3.addQuad(NN(`${pf}/N13`), NN(`${pf}/R2`), NN(`${pf}/N15`)); 
+
+n3.addQuad(NN(`${pf}/N6`),  NN(`${pf}/R2`), NN(`${pf}/N9`)); 
+n3.addQuad(NN(`${pf}/N6`),  NN(`${pf}/R2`), NN(`${pf}/N10`)); 
+n3.addQuad(NN(`${pf}/N9`),  NN(`${pf}/R2`), NN(`${pf}/N14`)); 
+n3.addQuad(NN(`${pf}/N14`), NN(`${pf}/R2`), NN(`${pf}/N16`)); 
 
 
 const graph = new GraphOperations({
@@ -154,9 +152,10 @@ describe('calcInOutRatios', () => {
 describe('calcRandomWalks', () => {
   test('calculates random walks', async () => {
     const props = await graph.getProps();
-    const walks = Object.fromEntries(await graph.calcRandomWalks(props, 1, 5));
+    const walks = await graph.calcRandomWalks(props, 1, 5);
+    const items = Object.fromEntries(walks.map(([p, , ws]) => [p, ws]));
 
-    const R1 = Object.values(walks[`${pf}/R1`])[0];
+    const R1 = Object.values(items[`${pf}/R1`])[0];
     expect(R1).toHaveProperty('status', 'loop');
     expect(R1.nodes).toHaveLength(4);
     expect(R1.nodes).toContain(`${pf}/N1`);
@@ -164,13 +163,13 @@ describe('calcRandomWalks', () => {
     expect(R1.nodes).toContain(`${pf}/N3`);
     expect(R1.nodes).toContain(`${pf}/N4`);
 
-    const R2 = Object.values(walks[`${pf}/R2`])[0];
+    const R2 = Object.values(items[`${pf}/R2`])[0];
     expect(R2).toHaveProperty('status', 'finished_early');
 
-    const R3 = Object.values(walks[`${pf}/R3`])[0];
+    const R3 = Object.values(items[`${pf}/R3`])[0];
     expect(R3).toHaveProperty('status', 'found_literal');
 
-    const R4 = Object.values(walks[`${pf}/R4`])[0];
+    const R4 = Object.values(items[`${pf}/R4`])[0];
     expect(R4).toHaveProperty('status', 'finished_early');
   });
 });
