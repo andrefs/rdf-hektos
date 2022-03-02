@@ -1,8 +1,6 @@
 import GraphOperations from './lib/GraphOperations.js';
 import {summProps, ppMatrix, flattenObjValues} from './lib/utils.js'
 
-//test
-
 import OptionParser from 'option-parser';
 import Store from './lib/Store.js';
 const parser = new OptionParser();
