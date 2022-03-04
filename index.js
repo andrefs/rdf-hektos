@@ -4,24 +4,7 @@ import {summProps, ppMatrix, flattenObjValues} from './lib/utils.js'
 import OptionParser from 'option-parser';
 import Store from './lib/Store.js';
 const parser = new OptionParser();
-
-let showProgBar = true;
-let quiet = false;
-let outputFile;
-
-parser.addOption('h', 'help', 'Display this help message')
-      .action(parser.helpAction());
-parser.addOption('q', 'quiet', 'No output other than results')
-      .action(() => quiet = true);
-parser.addOption('b', 'no-progress-bar', 'Remove progress bar')
-      .action(() => showProgBar = false);
-parser.addOption('o', 'output', 'Send output to file')
-      .argument('FILE')
-      .action((value) => outputFile = value);
-
-parser.parse();
-
-if(quiet){ showProgBar = false; }
+import opts from './lib/opts.js'
 
 async function run(){
   console.warn('Starting');
