@@ -1,9 +1,7 @@
 import GraphOperations from './lib/GraphOperations.js';
 import {summProps, ppMatrix, flattenObjValues} from './lib/utils.js'
 
-import OptionParser from 'option-parser';
 import Store from './lib/Store.js';
-const parser = new OptionParser();
 import opts from './lib/opts.js'
 
 async function run(){
@@ -15,10 +13,10 @@ async function run(){
   const repo = 'wordnet';
   //const endpointUrl = `${host}:${port}/repositories/${repo}`;
   const port = '3030';
-  const endpointUrl = `${host}:${port}/${repo}/sparql`;
+  const endpointUrl = opts.endpointUrl || `${host}:${port}/${repo}/sparql`;
   const store = new Store({endpointUrl})
-  const graph = new GraphOperations(store, {showProgBar});
   let props = await graph.getProps();
+  const graph = new GraphOperations(store, {showProgBar: opts.showProgBar});
 
   const walks = await graph.calcRandomWalks(props, 1, 10);
   for(const [p, sampledWalks, ws] of walks){
