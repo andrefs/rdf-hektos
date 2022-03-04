@@ -37,14 +37,14 @@ const graph = new GraphOperations({
   }
 });
 
-test('getProps', async() => {
-  const props = await graph.getProps();
+test('getPreds', async() => {
+  const preds = await graph.getPreds();
 
-  expect(Object.keys(props)).toHaveLength(4);
-  expect(props).toHaveProperty([`${pf}/R1`, 'count'], 4);
-  expect(props).toHaveProperty([`${pf}/R2`, 'count'], 10);
-  expect(props).toHaveProperty([`${pf}/R3`, 'count'], 1);
-  expect(props).toHaveProperty([`${pf}/R4`, 'count'], 2);
+  expect(Object.keys(preds)).toHaveLength(4);
+  expect(preds).toHaveProperty([`${pf}/R1`, 'count'], 4);
+  expect(preds).toHaveProperty([`${pf}/R2`, 'count'], 10);
+  expect(preds).toHaveProperty([`${pf}/R3`, 'count'], 1);
+  expect(preds).toHaveProperty([`${pf}/R4`, 'count'], 2);
 });
 
 
@@ -138,8 +138,8 @@ describe('_randSelectSubjects', () => {
 
 describe('calcInOutRatios', () => {
   test('calculates ratios', async () => {
-    const props = await graph.getProps();
-    const ratios = Object.fromEntries(await graph.calcInOutRatios(props));
+    const preds = await graph.getPreds();
+    const ratios = Object.fromEntries(await graph.calcInOutRatios(preds));
 
     expect(Object.keys(ratios)).toHaveLength(3);
     expect(ratios[`${pf}/R2`]).toBe("1.3333333333333333");
@@ -151,8 +151,8 @@ describe('calcInOutRatios', () => {
 
 describe('calcRandomWalks', () => {
   test('calculates random walks', async () => {
-    const props = await graph.getProps();
-    const walks = await graph.calcRandomWalks(props, 1, 5);
+    const preds = await graph.getPreds();
+    const walks = await graph.calcRandomWalks(preds, 1, 5);
     const items = Object.fromEntries(walks.map(([p, , ws]) => [p, ws]));
 
     const R1 = Object.values(items[`${pf}/R1`])[0];
