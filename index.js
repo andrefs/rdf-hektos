@@ -35,7 +35,7 @@ async function run(){
 
   const sum = summPreds(preds);
 
-  ppMatrix(flattenObjValues(sum), outputFile);
+  ppMatrix(flattenObjValues(sum), opts.outputFile);
 }
 
 run();
