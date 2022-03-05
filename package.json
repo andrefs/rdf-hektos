@@ -15,8 +15,8 @@
   "author": "André Santos",
   "license": "ISC",
   "dependencies": {
-    "@comunica/actor-init-sparql": "1.22.3",
     "@comunica/logger-pretty": "1.22.0",
+    "@comunica/query-sparql": "2.0.5",
     "@rdfjs/data-model": "2.0.0",
     "@rdfjs/namespace": "2.0.0",
     "@rdfjs/types": "1.1.0",
