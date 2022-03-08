@@ -1,8 +1,8 @@
 import GraphOperations from '../../lib/GraphOperations.js';
 import rdf from '@rdfjs/data-model';
 import N3 from 'n3';
-import {newEngine} from '@comunica/actor-init-sparql';
-const myEngine = newEngine();
+import {QueryEngine} from '@comunica/query-sparql';
+const engine = new QueryEngine();
 const NN = rdf.namedNode;
 const pf = 'http://example.org/andrefs';
 const n3 = new N3.Store();
@@ -32,8 +32,8 @@ n3.addQuad(NN(`${pf}/N14`), NN(`${pf}/R2`), NN(`${pf}/N16`));
 
 const graph = new GraphOperations({
   select: async (sparql) => {
-    const res = await myEngine.query(sparql, {sources: [n3]});
-    return res.bindingsStream;
+    const res = await engine.queryBindings(sparql, {sources: [n3]});
+    return res;
   }
 });
 
@@ -54,14 +54,15 @@ describe('_randomWalk', () => {
     const acc = {};
     const r = await graph._randomWalk(
                       rdf.namedNode(`${pf}/R1`),
-                      rdf.namedNode(`${pf}/N1`), 4, acc);
+                      rdf.namedNode(`${pf}/N1`), 6, acc);
   
-    expect(r).toHaveProperty('status', 'loop');
-    expect(r.nodes).toHaveLength(4);
-    expect(r.nodes).toContain(`${pf}/N1`);
-    expect(r.nodes).toContain(`${pf}/N3`);
-    expect(r.nodes).toContain(`${pf}/N4`);
-    expect(r.nodes).toContain(`${pf}/N2`);
+    expect(r).toHaveProperty('status', ['found_loop']);
+    expect(r.nodes).toHaveLength(5);
+    expect(r.nodes[0]).toHaveProperty('value', `${pf}/N4`);
+    expect(r.nodes[1]).toHaveProperty('value', `${pf}/N2`);
+    expect(r.nodes[2]).toHaveProperty('value', `${pf}/N1`);
+    expect(r.nodes[3]).toHaveProperty('value', `${pf}/N3`);
+    expect(r.nodes[4]).toHaveProperty('value', `${pf}/N4`);
   });
 
   test('finishes early', async () => {
@@ -70,11 +71,11 @@ describe('_randomWalk', () => {
                       rdf.namedNode(`${pf}/R4`),
                       rdf.namedNode(`${pf}/N3`), 4, acc);
   
-    expect(r).toHaveProperty('status', 'finished_early');
+    expect(r).toHaveProperty('status', ['finished_early', 'finished_early']);
     expect(r.nodes).toHaveLength(3);
-    expect(r.nodes).toContain(`${pf}/N3`);
-    expect(r.nodes).toContain(`${pf}/N11`);
-    expect(r.nodes).toContain(`${pf}/N12`);
+    expect(r.nodes[0]).toHaveProperty('value', `${pf}/N3`);
+    expect(r.nodes[1]).toHaveProperty('value', `${pf}/N11`);
+    expect(r.nodes[2]).toHaveProperty('value', `${pf}/N12`);
   
   });
 
@@ -84,9 +85,10 @@ describe('_randomWalk', () => {
                       rdf.namedNode(`${pf}/R3`),
                       rdf.namedNode(`${pf}/N7`), 4, acc);
   
-    expect(r).toHaveProperty('status', 'found_literal');
-    expect(r.nodes).toHaveLength(1);
-    expect(r.nodes).toContain(`${pf}/N7`);
+    expect(r).toHaveProperty('status', ['found_literal', 'finished_early']);
+    expect(r.nodes).toHaveLength(2);
+    expect(r.nodes[0]).toHaveProperty('value', `${pf}/N7`);
+    expect(r.nodes[1]).toHaveProperty('value', 'L1');
   });
 
   test('finishes', async () => {
@@ -95,10 +97,10 @@ describe('_randomWalk', () => {
                       rdf.namedNode(`${pf}/R4`),
                       rdf.namedNode(`${pf}/N3`), 2, acc);
   
-    expect(r).toHaveProperty('status', 'finished');
-    expect(r.nodes).toHaveLength(3);
-    expect(r.nodes).toContain(`${pf}/N3`);
-    expect(r.nodes).toContain(`${pf}/N11`);
+    expect(r).toHaveProperty('status', ['finished']);
+    expect(r.nodes).toHaveLength(2);
+    expect(r.nodes[0]).toHaveProperty('value', `${pf}/N3`);
+    expect(r.nodes[1]).toHaveProperty('value', `${pf}/N11`);
   });
 });
 
@@ -108,31 +110,32 @@ describe('_randomWalks', () => {
     const r = await graph._randomWalks(
                       rdf.namedNode(`${pf}/R2`),
                       [rdf.namedNode(`${pf}/N8`),
-                       rdf.namedNode(`${pf}/N9`)], 2);
+                       rdf.namedNode(`${pf}/N9`)], 3);
 
-    expect(r).toHaveProperty([`${pf}/N8`, 'status'], 'finished');
-    expect(r).toHaveProperty([`${pf}/N9`, 'status'], 'finished');
+    expect(r).toHaveProperty([`${pf}/N8`, 'status'], ['finished']);
+    expect(r).toHaveProperty([`${pf}/N9`, 'status'], ['finished']);
     expect(r[`${pf}/N8`].nodes).toHaveLength(3);
     expect(r[`${pf}/N9`].nodes).toHaveLength(3);
-    expect(r[`${pf}/N8`].nodes).toContain(`${pf}/N8`);
-    expect(r[`${pf}/N8`].nodes).toContain(`${pf}/N13`);
-    expect(r[`${pf}/N8`].nodes).toContain(`${pf}/N15`);
-    expect(r[`${pf}/N9`].nodes).toContain(`${pf}/N9`);
-    expect(r[`${pf}/N9`].nodes).toContain(`${pf}/N14`);
-    expect(r[`${pf}/N9`].nodes).toContain(`${pf}/N16`);
+    expect(r[`${pf}/N8`].nodes[0]).toHaveProperty('value', `${pf}/N5`);
+    expect(r[`${pf}/N8`].nodes[1]).toHaveProperty('value', `${pf}/N8`);
+    expect(r[`${pf}/N8`].nodes[2]).toHaveProperty('value', `${pf}/N13`);
+    expect(r[`${pf}/N9`].nodes[0]).toHaveProperty('value', `${pf}/N6`);
+    expect(r[`${pf}/N9`].nodes[1]).toHaveProperty('value', `${pf}/N9`);
+    expect(r[`${pf}/N9`].nodes[2]).toHaveProperty('value', `${pf}/N14`);
   });
 });
 
 
 describe('_randSelectSubjects', () => {
   test('selects subjects', async () => {
-    const r = await graph._randSelectSubjects(rdf.namedNode(`${pf}/R4`), 2);
+    const r = await graph._randSelectSubjects(rdf.namedNode(`${pf}/R4`), 3);
 
     const values = r.map(x => x.value).sort();
 
-    expect(r).toHaveLength(2);
+    expect(r).toHaveLength(3);
     expect(values[0]).toBe(`${pf}/N11`);
-    expect(values[1]).toBe(`${pf}/N3`);
+    expect(values[1]).toBe(`${pf}/N12`);
+    expect(values[2]).toBe(`${pf}/N3`);
   });
 });
 
@@ -152,24 +155,25 @@ describe('calcInOutRatios', () => {
 describe('calcRandomWalks', () => {
   test('calculates random walks', async () => {
     const preds = await graph.getPreds();
-    const walks = await graph.calcRandomWalks(preds, 1, 5);
+    const walks = await graph.calcRandomWalks(preds, 1, 6);
     const items = Object.fromEntries(walks.map(([p, , ws]) => [p, ws]));
 
     const R1 = Object.values(items[`${pf}/R1`])[0];
-    expect(R1).toHaveProperty('status', 'loop');
-    expect(R1.nodes).toHaveLength(4);
-    expect(R1.nodes).toContain(`${pf}/N1`);
-    expect(R1.nodes).toContain(`${pf}/N2`);
-    expect(R1.nodes).toContain(`${pf}/N3`);
-    expect(R1.nodes).toContain(`${pf}/N4`);
+    expect(R1).toHaveProperty('status', ['found_loop']);
+    const vs = R1.nodes.map(n => n.value);
+    expect(R1.nodes).toHaveLength(5);
+    expect(vs).toContain(`${pf}/N4`);
+    expect(vs).toContain(`${pf}/N2`);
+    expect(vs).toContain(`${pf}/N1`);
+    expect(vs).toContain(`${pf}/N3`);
 
     const R2 = Object.values(items[`${pf}/R2`])[0];
-    expect(R2).toHaveProperty('status', 'finished_early');
+    expect(R2).toHaveProperty('status', ['finished_early', 'finished_early']);
 
     const R3 = Object.values(items[`${pf}/R3`])[0];
-    expect(R3).toHaveProperty('status', 'found_literal');
+    expect(R3).toHaveProperty('status', ['found_literal', 'finished_early']);
 
     const R4 = Object.values(items[`${pf}/R4`])[0];
-    expect(R4).toHaveProperty('status', 'finished_early');
+    expect(R4).toHaveProperty('status', ['finished_early', 'finished_early']);
   });
 });
