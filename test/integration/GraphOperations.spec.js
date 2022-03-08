@@ -2,6 +2,7 @@ import GraphOperations from '../../lib/GraphOperations.js';
 import rdf from '@rdfjs/data-model';
 import N3 from 'n3';
 import {QueryEngine} from '@comunica/query-sparql';
+import { N, Q, Query, V } from '../../lib/QueryBuilder.js';
 const engine = new QueryEngine();
 const NN = rdf.namedNode;
 const pf = 'http://example.org/andrefs';
@@ -177,3 +178,32 @@ describe('calcRandomWalks', () => {
     expect(R4).toHaveProperty('status', ['finished_early', 'finished_early']);
   });
 });
+
+describe('calcCoverage', () => {
+  test('calculates coverage', async () => {
+    const subq = new Query().select('s')
+                            .where(Q(V('s'), N(`${pf}/R2`), V('o')));
+
+    const cov = await graph.calcCoverage(subq);
+
+    expect(cov).toStrictEqual([["http://example.org/andrefs/R1", 2],
+                               ["http://example.org/andrefs/R2", 16]]);
+
+  });
+})
+
+describe('globalMetrics', () => {
+  test('calculates global metrics', async () => {
+    const subq = new Query().select('s')
+                            .where(Q(V('s'), N(`${pf}/R2`), V('o')));
+
+    const global = await graph.globalMetrics(subq);
+
+    expect(global).toStrictEqual({
+      totalNodes: 34,
+      totalResources: 51,
+      totalSeeds: 10,
+      totalSubjects: 17,
+    });
+  });
+})
