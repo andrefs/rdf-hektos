@@ -3,6 +3,7 @@ import {summPreds, ppMatrix, flattenObjValues} from './lib/utils.js'
 
 import Store from './lib/Store.js';
 import opts from './lib/opts.js'
+import { N, Q, Query, V } from './lib/QueryBuilder.js';
 
 async function run(){
   console.warn('Starting');
@@ -29,6 +30,16 @@ async function run(){
     if(preds[p]){
       preds[p].ratio = r;
     }
+  }
+
+  const a = N('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
+  const synsetClass = N('http://www.w3.org/ns/lemon/ontolex#LexicalConcept');
+  const subq = new Query().select('s')
+                    .where(Q(V('s'), a, synsetClass));
+
+  const cov = await graph.calcCoverage(subq);
+  for(const [p, c] of cov){
+    preds[p].coverage = c;
   }
 
   //await calcLoops(preds);
