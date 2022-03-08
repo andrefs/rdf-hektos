@@ -10,7 +10,7 @@ async function run(){
 
   const host = 'http://localhost';
   //const port = '7201';
-  const repo = 'wordnet';
+  const repo = opts.repository || 'wordnet';
   //const endpointUrl = `${host}:${port}/repositories/${repo}`;
   const port = '3030';
   const endpointUrl = opts.endpointUrl || `${host}:${port}/${repo}/sparql`;
