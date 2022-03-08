@@ -4,7 +4,7 @@
   "description": "Extract a property summary from an RDF graph",
   "scripts": {
     "test": "yarn node --experimental-vm-modules $(yarn bin jest)",
-    "build": "tsc --project ./src"
+    "build": "tsc"
   },
   "type": "module",
   "keywords": [
