@@ -192,6 +192,33 @@ describe('calcCoverage', () => {
   });
 })
 
+describe('', () => {
+  test('calculates branching factors', async () => {
+    const preds = await graph.getPreds();
+    const bfs = await graph.calcBranchingFactor(preds);
+    expect(bfs).toMatchInlineSnapshot(`
+Array [
+  Array [
+    "http://example.org/andrefs/R1",
+    0.25,
+  ],
+  Array [
+    "http://example.org/andrefs/R4",
+    0.5,
+  ],
+  Array [
+    "http://example.org/andrefs/R2",
+    0.1,
+  ],
+  Array [
+    "http://example.org/andrefs/R3",
+    1,
+  ],
+]
+`);
+  });
+})
+
 describe('globalMetrics', () => {
   test('calculates global metrics', async () => {
     const subq = new Query().select('s')

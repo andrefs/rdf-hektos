@@ -44,10 +44,17 @@ async function run(){
   }
 
   //await calcLoops(preds);
+  
+  const bfs = await graph.calcBranchingFactor(preds);
+  for(const [p, bf] of bfs){
+    preds[p].branchingFactor = bf;
+  }
 
   const sum = summPreds(preds);
 
   ppMatrix(flattenObjValues(sum), opts.outputFile);
+  
+
 }
 
 run();
