@@ -277,15 +277,15 @@ class GraphOperations extends EventEmitter {
     });
   }
 
-  async calcLoops(preds){
-    const loops = [];
+  async calcLoops(preds: {[key:string]: Predicate}): Promise<Array<[string, number]>>{
+    const loops: [string, number][] = [];
     this.emit('loops-starting', Object.keys(preds).length);
     for(const p of Object.keys(preds)){
       const query = `SELECT (COUNT(?s) AS ?loops)
                      WHERE { ?s <${p}>+ ?s .}`;
       const stream = await this._store.select(query);
       const lc = await s2a(stream);
-      loops.push([p, lc]);
+      loops.push([p, Number(lc[0].get('loops')?.value)]);
       this.emit('loops-loop');
     }
     this.emit('loops-finished');
@@ -304,8 +304,8 @@ class GraphOperations extends EventEmitter {
   }
 
 
-  async calcBranchingFactor(preds){
-    const bfs = [];
+  async calcBranchingFactor(preds: {[key:string]: Predicate}): Promise<Array<[string, number]>>{
+    const bfs: [string, number][] = [];
     for(const p of Object.keys(preds)){
       const res = await this._runQuery(new Query()
                                 .select(
@@ -315,15 +315,15 @@ class GraphOperations extends EventEmitter {
                                 .where(
                                   Q(V('s'), N(p), V('o')),
                                 ));
-      const nrCount = res[0].get('nonRoots').value;
-      const nlCount = res[0].get('nonLeaves').value;
+      const nrCount = res[0].get('nonRoots')?.value;
+      const nlCount = res[0].get('nonLeaves')?.value;
       bfs.push([p, Number(nrCount)/Number(nlCount)]);
     }
 
     return bfs;
   }
 
-  async globalMetrics(seedQuery){
+  async globalMetrics(seedQuery: Query): Promise<{totalResources: number, totalNodes: number, totalSubjects: number, totalSeeds: number}>{
     const totalResources = await this._runQuery(new Query()
                                 .select(COUNT('x', 'total', 'distinct'))
                                 .where(
@@ -351,9 +351,9 @@ class GraphOperations extends EventEmitter {
     const totalSeeds = await this._runQuery(seedQuery);
 
     return {
-      totalResources: Number(totalResources[0].get('total').value),
-      totalNodes: Number(totalNodes[0].get('total').value),
-      totalSubjects: Number(totalSubjects[0].get('total').value),
+      totalResources: Number(totalResources[0].get('total')?.value),
+      totalNodes: Number(totalNodes[0].get('total')?.value),
+      totalSubjects: Number(totalSubjects[0].get('total')?.value),
       totalSeeds: totalSeeds.length
     }
   }
