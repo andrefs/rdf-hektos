@@ -14,9 +14,9 @@ async function run(){
   const repo = opts.repository || 'wordnet';
   //const endpointUrl = `${host}:${port}/repositories/${repo}`;
   const port = '3030';
-  const endpointUrl = opts.endpointUrl || `${host}:${port}/${repo}/sparql`;
+  const endpointUrl = opts.endpoint || `${host}:${port}/${repo}/sparql`;
   const store = new Store({endpointUrl})
-  const graph = new GraphOperations(store, {showProgBar: opts.showProgBar});
+  const graph = new GraphOperations(store, {showProgBar: !opts.noProgressBar});
   let preds = await graph.getPreds();
 
   const walks = await graph.calcRandomWalks(preds, 1, 10);

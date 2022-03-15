@@ -1,13 +1,16 @@
 import {Query, COUNT, V, RAND, Q, N, BIND, UNION, FILTER, NOT, IS_BLANK} from './QueryBuilder.js';
-import Promise from 'bluebird';
+import Bluebird from 'bluebird';
 import EventEmitter from 'events';
 import cliProgress from 'cli-progress';
+import {BindingsStream} from '@comunica/types';
+import {Bindings, Term} from '@rdfjs/types';
 import { Stream } from 'stream';
+import Store from './Store.js';
 const multibar = new cliProgress.MultiBar({
     stopOnComplete: true,
     clearOnComplete: false,
     hideCursor: true,
-    barSize: 30,
+    barsize: 30,
     format: ' {bar} {percentage}% | {value}/{total} {task} | {tid}'
 }, cliProgress.Presets.shades_grey);
 
@@ -21,9 +24,9 @@ const  FOUND_LOOP     = 'found_loop';
 
 
 
-const s2a = async (stream: Stream) => {
-    return new Promise((resolve) => {
-      const res = [];
+const s2a = async (stream: BindingsStream) => {
+    return new Bluebird<Bindings[]>((resolve) => {
+      const res:Bindings[] = [];
       stream
         .on('data', (bindings) => res.push(bindings))
         .on('end',() => resolve(res));
@@ -32,8 +35,11 @@ const s2a = async (stream: Stream) => {
 
 
 class GraphOperations extends EventEmitter {
+  _store: Store;
+  _bars: {[key: string]: cliProgress.SingleBar} = {};
 
-  constructor(store, {showProgBar}={}){
+  constructor(store: Store, {showProgBar}:{showProgBar?:boolean}={}){
+
     super();
     if(showProgBar){
       this._handleEvents();
@@ -76,7 +82,7 @@ class GraphOperations extends EventEmitter {
 
   }
 
-  async getPreds(){
+  async getPreds(): Promise<{[key: string]: Predicate}>{
     const q = new Query()
                       .select('p', COUNT('p', 'total'))
                       .where(
@@ -89,16 +95,16 @@ class GraphOperations extends EventEmitter {
     this.emit('preds-finished', res.length); 
     return Object.fromEntries(res.map(r => {
       return [
-      r.get('p').value,
+      r.get('p')?.value,
       {
-        count: Number(r.get('total').value),
+        count: Number(r.get('total')?.value) || 0,
         node: r.get('p')
       }
     ];}));
   }
 
-  async _randomWalks(pred, nodes, len){
-    const walks = {};
+  async _randomWalks(pred: Term, nodes: Term[], len: number): Promise<{[key:string]: Walk}>{
+    const walks: {[key:string]: Walk} = {};
     this.emit('walks-pred-starting', nodes.length);
     const ws = await Promise.map(nodes, n => {
       this.emit('walks-pred-node', n.value);
@@ -112,7 +118,7 @@ class GraphOperations extends EventEmitter {
     return walks;
   }
 
-  async _runQuery(query, invalidateCache) {
+  async _runQuery(query: Query | string, invalidateCache?: boolean) {
     const sparql = typeof query !== 'string' ? query.toSparql() : query;
     const stream = await this._store.select(sparql);
     const res = await s2a(stream);
@@ -123,7 +129,7 @@ class GraphOperations extends EventEmitter {
   }
 
 
-  async rightRWStep(s, p, o){
+  async rightRWStep(s, p, o): Promise<Term | undefined>{
     const q = new Query().select(o)
                          .where(Q(s, p, V(o)), BIND(RAND(), 'sortKey'))
                          .orderBy('sortKey')
@@ -137,7 +143,7 @@ class GraphOperations extends EventEmitter {
     return res;
   }
 
-  async leftRWStep(s, p, o){
+  async leftRWStep(s, p, o): Promise<Term | undefined>{
     const q = new Query().select(s)
                          .where(Q(V(s), p, o), BIND(RAND(), 'sortKey'))
                          .orderBy('sortKey')
@@ -151,7 +157,7 @@ class GraphOperations extends EventEmitter {
     return res;
   }
 
-  isRandomWalkOver(x, visitedNodes){
+  isRandomWalkOver(x: Term, visitedNodes: Set<string>){
     return  !x ?                         FINISHED_EARLY :
             x.termType === 'BlankNode' ? FOUND_BLANK    :
             x.termType === 'Literal' ?   FOUND_LITERAL  :
@@ -159,16 +165,17 @@ class GraphOperations extends EventEmitter {
             null;
   }
 
-  async _randomWalk(pred, node, len){
-    let leftNode = node;
-    let rightNode = node;
-    let visitedNodes = new Set().add(node.value);
+    //return {status, nodes: path};
+  async _randomWalk(pred:Term, node:Term, len: number): Promise<{status: string[], nodes: Term[]}>{
+    let leftNode: Term | undefined = node;
+    let rightNode: Term | undefined = node;
+    let visitedNodes = new Set<string>().add(node.value);
     const path = [node];
     let rightFinished = false;
     let leftFinished = false;
     const status = [];
 
-    const pathIsLoop = path => path.length > 1 && path[0].value === path[path.length-1].value;
+    const pathIsLoop = (path: Term[]) => path.length > 1 && path[0].value === path[path.length-1].value;
 
     if(rightNode.termType === 'Literal'){
       status.push(FOUND_LITERAL);
@@ -210,7 +217,7 @@ class GraphOperations extends EventEmitter {
     return {status, nodes: path};
   }
 
-  async _randSelectSubjects(p, howMany){
+  async _randSelectSubjects(p: Term, howMany: number): Promise<Term[]>{
     const q = new Query().distinct().select('x')
                       .where(
                         Q(V('x'), p, V('o')),
@@ -222,18 +229,18 @@ class GraphOperations extends EventEmitter {
                       .orderBy('sortKey')
                       .limit(howMany);
     const nodes = await this._runQuery(q, true);
-    return nodes.map(x => x.get('x'));
+    return nodes.map(x => x.get('x') as Term);
   }
 
 
-  async calcRandomWalks(preds, pctg=1, walkLength=5){
+  async calcRandomWalks(preds: {[key:string]: Predicate}, pctg=1, walkLength=5): Promise<PredicateWalks[]>{
     this.emit('walks-started', Object.keys(preds).length);
-    const walks = [];
+    const walks: PredicateWalks[] = [];
     console.log(`  doing random walks (${Object.keys(preds).length} ` +
       `preds, ${pctg}% of paths, length ${walkLength})`);
     for (const p of Object.keys(preds)){
       this.emit('walks-pred', p);
-      const total = preds[p].count;
+      const total = preds[p]?.count;
       const sampledWalks = Math.ceil(total*pctg/100);
       const subjs = await this._randSelectSubjects(preds[p].node, sampledWalks);
       const ws = await this._randomWalks(preds[p].node, subjs, walkLength);
@@ -243,7 +250,7 @@ class GraphOperations extends EventEmitter {
     return walks;
   };
 
-  async calcInOutRatios(preds){
+  async calcInOutRatios(preds: {[key:string]: Predicate}): Promise<Array<[string, number]>>{
     const query = `
       PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
   
@@ -263,7 +270,11 @@ class GraphOperations extends EventEmitter {
   
     const stream = await this._store.select(query);
     const res = await s2a(stream);
-    return res.map(r => [r.get('p').value, r.get('avg').value]);
+    return res.map(r => {
+      const p = r.get('p')?.value as string;
+      const avg = Number(r.get('avg')?.value);
+      return [p, avg];
+    });
   }
 
   async calcLoops(preds){
@@ -281,7 +292,7 @@ class GraphOperations extends EventEmitter {
     return loops;
   }
 
-  async calcCoverage(subSelect){
+  async calcCoverage(subSelect: Query): Promise<Array<[string, number]>>{
     const q = new Query().select('p', COUNT('s', 'cov'))
                        .where(
                          Q(V('s'), V('p'), V('o')),
@@ -289,7 +300,7 @@ class GraphOperations extends EventEmitter {
                        )
                       .groupBy('p')
     const cov = await this._runQuery(q);
-    return cov.map(c => [c.get('p').value, Number(c.get('cov').value)]);
+    return cov.map(c => [c.get('p')?.value as string, Number(c.get('cov')?.value)]);
   }
 
 
@@ -347,6 +358,23 @@ class GraphOperations extends EventEmitter {
     }
   }
 };
+
+interface Predicate {
+  count: number,
+  node: Term,
+  sampledWalks?: number,
+  walks: {[key:string]: Walk},
+  ratio?: number,
+  branchingFactor?: number,
+  coverage: number,
+};
+
+interface Walk {
+  status: string[],
+  nodes: Term[]
+};
+
+type PredicateWalks = [string, number, {[key:string]: Walk}];
 
 export default GraphOperations;
 

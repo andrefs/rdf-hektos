@@ -1,10 +1,9 @@
 import rdf from '@rdfjs/data-model';
-import { Literal, Quad, Variable } from 'rdf-data-factory';
-import { BaseQuad, BlankNode, NamedNode, Quad_Object, Quad_Predicate, Quad_Subject } from '@rdfjs/types';
-import {Generator, BgpPattern, Expression, GroupPattern, Pattern, Triple, SelectQuery, UnionPattern, Term, BindPattern, FilterPattern} from 'sparqljs';
-import { throws } from 'assert';
+import { Literal, Quad } from 'rdf-data-factory';
+import RdfJs from '@rdfjs/types';
+import SparqlJs, { OperationExpression } from 'sparqljs';
 
-const generator = new Generator();
+const generator = new SparqlJs.Generator();
 
 export const UNION = 'UNION';
 
@@ -14,7 +13,7 @@ export const normVar = (value: string) => value.replace(/^\?/, '');
 
 type StrOr<T> = string | T;
 
-export const V = (value: StrOr<Variable>): Variable => {
+export const V = (value: StrOr<RdfJs.Variable>): RdfJs.Variable => {
   if(typeof value === 'string'){
     const _val = normVar(value);
     let r = rdf.variable(_val);
@@ -24,13 +23,13 @@ export const V = (value: StrOr<Variable>): Variable => {
   return value;
 };
 
-export const Q = (s: Quad_Subject, p: Quad_Predicate, o: Quad_Object, graph=rdf.defaultGraph()) => {
+export const Q = (s: RdfJs.Quad_Subject, p: RdfJs.Quad_Predicate, o: RdfJs.Quad_Object, graph=rdf.defaultGraph()) => {
   let r = rdf.quad(s, p, o, graph);
   r.termType = 'Quad';
   return r;
 };
 
-export const N = (value: StrOr<NamedNode>) => {
+export const N = (value: StrOr<RdfJs.NamedNode>) => {
   if(typeof value === 'string'){
     let n = rdf.namedNode(value);
     n.termType = 'NamedNode';
@@ -39,7 +38,7 @@ export const N = (value: StrOr<NamedNode>) => {
   return value;
 };
 
-export const B = (value: StrOr<BlankNode>) => {
+export const B = (value: StrOr<RdfJs.BlankNode>) => {
   if(typeof value === 'string'){
     let b = rdf.blankNode(value);
     b.termType = 'BlankNode';
@@ -57,8 +56,7 @@ export const L = (value: number | StrOr<Literal>, languageOrDataType?: string) =
   return value;
 };
 
-
-export const COUNT = (value: StrOr<Variable>, as: StrOr<Variable>, distinct: boolean | string) => {
+export const COUNT = (value: StrOr<RdfJs.Variable>, as: StrOr<RdfJs.Variable>, distinct?: boolean | string): SparqlJs.VariableExpression => {
   return {
     expression: {
       expression: V(value),
@@ -70,40 +68,40 @@ export const COUNT = (value: StrOr<Variable>, as: StrOr<Variable>, distinct: boo
   };
 };
 
-export const RAND = () => ({
+export const RAND = (): OperationExpression => ({
   type: 'operation',
   operator: 'rand',
   args: []
 });
 
-export const FILTER = (exp: Expression) : FilterPattern => ({
+export const FILTER = (exp: SparqlJs.Expression) : SparqlJs.FilterPattern => ({
   type: 'filter',
   expression: exp
 });
 
-export const NOT = (...args: StrOr<Variable>[]) => ({
+export const NOT = (...args: StrOr<RdfJs.Variable>[]) => ({
   type: 'operation',
   operator: '!',
   args
 });
 
-export const IS_BLANK = (...args: StrOr<Variable>[]) => ({
+export const IS_BLANK = (...args: StrOr<RdfJs.Variable>[]) => ({
   type: 'operation',
   operator: 'isblank',
   args: args.map(v => V(v))
 });
 
-export const BIND = (exp: Expression, v: string | Variable) : BindPattern => ({
+export const BIND = (exp: SparqlJs.Expression, v: string | RdfJs.Variable) : SparqlJs.BindPattern => ({
   type: 'bind',
   variable: V(v),
   expression: exp
 });
 
 export class Query {
-  obj: SelectQuery;
+  obj: SparqlJs.SelectQuery;
 
   constructor(){
-    const vars: Variable[] = [];
+    const vars: SparqlJs.Variable[] = [];
     this.obj = {
       type: 'query',
       prefixes: {},
@@ -127,18 +125,18 @@ export class Query {
     return this;
   }
 
-  select(...binds: Variable[]){
+  select(...binds: StrOr<SparqlJs.Variable>[]){
     this.obj = {
       ...this.obj,
       queryType: 'SELECT',
     };
-    const variables = this.obj.variables as Variable[];
+    const variables = this.obj.variables as SparqlJs.Variable[];
     variables.push(...binds.map(V));
     return this;
   }
 
 
-  where(...args: (SelectQuery | BaseQuad | BindPattern | FilterPattern | Union)[]){
+  where(...args: (Query | RdfJs.BaseQuad | SparqlJs.BindPattern | SparqlJs.FilterPattern | Union)[]){
     const [w, prefixes] = _where(args);
     if(prefixes){
       this.obj.prefixes = {...this.obj.prefixes, ...prefixes};
@@ -147,7 +145,7 @@ export class Query {
     return this;
   }
 
-  groupBy(...vars: StrOr<Variable>[]){
+  groupBy(...vars: StrOr<RdfJs.Variable>[]){
     this.obj.group = vars.map(v => ({
       expression: V(v)
     }));
@@ -162,7 +160,7 @@ export class Query {
         v = a[0];
         descending = a[1] === 'DESC';
       }
-      v = V(v as StrOr<Variable>);
+      v = V(v as StrOr<RdfJs.Variable>);
       const r = {expression: v, descending};
       return r;
     });
@@ -180,9 +178,9 @@ const isQuad = (obj: any): obj is Quad => {
 
 type Prefixes = { [prefix: string]: string };
 
-function _where(args: (SelectQuery | Quad | BindPattern | FilterPattern | Union)[]): [Pattern[], Prefixes] {
-  const res: (Pattern|Union)[] = [];
-  let bgp: Triple[] = [];
+function _where(args: (Query | Quad | SparqlJs.BindPattern | SparqlJs.FilterPattern | Union)[]): [SparqlJs.Pattern[], Prefixes] {
+  const res: (SparqlJs.Pattern|Union)[] = [];
+  let bgp: SparqlJs.Triple[] = [];
   let prefixes = {};
   for(let i=0; i<args.length; i++){
     const a = args[i];
@@ -196,11 +194,7 @@ function _where(args: (SelectQuery | Quad | BindPattern | FilterPattern | Union)
       continue;
     }
     if(isQuad(a)){
-      bgp.push(a as Triple);
-      continue;
-    }
-    if(a.type === 'bind' || a.type === 'filter'){
-      res.push(a);
+      bgp.push(a as SparqlJs.Triple);
       continue;
     }
     if(a instanceof Query){
@@ -211,10 +205,14 @@ function _where(args: (SelectQuery | Quad | BindPattern | FilterPattern | Union)
       res.push({type: 'group', patterns: [a.obj]})
       continue;
     }
+    if(a.type === 'bind' || a.type === 'filter'){
+      res.push(a);
+      continue;
+    }
     if(Array.isArray(a)){
       const [nested] = _where(a);
       const g = {type: 'group', patterns: nested};
-      res.push(g as GroupPattern);
+      res.push(g as SparqlJs.GroupPattern);
       continue;
     }
   }
@@ -222,11 +220,11 @@ function _where(args: (SelectQuery | Quad | BindPattern | FilterPattern | Union)
     res.push({type: 'bgp', triples: bgp});
   }
 
-  const readyRes: Pattern[] = [];
+  const readyRes: SparqlJs.Pattern[] = [];
 
   for(let i=0; i<res.length; i++){
     if(res[i] !== UNION){
-      readyRes.push(res[i] as Pattern);
+      readyRes.push(res[i] as SparqlJs.Pattern);
       continue;
     }
 
@@ -238,18 +236,18 @@ function _where(args: (SelectQuery | Quad | BindPattern | FilterPattern | Union)
     if(second === UNION || isUnionPattern(second)){ throw 'Error'; }
     else {
       union.patterns.push(second);
-      readyRes.push(union as UnionPattern);
+      readyRes.push(union as SparqlJs.UnionPattern);
     }
     continue;
   }
   return [readyRes, prefixes];
 };
 
-const isUnionPattern = (obj: any): obj is UnionPattern => {
+const isUnionPattern = (obj: any): obj is SparqlJs.UnionPattern => {
   return obj.type === 'union';
 };
 
 
 
-type OrderByArg = StrOr<Variable> | [StrOr<Variable>, 'ASC' | 'DESC'];
+type OrderByArg = StrOr<RdfJs.Variable> | [StrOr<RdfJs.Variable>, 'ASC' | 'DESC'];
 
