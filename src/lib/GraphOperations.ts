@@ -359,7 +359,7 @@ class GraphOperations extends EventEmitter {
   }
 };
 
-interface Predicate {
+export interface Predicate {
   count: number,
   node: Term,
   sampledWalks?: number,
@@ -369,12 +369,12 @@ interface Predicate {
   coverage: number,
 };
 
-interface Walk {
+export interface Walk {
   status: string[],
   nodes: Term[]
 };
 
-type PredicateWalks = [string, number, {[key:string]: Walk}];
+export type PredicateWalks = [string, number, {[key:string]: Walk}];
 
 export default GraphOperations;
 

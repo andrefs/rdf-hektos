@@ -1,7 +1,18 @@
 import {promises as fs} from 'fs';
+import {Predicate, Walk} from './GraphOperations.js';
 
-export const summPreds = (preds) => {
-  const res = {};
+interface PredicateSummary {
+  ratio?: number,
+  count?: number,
+  coverage?: number,
+  sampledWalks?: number,
+  branchingFactor?: number,
+  walks?: {[key:string]: number},
+  avgLen?: number
+};
+
+export const summPreds = (preds: {[key:string]: Predicate}) => {
+  const res : {[key: string]: PredicateSummary} = {};
   for(const p of Object.keys(preds)){
     res[p] = {};
     res[p].ratio           = preds[p].ratio;
@@ -11,7 +22,7 @@ export const summPreds = (preds) => {
     res[p].branchingFactor = preds[p].branchingFactor;
 
     let len = 0;
-    const walks = {};
+    const walks: {[key:string]: number} = {};
     for(const w of Object.values(preds[p].walks)){
       len += w.nodes.length;
       for(const s of w.status){
