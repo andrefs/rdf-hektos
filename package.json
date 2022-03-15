@@ -13,6 +13,19 @@
     "GraphDB",
     "SPARQL"
   ],
+  "jest": {
+    "preset": "ts-jest/presets/default-esm",
+    "extensionsToTreatAsEsm": [".ts"],
+    "globals": {
+      "ts-jest": {
+        "useESM": true
+      }
+    },
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    }
+  },
   "author": "André Santos",
   "license": "ISC",
   "dependencies": {
@@ -21,13 +34,15 @@
     "@rdfjs/data-model": "2.0.0",
     "@rdfjs/namespace": "2.0.0",
     "@rdfjs/types": "1.1.0",
+    "@types/cli-progress": "3.9.2",
+    "@types/rdfjs__data-model": "2.0.1",
     "bluebird": "3.7.2",
     "cli-progress": "3.10.0",
     "graphdb": "2.0.0",
-    "option-parser": "1.0.2",
     "rdf-data-factory": "1.1.0",
     "sparql-http-client": "2.4.0",
-    "sparqljs": "3.5.1"
+    "sparqljs": "3.5.1",
+    "ts-command-line-args": "2.2.1"
   },
   "devDependencies": {
     "@types/jest": "27.4.1",

@@ -2,13 +2,16 @@ import {QueryEngine} from '@comunica/query-sparql';
 import {LoggerPretty} from "@comunica/logger-pretty";
 
 class Store {
-  constructor({endpointUrl}){
+  engine: QueryEngine;
+  source: string;
+
+  constructor({endpointUrl}: {endpointUrl: string}){
     this.engine = new QueryEngine();
     this.source = endpointUrl;
   }
 
 
-  async select(q){
+  async select(q: string){
     const preQuery = Date.now();
     const res = await this.engine.queryBindings(q, {
       sources: [{

@@ -1,37 +1,25 @@
-import OptionParser from 'option-parser';
-const parser = new OptionParser();
-
-const opts: {
-  showProgBar: boolean,
-  quiet: boolean,
-  outputFile?: string,
-  sparqlEndpoint?: string,
-  repository?: string
-} = {
-  showProgBar: true,
-  quiet: false,
+interface CliOptions {
+  quiet: Boolean,
+  noProgressBar: Boolean,
+  output: String,
+  endpoint: String,
+  repository: String,
+  help: Boolean
 };
 
-parser.addOption('h', 'help', 'Display this help message')
-      .action(parser.helpAction());
-parser.addOption('q', 'quiet', 'No output other than results')
-      .action(() => opts.quiet = true);
-parser.addOption('b', 'no-progress-bar', 'Remove progress bar')
-      .action(() => opts.showProgBar = false);
-parser.addOption('o', 'output', 'Send output to file')
-      .argument('FILE')
-      .action((value: string) => opts.outputFile = value)
-parser.addOption('e', 'endpoint', 'SPARQL endpoint')
-      .argument('ENDPOINT')
-      .action((value: string) => opts.sparqlEndpoint = value)
-parser.addOption('r', 'repository', 'Repository ID')
-      .argument('REPO')
-      .action((value: string) => opts.repository = value)
-      ;
+import {parse} from 'ts-command-line-args';
 
-parser.parse();
+export const args = parse<CliOptions>(
+  {
+    quiet:         {type: Boolean, optional: true, alias: 'q', description: 'No output other than results'},
+    noProgressBar: {type: Boolean, optional: true, alias: 'b', description: 'Remove progress bar'         },
+    output:        {type: Boolean, optional: true, alias: 'o', description: 'Send output to file'         },
+    endpoint:      {type: Boolean, optional: true, alias: 'e', description: 'SPARQL endpoint'             },
+    repository:    {type: Boolean, optional: true, alias: 'r', description: 'Repository ID'               },
+    help:          {type: Boolean, optional: true, alias: 'h', description: 'Display this help message'   },
+  }, {
+    helpArg: 'help'
+  }
+);
 
-if(opts.quiet){ opts.showProgBar = false; }
-
-export default opts;
-
+export default args;
