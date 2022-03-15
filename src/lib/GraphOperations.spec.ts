@@ -2,9 +2,10 @@ import {jest} from '@jest/globals';
 import GraphOperations from './GraphOperations.js';
 import {Readable} from 'stream';
 import rdf from '@rdfjs/data-model';
+import Store from './Store.js';
 
-let store;
-let graph;
+let store: Store;
+let graph: GraphOperations;
 const pf = 'http://example.org/andrefs';
 const xml = 'http://www.w3.org/2001/XMLSchema';
 

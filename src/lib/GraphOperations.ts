@@ -2,6 +2,7 @@ import {Query, COUNT, V, RAND, Q, N, BIND, UNION, FILTER, NOT, IS_BLANK} from '.
 import Promise from 'bluebird';
 import EventEmitter from 'events';
 import cliProgress from 'cli-progress';
+import { Stream } from 'stream';
 const multibar = new cliProgress.MultiBar({
     stopOnComplete: true,
     clearOnComplete: false,
@@ -20,7 +21,7 @@ const  FOUND_LOOP     = 'found_loop';
 
 
 
-const s2a = async (stream) => {
+const s2a = async (stream: Stream) => {
     return new Promise((resolve) => {
       const res = [];
       stream
