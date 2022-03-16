@@ -143,11 +143,22 @@ describe('FILTER', () => {
 
 describe('NOT', () => {
   test('wraps contents', () => {
-    expect(NOT('x', 'y')).toEqual({
-      type: 'operation',
-      operator: '!',
-      args: ['x', 'y']
-    })
+    expect(NOT('x', 'y')).toMatchInlineSnapshot(`
+Object {
+  "args": Array [
+    Variable {
+      "termType": "Variable",
+      "value": "x",
+    },
+    Variable {
+      "termType": "Variable",
+      "value": "y",
+    },
+  ],
+  "operator": "!",
+  "type": "operation",
+}
+`);
   });
 });
 

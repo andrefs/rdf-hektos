@@ -184,17 +184,16 @@ function _where(args: WhereArg[]): [SparqlJs.Pattern[], Prefixes] {
   let prefixes = {};
   for(let i=0; i<args.length; i++){
     const a = args[i];
+    if(isQuad(a)){
+      bgp.push(a as SparqlJs.Triple);
+      continue;
+    }
     if(bgp.length){
       res.push({type: 'bgp', triples: bgp});
       bgp = [];
-      continue;
     }
     if(a === UNION){
       res.push(a);
-      continue;
-    }
-    if(isQuad(a)){
-      bgp.push(a as SparqlJs.Triple);
       continue;
     }
     if(a instanceof Query){
