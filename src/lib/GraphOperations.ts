@@ -107,7 +107,7 @@ class GraphOperations extends EventEmitter {
   async _randomWalks(pred: Term, nodes: Term[], len: number): Promise<{[key:string]: Walk}>{
     const walks: {[key:string]: Walk} = {};
     this.emit('walks-pred-starting', nodes.length);
-    const ws = await Promise.map(nodes, n => {
+    const ws = await Bluebird.map(nodes, n => {
       this.emit('walks-pred-node', n.value);
       return this._randomWalk(pred, n, len);
     }, {concurrency});

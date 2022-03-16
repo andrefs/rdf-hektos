@@ -473,6 +473,7 @@ Array [
 Object {
   "patterns": Array [
     Object {
+      "prefixes": Object {},
       "queryType": "SELECT",
       "type": "query",
       "variables": Array [
@@ -544,47 +545,44 @@ Array [
     "type": "bgp",
   },
   Object {
-    "triples": Array [
-      Array [
-        Object {
-          "triples": Array [
-            Quad {
-              "graph": DefaultGraph {},
-              "object": Variable {
-                "termType": "Variable",
-                "value": "z2",
-              },
-              "predicate": Variable {
-                "termType": "Variable",
-                "value": "y",
-              },
-              "subject": Variable {
-                "termType": "Variable",
-                "value": "x",
-              },
-              "termType": "Quad",
+    "patterns": Array [
+      Object {
+        "triples": Array [
+          Quad {
+            "graph": DefaultGraph {},
+            "object": Variable {
+              "termType": "Variable",
+              "value": "z2",
             },
-            Quad {
-              "graph": DefaultGraph {},
-              "object": Variable {
-                "termType": "Variable",
-                "value": "z3",
-              },
-              "predicate": Variable {
-                "termType": "Variable",
-                "value": "y",
-              },
-              "subject": Variable {
-                "termType": "Variable",
-                "value": "x",
-              },
-              "termType": "Quad",
+            "predicate": Variable {
+              "termType": "Variable",
+              "value": "y",
             },
-          ],
-          "type": "bgp",
-        },
-      ],
-      Object {},
+            "subject": Variable {
+              "termType": "Variable",
+              "value": "x",
+            },
+            "termType": "Quad",
+          },
+          Quad {
+            "graph": DefaultGraph {},
+            "object": Variable {
+              "termType": "Variable",
+              "value": "z3",
+            },
+            "predicate": Variable {
+              "termType": "Variable",
+              "value": "y",
+            },
+            "subject": Variable {
+              "termType": "Variable",
+              "value": "x",
+            },
+            "termType": "Quad",
+          },
+        ],
+        "type": "bgp",
+      },
     ],
     "type": "group",
   },
@@ -626,37 +624,47 @@ Array [
         ],
         "type": "bgp",
       },
-      Quad {
-        "graph": DefaultGraph {},
-        "object": Variable {
-          "termType": "Variable",
-          "value": "x",
-        },
-        "predicate": Variable {
-          "termType": "Variable",
-          "value": "y",
-        },
-        "subject": Variable {
-          "termType": "Variable",
-          "value": "z",
-        },
-        "termType": "Quad",
+      Object {
+        "triples": Array [
+          Quad {
+            "graph": DefaultGraph {},
+            "object": Variable {
+              "termType": "Variable",
+              "value": "x",
+            },
+            "predicate": Variable {
+              "termType": "Variable",
+              "value": "y",
+            },
+            "subject": Variable {
+              "termType": "Variable",
+              "value": "z",
+            },
+            "termType": "Quad",
+          },
+        ],
+        "type": "bgp",
       },
-      Quad {
-        "graph": DefaultGraph {},
-        "object": Variable {
-          "termType": "Variable",
-          "value": "y",
-        },
-        "predicate": Variable {
-          "termType": "Variable",
-          "value": "x",
-        },
-        "subject": Variable {
-          "termType": "Variable",
-          "value": "z",
-        },
-        "termType": "Quad",
+      Object {
+        "triples": Array [
+          Quad {
+            "graph": DefaultGraph {},
+            "object": Variable {
+              "termType": "Variable",
+              "value": "y",
+            },
+            "predicate": Variable {
+              "termType": "Variable",
+              "value": "x",
+            },
+            "subject": Variable {
+              "termType": "Variable",
+              "value": "z",
+            },
+            "termType": "Quad",
+          },
+        ],
+        "type": "bgp",
       },
     ],
     "type": "union",

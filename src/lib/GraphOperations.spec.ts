@@ -14,14 +14,14 @@ jest.mock('./Store.ts', () => {
   });
 });
 
-const StoreMock  = Store as jest.MockedClass<typeof Store>;
+let StoreMock = Store as jest.MockedClass<typeof Store>;
 
 let graph: GraphOperations;
 const pf = 'http://example.org/andrefs';
 const xml = 'http://www.w3.org/2001/XMLSchema';
 
 beforeEach(() => {
-  StoreMock.mockClear();
+  StoreMock.mockReset();
   graph = new GraphOperations(new Store({endpointUrl:''}));
 });
 

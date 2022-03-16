@@ -146,9 +146,9 @@ describe('calcInOutRatios', () => {
     const ratios = Object.fromEntries(await graph.calcInOutRatios(preds));
 
     expect(Object.keys(ratios)).toHaveLength(3);
-    expect(ratios[`${pf}/R2`]).toBe("1.3333333333333333");
-    expect(ratios[`${pf}/R1`]).toBe("1");
-    expect(ratios[`${pf}/R4`]).toBe("1");
+    expect(ratios[`${pf}/R2`]).toBe(1.3333333333333333);
+    expect(ratios[`${pf}/R1`]).toBe(1);
+    expect(ratios[`${pf}/R4`]).toBe(1);
   });
 });
 
