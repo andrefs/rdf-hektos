@@ -41,26 +41,26 @@ export const summPreds = (preds: {[key:string]: Predicate}) => {
 
 
 
-export const flattenObj = (obj, parentKey = null, res = {}) => {
-    for (let key in obj) {
-        const predName = parentKey ? parentKey + "." + key : key
-        if (typeof (obj[key]) === "object" && !Array.isArray(obj[key])) {
-            flattenObj(obj[key], predName, res)
-        } else {
-            res[predName] = obj[key]
-        }
+export const flattenObj = (obj: {[key:string]: NestedObject}, parentKey: (string |null)=null, res:{[key:string]: } = {}) => {
+  for (let key in obj) {
+    const predName = parentKey ? parentKey + "." + key : key;
+    if (typeof (obj[key]) === "object" && !Array.isArray(obj[key])) {
+        flattenObj(obj[key] as {[key:string]: object}, predName, res);
+    } else {
+        res[predName] = obj[key];
     }
-    return res
+  }
+  return res
 };
 
-export const flattenObjValues = obj => {
+type NestedObject = (string|number|Array<NestedObject>|{[key:string]: NestedObject})
+
+export const flattenObjValues = (obj: NestedObject) => {
   return Object.keys(obj)
                      .reduce((previous, key) => {
                        previous[key] = flattenObj(obj[key]);
                        return previous;
                      }, {});
-
-
 };
 
 export const ppMatrix = async (data, outputFile) => {
@@ -74,7 +74,7 @@ export const ppMatrix = async (data, outputFile) => {
 };
 
 
-export const prettyMatrix = (data) => {
+export const prettyMatrix = (data): string => {
   const table = [];
   const keys = {};
   for(const x of Object.values(data)){

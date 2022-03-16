@@ -58,9 +58,9 @@ describe('L', () => {
       termType: 'Literal'
     });
   });
-  test('wraps a string into an @rdfjs/Literal', () => {
+  test('wraps a number into an @rdfjs/Literal', () => {
     expect(L(3)).toMatchObject({
-      value: 3,
+      value: '3',
       termType: 'Literal'
     });
   });
@@ -176,7 +176,14 @@ describe('BIND', () => {
 
 describe('Query', () => {
   test('constructor', () => {
-    expect(new Query()).toEqual({obj:{type:'query', prefixes: {}}});
+    expect(new Query()).toEqual({
+      obj:{
+        type:'query',
+        queryType: 'SELECT',
+        prefixes: {},
+        variables: []
+      }
+    });
   });
 
   test('prefix', () => {
@@ -228,34 +235,7 @@ Query {
 
   test('groupBy', () => {
     expect(new Query().groupBy('a', '?b', V('c'))).
-toMatchInlineSnapshot(`
-Query {
-  "obj": Object {
-    "group": Array [
-      Object {
-        "expression": Variable {
-          "termType": "Variable",
-          "value": "a",
-        },
-      },
-      Object {
-        "expression": Variable {
-          "termType": "Variable",
-          "value": "b",
-        },
-      },
-      Object {
-        "expression": Variable {
-          "termType": "Variable",
-          "value": "c",
-        },
-      },
-    ],
-    "prefixes": Object {},
-    "type": "query",
-  },
-}
-`);
+toMatchInlineSnapshot();
   });
 
   test('orderBy', () => {
@@ -314,12 +294,13 @@ Query {
 
 describe('Query.where', () => {
   test('accepts quads', () => {
-    expect(new Query().where(Q(V('a'), V('b'), V('c')))).
-toMatchInlineSnapshot(`
+    expect(new Query().where(Q(V('a'), V('b'), V('c')))).toMatchInlineSnapshot(`
 Query {
   "obj": Object {
     "prefixes": Object {},
+    "queryType": "SELECT",
     "type": "query",
+    "variables": Array [],
     "where": Array [
       Object {
         "triples": Array [
