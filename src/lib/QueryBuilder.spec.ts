@@ -235,12 +235,81 @@ Query {
 
   test('groupBy', () => {
     expect(new Query().groupBy('a', '?b', V('c'))).
-toMatchInlineSnapshot();
+toMatchInlineSnapshot(`
+Query {
+  "obj": Object {
+    "group": Array [
+      Object {
+        "expression": Variable {
+          "termType": "Variable",
+          "value": "a",
+        },
+      },
+      Object {
+        "expression": Variable {
+          "termType": "Variable",
+          "value": "b",
+        },
+      },
+      Object {
+        "expression": Variable {
+          "termType": "Variable",
+          "value": "c",
+        },
+      },
+    ],
+    "prefixes": Object {},
+    "queryType": "SELECT",
+    "type": "query",
+    "variables": Array [],
+  },
+}
+`);
   });
 
   test('orderBy', () => {
     const q = new Query().orderBy('a', ['b', 'DESC'], ['c', 'ASC'], RAND());
-    expect(q).toMatchInlineSnapshot();
+    expect(q).toMatchInlineSnapshot(`
+Query {
+  "obj": Object {
+    "order": Array [
+      Object {
+        "descending": false,
+        "expression": Variable {
+          "termType": "Variable",
+          "value": "a",
+        },
+      },
+      Object {
+        "descending": true,
+        "expression": Variable {
+          "termType": "Variable",
+          "value": "b",
+        },
+      },
+      Object {
+        "descending": false,
+        "expression": Variable {
+          "termType": "Variable",
+          "value": "c",
+        },
+      },
+      Object {
+        "descending": false,
+        "expression": Object {
+          "args": Array [],
+          "operator": "rand",
+          "type": "operation",
+        },
+      },
+    ],
+    "prefixes": Object {},
+    "queryType": "SELECT",
+    "type": "query",
+    "variables": Array [],
+  },
+}
+`);
   });
 
 

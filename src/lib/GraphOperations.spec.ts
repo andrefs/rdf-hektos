@@ -7,20 +7,22 @@ import { QueryEngine } from '@comunica/query-sparql';
 import Bluebird from 'bluebird';
 import { V } from './QueryBuilder.js';
 
-let store: Store;
+const mockSelect = jest.fn();
+jest.mock('./Store.ts', () => {
+  return jest.fn().mockImplementation(() => {
+    return {select: mockSelect};
+  });
+});
+
+const StoreMock  = Store as jest.MockedClass<typeof Store>;
+
 let graph: GraphOperations;
 const pf = 'http://example.org/andrefs';
 const xml = 'http://www.w3.org/2001/XMLSchema';
-let mockSelect: jest.MockedFunction<typeof store.select>;
 
 beforeEach(() => {
-  mockSelect = jest.fn() as jest.MockedFunction<typeof store.select>;
-  store = {
-    select: mockSelect,
-    engine: new QueryEngine(),
-    source: ''
-  };
-  graph = new GraphOperations(store);
+  StoreMock.mockClear();
+  graph = new GraphOperations(new Store({endpointUrl:''}));
 });
 
 const wrapReadable = async (conts: object[]) => Promise.resolve(Readable.from(conts.map(
@@ -142,9 +144,9 @@ describe('_randomWalk', () => {
 
 describe('_randomWalks', () => {
   test('returns walks', async () => {
-    const mockRandomWalk  = jest.fn() as jest.MockedFunction<typeof graph._randomWalk>;
-    graph._randomWalk = mockRandomWalk;
-    mockRandomWalk
+    const _randomWalk = jest.fn();
+    graph._randomWalk = _randomWalk as any;
+    _randomWalk
       .mockReturnValueOnce(Promise.resolve({
         status: ['finished'],
         nodes: [
