@@ -65,7 +65,7 @@ describe('L', () => {
     });
   });
   test('does nothing to an @rdfjs/Literal', () => {
-    const l = rdf.blankNode('l');
+    const l = rdf.literal('l');
     expect(L(l)).toEqual(l);
   });
 });
@@ -134,9 +134,9 @@ describe('RAND', () => {
 
 describe('FILTER', () => {
   test('wraps contents', () => {
-    expect(FILTER('x')).toEqual({
+    expect(FILTER(V('x'))).toEqual({
       type: 'filter',
-      expression: 'x'
+      expression: V('x')
     })
   });
 });
@@ -165,10 +165,10 @@ describe('IS_BLANK', () => {
 
 describe('BIND', () => {
   test('wraps contents', () => {
-    expect(BIND(COUNT('x'), 'y')).toEqual({
+    expect(BIND(RAND(), 'y')).toEqual({
       type: 'bind',
       variable: V('y'),
-      expression: COUNT('x')
+      expression: RAND()
     })
   });
 });
@@ -259,44 +259,8 @@ Query {
   });
 
   test('orderBy', () => {
-    expect(new Query().orderBy('a', ['b', 'DESC'], ['c', 'ASC'], RAND())).
-toMatchInlineSnapshot(`
-Query {
-  "obj": Object {
-    "order": Array [
-      Object {
-        "expression": Variable {
-          "termType": "Variable",
-          "value": "a",
-        },
-      },
-      Object {
-        "descending": true,
-        "expression": Variable {
-          "termType": "Variable",
-          "value": "b",
-        },
-      },
-      Object {
-        "ascending": true,
-        "expression": Variable {
-          "termType": "Variable",
-          "value": "c",
-        },
-      },
-      Object {
-        "expression": Object {
-          "args": Array [],
-          "operator": "rand",
-          "type": "operation",
-        },
-      },
-    ],
-    "prefixes": Object {},
-    "type": "query",
-  },
-}
-`);
+    const q = new Query().orderBy('a', ['b', 'DESC'], ['c', 'ASC'], RAND());
+    expect(q).toMatchInlineSnapshot();
   });
 
 
@@ -444,7 +408,7 @@ Array [
                         Q(V('i'), V('p'), V('o')),
                         subq
                       );
-    expect(q.obj.where[1]).toMatchInlineSnapshot(`
+    expect(q?.obj?.where?.[1]).toMatchInlineSnapshot(`
 Object {
   "patterns": Array [
     Object {

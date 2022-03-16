@@ -15,7 +15,7 @@ beforeEach(() => {
   graph = new GraphOperations(store);
 });
 
-const wrapReadable = (conts) => new Readable.from(conts.map(
+const wrapReadable = (conts: object[]) => Readable.from(conts.map(
   c => ({get: b => c[b]})
 ));
 
@@ -73,10 +73,9 @@ describe('_randomWalk', () => {
       .mockReturnValueOnce(wrapReadable([{'x': rdf.namedNode(`${pf}/N12`)}]))
       .mockReturnValueOnce(wrapReadable([]));
 
-    const acc = {};
     const r = await graph._randomWalk(
                       rdf.namedNode(`${pf}/R4`),
-                      rdf.namedNode(`${pf}/N3`), 4, acc);
+                      rdf.namedNode(`${pf}/N3`), 4);
 
     expect(r).toHaveProperty('status', ['finished_early', 'finished_early']);
     expect(r.nodes).toHaveLength(3);
@@ -91,10 +90,9 @@ describe('_randomWalk', () => {
       .mockReturnValueOnce(wrapReadable([{'x': rdf.literal('L1')}]))
       .mockReturnValueOnce(wrapReadable([]));
 
-    const acc = {};
     const r = await graph._randomWalk(
                       rdf.namedNode(`${pf}/R3`),
-                      rdf.namedNode(`${pf}/N7`), 4, acc);
+                      rdf.namedNode(`${pf}/N7`), 4);
 
     expect(r).toHaveProperty('status', ['found_literal', 'finished_early']);
     expect(r.nodes).toHaveLength(2);
@@ -106,10 +104,9 @@ describe('_randomWalk', () => {
     store.select
       .mockReturnValueOnce(wrapReadable([{'x': rdf.namedNode(`${pf}/N7`)}]))
 
-    const acc = {};
     const r = await graph._randomWalk(
                       rdf.namedNode(`${pf}/R3`),
-                      rdf.literal('L1'), 2, acc);
+                      rdf.literal('L1'), 2);
 
     expect(r).toHaveProperty('status', ['found_literal', 'finished']);
     expect(r.nodes).toHaveLength(2);
@@ -124,10 +121,9 @@ describe('_randomWalk', () => {
       .mockReturnValueOnce(wrapReadable([]))
       .mockReturnValueOnce(wrapReadable([{'x': rdf.namedNode(`${pf}/N12`)}]));
 
-    const acc = {};
     const r = await graph._randomWalk(
                       rdf.namedNode(`${pf}/R4`),
-                      rdf.namedNode(`${pf}/N3`), 2, acc);
+                      rdf.namedNode(`${pf}/N3`), 2);
 
     expect(r).toHaveProperty('status', ['finished']);
     expect(r.nodes).toHaveLength(2);

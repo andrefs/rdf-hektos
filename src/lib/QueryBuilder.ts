@@ -136,7 +136,7 @@ export class Query {
   }
 
 
-  where(...args: (Query | RdfJs.BaseQuad | SparqlJs.BindPattern | SparqlJs.FilterPattern | Union)[]){
+  where(...args: WhereArg[]){
     const [w, prefixes] = _where(args);
     if(prefixes){
       this.obj.prefixes = {...this.obj.prefixes, ...prefixes};
@@ -178,7 +178,7 @@ const isQuad = (obj: any): obj is Quad => {
 
 type Prefixes = { [prefix: string]: string };
 
-function _where(args: (Query | Quad | SparqlJs.BindPattern | SparqlJs.FilterPattern | Union)[]): [SparqlJs.Pattern[], Prefixes] {
+function _where(args: WhereArg[]): [SparqlJs.Pattern[], Prefixes] {
   const res: (SparqlJs.Pattern|Union)[] = [];
   let bgp: SparqlJs.Triple[] = [];
   let prefixes = {};
@@ -249,5 +249,6 @@ const isUnionPattern = (obj: any): obj is SparqlJs.UnionPattern => {
 
 
 
-type OrderByArg = StrOr<RdfJs.Variable> | [StrOr<RdfJs.Variable>, 'ASC' | 'DESC'];
+type WhereArg = Query | Quad | SparqlJs.BindPattern | SparqlJs.FilterPattern | Union | WhereArg[];
+type OrderByArg = OperationExpression | StrOr<RdfJs.Variable> | [StrOr<RdfJs.Variable>, 'ASC' | 'DESC'];
 

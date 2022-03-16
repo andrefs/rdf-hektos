@@ -1,3 +1,4 @@
+import { N } from './QueryBuilder.js';
 import {flattenObj, summPreds, flattenObjValues, prettyMatrix} from './utils.js';
 
 const obj = {
@@ -44,16 +45,17 @@ test('summPreds correctly summarizes predicates', () => {
     predA: {
       ratio: 2,
       count: 3,
+      node: N('predA'),
       sampledWalks: 2,
       branchingFactor: 2,
       coverage: 2,
       walks: {
         source1: {
-          nodes: ['n1', 'n2'],
+          nodes: [N('n1'), N('n2')],
           status: ['found_loop']
         },
         source2: {
-          nodes: ['n3', 'n4', 'n5'],
+          nodes: [N('n3'), N('n4'), N('n5')],
           status: ['found_literal']
         }
       }
@@ -61,20 +63,21 @@ test('summPreds correctly summarizes predicates', () => {
     predB: {
       ratio: 0.3,
       count: 10,
+      node: N('predB'),
       branchingFactor: 0.3,
       sampledWalks: 3,
       coverage: 3,
       walks: {
         source1: {
-          nodes: ['n6', 'n7'],
+          nodes: [N('n6'), N('n7')],
           status: ['finished_early'],
         },
         source3: {
-          nodes: ['n8', 'n9'],
+          nodes: [N('n8'), N('n9')],
           status: ['finished_early'],
         },
         source4: {
-          nodes: ['n10', 'n11'],
+          nodes: [N('n10'), N('n11')],
           status: ['finished_early'],
         }
       }
