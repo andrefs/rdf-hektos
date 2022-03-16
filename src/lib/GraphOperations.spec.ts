@@ -1,11 +1,8 @@
 import {jest} from '@jest/globals';
-import GraphOperations from './GraphOperations.js';
+import GraphOperations from './GraphOperations';
 import {Readable} from 'stream';
 import rdf from '@rdfjs/data-model';
-import Store from './Store.js';
-import { QueryEngine } from '@comunica/query-sparql';
-import Bluebird from 'bluebird';
-import { V } from './QueryBuilder.js';
+import Store from './Store';
 
 const mockSelect = jest.fn();
 jest.mock('./Store.ts', () => {

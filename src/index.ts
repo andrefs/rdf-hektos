@@ -1,9 +1,9 @@
-import GraphOperations from './lib/GraphOperations.js';
-import {summPreds, ppMatrix, flattenObjValues} from './lib/utils.js'
+import GraphOperations from './lib/GraphOperations';
+import {summPreds, ppMatrix, flattenObjValues} from './lib/utils'
 
-import Store from './lib/Store.js';
-import opts from './lib/opts.js'
-import { N, Q, Query, V } from './lib/QueryBuilder.js';
+import Store from './lib/Store';
+import opts from './lib/opts'
+import { N, Q, Query, V } from './lib/QueryBuilder';
 
 async function run(){
   console.warn('Starting');

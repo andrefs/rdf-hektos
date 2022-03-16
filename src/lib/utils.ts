@@ -1,5 +1,5 @@
 import {promises as fs} from 'fs';
-import {Predicate, Walk} from './GraphOperations.js';
+import {Predicate, Walk} from './GraphOperations';
 
 interface PredicateSummary {
   [key: string]: any,

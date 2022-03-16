@@ -1,4 +1,4 @@
-import {B, COUNT, L, N, normVar, Query, RAND, V, Q, NOT, FILTER, BIND, IS_BLANK, UNION} from './QueryBuilder.js';
+import {B, COUNT, L, N, normVar, Query, RAND, V, Q, NOT, FILTER, BIND, IS_BLANK, UNION} from './QueryBuilder';
 import rdf from '@rdfjs/data-model';
 import sparqljs, {Parser} from 'sparqljs';
 
