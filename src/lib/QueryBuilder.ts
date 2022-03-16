@@ -79,13 +79,13 @@ export const FILTER = (exp: SparqlJs.Expression) : SparqlJs.FilterPattern => ({
   expression: exp
 });
 
-export const NOT = (...args: StrOr<RdfJs.Variable>[]) => ({
+export const NOT = (...args: StrOr<SparqlJs.Expression>[]): SparqlJs.Expression => ({
   type: 'operation',
   operator: '!',
-  args
+  args: args.map(v => typeof v === 'string' ? V(v) : v)
 });
 
-export const IS_BLANK = (...args: StrOr<RdfJs.Variable>[]) => ({
+export const IS_BLANK = (...args: StrOr<RdfJs.Variable>[]): SparqlJs.Expression => ({
   type: 'operation',
   operator: 'isblank',
   args: args.map(v => V(v))

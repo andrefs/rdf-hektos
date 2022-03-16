@@ -2,6 +2,7 @@ import {promises as fs} from 'fs';
 import {Predicate, Walk} from './GraphOperations.js';
 
 interface PredicateSummary {
+  [key: string]: any,
   ratio?: number,
   count?: number,
   coverage?: number,
@@ -41,25 +42,33 @@ export const summPreds = (preds: {[key:string]: Predicate}) => {
 
 
 
-export const flattenObj = (obj: {[key:string]: NestedObject}, parentKey: (string |null)=null, res:{[key:string]: } = {}) => {
+export const flattenObj = (obj: FlattableObject, parentKey: (string |null)=null, res = {}) => {
   for (let key in obj) {
+    const value = obj[key];
     const predName = parentKey ? parentKey + "." + key : key;
-    if (typeof (obj[key]) === "object" && !Array.isArray(obj[key])) {
-        flattenObj(obj[key] as {[key:string]: object}, predName, res);
-    } else {
-        res[predName] = obj[key];
+    if(typeof value === 'number' || typeof value === 'string' || Array.isArray(value)){
+      res[predName] = obj[key];
+      continue;
     }
+    flattenObj(value, predName, res);
   }
-  return res
+  return res;
 };
 
 type NestedObject = (string|number|Array<NestedObject>|{[key:string]: NestedObject})
 
-export const flattenObjValues = (obj: NestedObject) => {
+type FlattableObject = {[key:string]: (number|string|FlattableObject)};
+
+export const flattenObjValues = (obj: FlattableObject) => {
   return Object.keys(obj)
                      .reduce((previous, key) => {
-                       previous[key] = flattenObj(obj[key]);
-                       return previous;
+                        const value = obj[key];
+                        if(typeof value === 'number' || typeof value === 'string' || Array.isArray(value)){
+                          previous[key] = value;
+                          return previous;
+                        }
+                        previous[key] = flattenObj(value);
+                        return previous;
                      }, {});
 };
 

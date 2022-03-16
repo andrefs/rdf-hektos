@@ -6,6 +6,7 @@ import {Bindings, Term} from '@rdfjs/types';
 import { Stream } from 'stream';
 import Store from './Store.js';
 import { BindingsStream } from '@comunica/types';
+import { Quad_Predicate } from 'n3';
 const multibar = new cliProgress.MultiBar({
     stopOnComplete: true,
     clearOnComplete: false,
@@ -220,9 +221,9 @@ class GraphOperations extends EventEmitter {
   async _randSelectSubjects(p: Term, howMany: number): Promise<Term[]>{
     const q = new Query().distinct().select('x')
                       .where(
-                        Q(V('x'), p, V('o')),
+                        Q(V('x'), p as Quad_Predicate, V('o')),
                         UNION,
-                        Q(V('s'), p, V('x')),
+                        Q(V('s'), p as Quad_Predicate, V('x')),
                         FILTER(NOT(IS_BLANK('x'))),
                         BIND(RAND(), 'sortKey')
                       )
@@ -363,10 +364,10 @@ export interface Predicate {
   count: number,
   node: Term,
   sampledWalks?: number,
-  walks: {[key:string]: Walk},
+  walks?: {[key:string]: Walk},
   ratio?: number,
   branchingFactor?: number,
-  coverage: number,
+  coverage?: number,
 };
 
 export interface Walk {
