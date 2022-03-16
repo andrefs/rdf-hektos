@@ -205,14 +205,14 @@ function _where(args: WhereArg[]): [SparqlJs.Pattern[], Prefixes] {
       res.push({type: 'group', patterns: [a.obj]})
       continue;
     }
-    if(a.type === 'bind' || a.type === 'filter'){
-      res.push(a);
-      continue;
-    }
     if(Array.isArray(a)){
       const [nested] = _where(a);
       const g = {type: 'group', patterns: nested};
       res.push(g as SparqlJs.GroupPattern);
+      continue;
+    }
+    if(a.type === 'bind' || a.type === 'filter'){
+      res.push(a);
       continue;
     }
   }

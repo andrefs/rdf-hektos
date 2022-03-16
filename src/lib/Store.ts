@@ -1,5 +1,6 @@
 import {QueryEngine} from '@comunica/query-sparql';
 import {LoggerPretty} from "@comunica/logger-pretty";
+import { EventEmitter } from 'stream';
 
 class Store {
   engine: QueryEngine;
@@ -11,7 +12,7 @@ class Store {
   }
 
 
-  async select(q: string){
+  async select(q: string): Promise<EventEmitter> {
     const preQuery = Date.now();
     const res = await this.engine.queryBindings(q, {
       sources: [{

@@ -2,10 +2,10 @@ import {Query, COUNT, V, RAND, Q, N, BIND, UNION, FILTER, NOT, IS_BLANK} from '.
 import Bluebird from 'bluebird';
 import EventEmitter from 'events';
 import cliProgress from 'cli-progress';
-import {BindingsStream} from '@comunica/types';
 import {Bindings, Term} from '@rdfjs/types';
 import { Stream } from 'stream';
 import Store from './Store.js';
+import { BindingsStream } from '@comunica/types';
 const multibar = new cliProgress.MultiBar({
     stopOnComplete: true,
     clearOnComplete: false,
@@ -24,9 +24,9 @@ const  FOUND_LOOP     = 'found_loop';
 
 
 
-const s2a = async (stream: BindingsStream) => {
+const s2a = async (stream: EventEmitter) => {
     return new Bluebird<Bindings[]>((resolve) => {
-      const res:Bindings[] = [];
+      const res: Bindings[] = [];
       stream
         .on('data', (bindings) => res.push(bindings))
         .on('end',() => resolve(res));

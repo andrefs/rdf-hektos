@@ -3,21 +3,29 @@ import GraphOperations from './GraphOperations.js';
 import {Readable} from 'stream';
 import rdf from '@rdfjs/data-model';
 import Store from './Store.js';
+import { QueryEngine } from '@comunica/query-sparql';
+import Bluebird from 'bluebird';
+import { V } from './QueryBuilder.js';
 
 let store: Store;
 let graph: GraphOperations;
 const pf = 'http://example.org/andrefs';
 const xml = 'http://www.w3.org/2001/XMLSchema';
+let mockSelect: jest.MockedFunction<typeof store.select>;
 
 beforeEach(() => {
-  const mockSelect = jest.fn();
-  store = {select: mockSelect};
+  mockSelect = jest.fn() as jest.MockedFunction<typeof store.select>;
+  store = {
+    select: mockSelect,
+    engine: new QueryEngine(),
+    source: ''
+  };
   graph = new GraphOperations(store);
 });
 
-const wrapReadable = (conts: object[]) => Readable.from(conts.map(
-  c => ({get: b => c[b]})
-));
+const wrapReadable = async (conts: object[]) => Promise.resolve(Readable.from(conts.map(
+  (c: {[key:string]: any}) => ({get: (b: string) => c[b]})
+)));
 
 
 test('getPreds', async() => {
@@ -33,10 +41,10 @@ test('getPreds', async() => {
     'total': rdf.literal("1", rdf.namedNode(`${xml}#integer`))
   }]);
 
-  store.select.mockReturnValueOnce(s);
+  mockSelect.mockReturnValueOnce(s);
   const preds = await graph.getPreds();
 
-  expect(store.select.mock.calls.length).toBe(1);
+  expect(mockSelect.mock.calls.length).toBe(1);
   expect(Object.keys(preds)).toHaveLength(3);
   expect(preds).toHaveProperty([`${pf}/R1`, 'count'], 4);
   expect(preds).toHaveProperty([`${pf}/R2`, 'count'], 6);
@@ -46,16 +54,15 @@ test('getPreds', async() => {
 
 describe('_randomWalk', () => {
   test('finds loop', async() => {
-    store.select
+    mockSelect
       .mockReturnValueOnce(wrapReadable([{'x': rdf.namedNode(`${pf}/N3`)}]))
       .mockReturnValueOnce(wrapReadable([{'x': rdf.namedNode(`${pf}/N2`)}]))
       .mockReturnValueOnce(wrapReadable([{'x': rdf.namedNode(`${pf}/N4`)}]))
       .mockReturnValueOnce(wrapReadable([{'x': rdf.namedNode(`${pf}/N4`)}]));
   
-    const acc = {};
     const r = await graph._randomWalk(
                       rdf.namedNode(`${pf}/R1`),
-                      rdf.namedNode(`${pf}/N1`), 6, acc);
+                      rdf.namedNode(`${pf}/N1`), 6);
   
     expect(r).toHaveProperty('status', ['found_loop']);
     expect(r.nodes).toHaveLength(5);
@@ -67,7 +74,7 @@ describe('_randomWalk', () => {
   });
 
   test('finishes early', async () => {
-    store.select
+    mockSelect
       .mockReturnValueOnce(wrapReadable([{'x': rdf.namedNode(`${pf}/N11`)}]))
       .mockReturnValueOnce(wrapReadable([]))
       .mockReturnValueOnce(wrapReadable([{'x': rdf.namedNode(`${pf}/N12`)}]))
@@ -86,7 +93,7 @@ describe('_randomWalk', () => {
   });
 
   test('finds literal', async () => {
-    store.select
+    mockSelect
       .mockReturnValueOnce(wrapReadable([{'x': rdf.literal('L1')}]))
       .mockReturnValueOnce(wrapReadable([]));
 
@@ -101,7 +108,7 @@ describe('_randomWalk', () => {
   });
 
   test('finds literal in first node', async () => {
-    store.select
+    mockSelect
       .mockReturnValueOnce(wrapReadable([{'x': rdf.namedNode(`${pf}/N7`)}]))
 
     const r = await graph._randomWalk(
@@ -116,7 +123,7 @@ describe('_randomWalk', () => {
 
 
   test('finishes', async () => {
-    store.select
+    mockSelect
       .mockReturnValueOnce(wrapReadable([{'x': rdf.namedNode(`${pf}/N11`)}]))
       .mockReturnValueOnce(wrapReadable([]))
       .mockReturnValueOnce(wrapReadable([{'x': rdf.namedNode(`${pf}/N12`)}]));
@@ -135,16 +142,25 @@ describe('_randomWalk', () => {
 
 describe('_randomWalks', () => {
   test('returns walks', async () => {
-    graph._randomWalk = jest.fn();
-    graph._randomWalk
-      .mockReturnValueOnce({
-        status: 'finished',
-        nodes: [`${pf}/N5`, `${pf}/N8`, `${pf}/N13`]
-      })
-      .mockReturnValueOnce({
-        status: 'finished',
-        nodes: [`${pf}/N6`, `${pf}/N9`, `${pf}/N14`]
-      });
+    const mockRandomWalk  = jest.fn() as jest.MockedFunction<typeof graph._randomWalk>;
+    graph._randomWalk = mockRandomWalk;
+    mockRandomWalk
+      .mockReturnValueOnce(Promise.resolve({
+        status: ['finished'],
+        nodes: [
+          rdf.namedNode(`${pf}/N5`),
+          rdf.namedNode(`${pf}/N8`),
+          rdf.namedNode(`${pf}/N13`)
+        ]
+      }))
+      .mockReturnValueOnce(Promise.resolve({
+        status: ['finished'],
+        nodes: [
+          rdf.namedNode(`${pf}/N6`),
+          rdf.namedNode(`${pf}/N9`),
+          rdf.namedNode(`${pf}/N14`)
+        ]
+      }));
 
     const r = await graph._randomWalks(
                       rdf.namedNode(`${pf}/R2`),
@@ -167,7 +183,7 @@ describe('_randomWalks', () => {
 
 describe('_randSelectSubjects', () => {
   test('selects subjects', async () => {
-    store.select
+    mockSelect
       .mockReturnValueOnce(wrapReadable([
                   {'x': rdf.namedNode(`${pf}/N3`)},
                   {'x': rdf.namedNode(`${pf}/N11`)}]));
