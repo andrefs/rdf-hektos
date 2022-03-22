@@ -18,8 +18,6 @@ const  FOUND_BLANK    = 'found_blank';
 const  FOUND_LITERAL  = 'found_literal';  
 const  FOUND_LOOP     = 'found_loop';     
 
-
-
 const s2a = async (stream: EventEmitter) => {
     return new Bluebird<Bindings[]>((resolve) => {
       const res: Bindings[] = [];
