@@ -13,9 +13,6 @@ const multibar = new cliProgress.MultiBar({
     format: ' {bar} {percentage}% | {value}/{total} {task} | {tid}'
 }, cliProgress.Presets.shades_grey);
 
-
-const concurrency = 1;
-
 const  FINISHED_EARLY = 'finished_early';
 const  FOUND_BLANK    = 'found_blank';    
 const  FOUND_LITERAL  = 'found_literal';  
@@ -32,14 +29,22 @@ const s2a = async (stream: EventEmitter) => {
     });
 };
 
+interface GraphOperationsOpts {
+  showProgBar?: boolean,
+  concurrency?: number
+};
+
+
+
 
 class GraphOperations extends EventEmitter {
   _store: Store;
+  _concurrency: number;
   _bars: {[key: string]: cliProgress.SingleBar} = {};
 
-  constructor(store: Store, {showProgBar}:{showProgBar?:boolean}={}){
-
+  constructor(store: Store, {showProgBar, concurrency}: GraphOperationsOpts = {}){
     super();
+    this._concurrency = concurrency ?? 1;
     if(showProgBar){
       this._handleEvents();
     }
@@ -108,7 +113,7 @@ class GraphOperations extends EventEmitter {
     const ws = await Bluebird.map(nodes, n => {
       this.emit('walks-pred-node', n.value);
       return this._randomWalk(pred, n, len);
-    }, {concurrency});
+    }, {concurrency: this._concurrency});
 
     for (const [i,n] of nodes.entries()){
       walks[n.value] = ws[i];
