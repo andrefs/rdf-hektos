@@ -179,12 +179,25 @@ describe('calcRandomWalks', () => {
   });
 });
 
-describe('calcCoverage', () => {
+describe('calcSubjectCoverage', () => {
   test('calculates coverage', async () => {
     const subq = new Query().select('s')
                             .where(Q(V('s'), N(`${pf}/R2`), V('o')));
 
-    const cov = await graph.calcCoverage(subq);
+    const cov = await graph.calcSubjectCoverage(subq);
+
+    expect(cov).toStrictEqual([["http://example.org/andrefs/R1", 2],
+                               ["http://example.org/andrefs/R2", 16]]);
+
+  });
+})
+
+describe('calcObjectCoverage', () => {
+  test('calculates coverage', async () => {
+    const subq = new Query().select('s')
+                            .where(Q(V('s'), N(`${pf}/R2`), V('o')));
+
+    const cov = await graph.calcObjectCoverage(subq);
 
     expect(cov).toStrictEqual([["http://example.org/andrefs/R1", 2],
                                ["http://example.org/andrefs/R2", 16]]);

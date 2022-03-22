@@ -48,7 +48,8 @@ test('summPreds correctly summarizes predicates', () => {
       node: N('predA'),
       sampledWalks: 2,
       branchingFactor: 2,
-      coverage: 2,
+      subjCoverage: 2,
+      objCoverage: 3,
       walks: {
         source1: {
           nodes: [N('n1'), N('n2')],
@@ -66,7 +67,8 @@ test('summPreds correctly summarizes predicates', () => {
       node: N('predB'),
       branchingFactor: 0.3,
       sampledWalks: 3,
-      coverage: 3,
+      subjCoverage: 3,
+      objCoverage: 1,
       walks: {
         source1: {
           nodes: [N('n6'), N('n7')],
@@ -90,9 +92,10 @@ Object {
     "avgLen": 2.5,
     "branchingFactor": 2,
     "count": 3,
-    "coverage": 2,
+    "objCoverage": 3,
     "ratio": 2,
     "sampledWalks": 2,
+    "subjCoverage": 2,
     "walks": Object {
       "found_literal": 1,
       "found_loop": 1,
@@ -102,9 +105,10 @@ Object {
     "avgLen": 2,
     "branchingFactor": 0.3,
     "count": 10,
-    "coverage": 3,
+    "objCoverage": 1,
     "ratio": 0.3,
     "sampledWalks": 3,
+    "subjCoverage": 3,
     "walks": Object {
       "finished_early": 3,
     },
@@ -120,7 +124,7 @@ test('prettyMatrix correctly generates a string from a matrix', () => {
       "count": 3,
       "ratio": 2,
       "sampledWalks": 2,
-      "coverage": 3,
+      "subjCoverage": 3,
       "walks": {
         "found_literal": 1,
         "loop": 1,
@@ -131,7 +135,7 @@ test('prettyMatrix correctly generates a string from a matrix', () => {
       "count": 10,
       "ratio": 0.3,
       "sampledWalks": 3,
-      "coverage": 2,
+      "subjCoverage": 2,
       "walks": {
         "finished_early": 3,
       },
@@ -139,7 +143,7 @@ test('prettyMatrix correctly generates a string from a matrix', () => {
   };
 
   expect(prettyMatrix(flattenObjValues(obj))).toMatchInlineSnapshot(`
-"Predicate	avgLen	count	ratio	sampledWalks	coverage	walks.found_literal	walks.loop	walks.finished_early
+"Predicate	avgLen	count	ratio	sampledWalks	subjCoverage	walks.found_literal	walks.loop	walks.finished_early
 predA	2.5	3	2	2	3	1	1	
 predB	2	10	0.3	3	2			3"
 `);
