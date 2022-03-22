@@ -291,8 +291,19 @@ class GraphOperations extends EventEmitter {
     return loops;
   }
 
-  async calcCoverage(subSelect: Query): Promise<Array<[string, number]>>{
+  async calcSubjectCoverage(subSelect: Query): Promise<Array<[string, number]>>{
     const q = new Query().select('p', COUNT('s', 'cov'))
+                       .where(
+                         Q(V('s'), V('p'), V('o')),
+                        subSelect
+                       )
+                      .groupBy('p')
+    const cov = await this._runQuery(q);
+    return cov.map(c => [c.get('p')?.value as string, Number(c.get('cov')?.value)]);
+  }
+
+  async calcObjectCoverage(subSelect: Query): Promise<Array<[string, number]>>{
+    const q = new Query().select('p', COUNT('o', 'cov'))
                        .where(
                          Q(V('s'), V('p'), V('o')),
                         subSelect
@@ -365,7 +376,8 @@ export interface Predicate {
   walks?: {[key:string]: Walk},
   ratio?: number,
   branchingFactor?: number,
-  coverage?: number,
+  subjCoverage?: number,
+  objCoverage?: number,
 };
 
 export interface Walk {

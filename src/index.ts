@@ -36,11 +36,16 @@ async function run(){
   const synsetClass = N('http://www.w3.org/ns/lemon/ontolex#LexicalConcept');
   const subq = new Query().select('s')
                     .where(Q(V('s'), a, synsetClass));
-  let global = await graph.globalMetrics(subq);
+  let global = await graph.globalMetrics(subq); // TODO store this somewhere
 
-  const cov = await graph.calcCoverage(subq);
-  for(const [p, c] of cov){
-    preds[p].coverage = c;
+  const scov = await graph.calcSubjectCoverage(subq);
+  for(const [p, c] of scov){
+    preds[p].subjCoverage = c;
+  }
+
+  const ocov = await graph.calcObjectCoverage(subq);
+  for(const [p, c] of ocov){
+    preds[p].objCoverage = c;
   }
 
   //await calcLoops(preds);

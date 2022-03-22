@@ -5,7 +5,8 @@ interface PredicateSummary {
   [key: string]: any,
   ratio?: number,
   count?: number,
-  coverage?: number,
+  subjCoverage?: number,
+  objCoverage?: number,
   sampledWalks?: number,
   branchingFactor?: number,
   walks?: {[key:string]: number},
@@ -18,7 +19,8 @@ export const summPreds = (preds: {[key:string]: Predicate}) => {
     res[p] = {};
     res[p].ratio           = preds[p].ratio;
     res[p].count           = preds[p].count;
-    res[p].coverage        = preds[p].coverage;
+    res[p].subjCoverage    = preds[p].subjCoverage;
+    res[p].objCoverage        = preds[p].objCoverage;
     res[p].sampledWalks    = preds[p].sampledWalks;
     res[p].branchingFactor = preds[p].branchingFactor;
 
