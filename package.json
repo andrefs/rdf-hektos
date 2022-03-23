@@ -6,7 +6,8 @@
     "test": "yarn node --experimental-vm-modules $(yarn bin jest)",
     "build": "tsc",
     "postbuild": "cp package.json build/package.json && cp yarn.lock build/yarn.lock && cd build && yarn install",
-    "start": "time node --experimental-specifier-resolution=node --loader ts-node/esm ./src/index.ts"
+    "start": "time node --experimental-specifier-resolution=node --loader ts-node/esm ./src/index.ts",
+    "proc-graph": "time node --experimental-specifier-resolution=node --loader ts-node/esm ./src/bin/proc-graph.ts"
   },
   "type": "module",
   "keywords": [

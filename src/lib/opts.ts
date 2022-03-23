@@ -1,4 +1,4 @@
-interface CliOptions {
+export interface CliOptions {
   quiet?: boolean,
   noProgressBar?: boolean,
   output?: string,
