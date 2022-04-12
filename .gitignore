@@ -7,3 +7,7 @@ fuseki/fuseki-base/configuration/assembler.ttl
 fuseki/fuseki-base/databases
 fuseki/data
 build
+res*.csv
+res*.tsv
+res*.txt
+proc-*.json

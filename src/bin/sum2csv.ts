@@ -13,6 +13,7 @@ async function run(){
   const sum = summPreds(preds);
 
   ppMatrix(flattenObjValues(sum), opts.output);
+  console.log(globalMetrics);
 }
 
 run();
