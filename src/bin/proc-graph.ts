@@ -12,19 +12,6 @@ const procGraph = async (store: Store, subSelect: Query, options: CliOptions) =>
   const graph = new GraphOperations(store, {showProgBar: !options.noProgressBar});
   let preds = await graph.getPreds();
 
-  const walks = await graph.calcRandomWalks(preds, 1, 10);
-  for(const [p, sampledWalks, ws] of walks){
-    preds[p].sampledWalks = sampledWalks;
-    preds[p].walks = ws;
-  }
-
-  const ratios = await graph.calcInOutRatios(preds);
-  for(const [p, r] of ratios){
-    if(preds[p]){
-      preds[p].ratio = r;
-    }
-  }
-
   let gm = await graph.globalMetrics(subSelect);
 
   const scov = await graph.calcSubjectCoverage(subSelect);
@@ -37,8 +24,6 @@ const procGraph = async (store: Store, subSelect: Query, options: CliOptions) =>
     preds[p].objCoverage = c;
   }
 
-  //await calcLoops(preds);
-  
   const bfs = await graph.calcBranchingFactor(preds);
   for(const [p, bf] of bfs){
     preds[p].branchingFactor = bf;

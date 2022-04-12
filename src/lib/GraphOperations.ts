@@ -307,11 +307,11 @@ class GraphOperations extends EventEmitter {
 
   async calcObjectCoverage(subSelect: Query): Promise<Array<[string, number]>>{
     const q = new Query().select('p', COUNT('o', 'cov'))
-                       .where(
-                         Q(V('s'), V('p'), V('o')),
-                        subSelect
-                       )
-                      .groupBy('p')
+                          .where(
+                            Q(V('s'), V('p'), V('o')),
+                            subSelect
+                          )
+                          .groupBy('p')
     const cov = await this._runQuery(q);
     return cov.map(c => [c.get('p')?.value as string, Number(c.get('cov')?.value)]);
   }
@@ -336,7 +336,7 @@ class GraphOperations extends EventEmitter {
     return bfs;
   }
 
-  async globalMetrics(seedQuery: Query): Promise<{totalResources: number, totalNodes: number, totalSubjects: number, totalSeeds: number}>{
+  async globalMetrics(seedQuery: Query): Promise<GlobalMetrics>{
     const totalResources = await this._runQuery(new Query()
                                 .select(COUNT('x', 'total', 'distinct'))
                                 .where(
@@ -386,6 +386,13 @@ export interface Predicate {
 export interface Walk {
   status: string[],
   nodes: Term[]
+};
+
+export interface GlobalMetrics {
+  totalResources: number,
+  totalNodes: number,
+  totalSubjects: number,
+  totalSeeds: number
 };
 
 export type PredicateWalks = [string, number, {[key:string]: Walk}];
