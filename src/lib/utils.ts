@@ -1,5 +1,5 @@
 import {promises as fs} from 'fs';
-import {Predicate, Walk} from './GraphOperations';
+import {GlobalMetrics, Predicate, Walk} from './GraphOperations';
 
 interface PredicateSummary {
   [key: string]: any,
@@ -20,7 +20,7 @@ export const summPreds = (preds: {[key:string]: Predicate}) => {
     res[p].ratio           = preds[p].ratio;
     res[p].count           = preds[p].count;
     res[p].subjCoverage    = preds[p].subjCoverage;
-    res[p].objCoverage        = preds[p].objCoverage;
+    res[p].objCoverage     = preds[p].objCoverage;
     res[p].sampledWalks    = preds[p].sampledWalks;
     res[p].branchingFactor = preds[p].branchingFactor;
 
@@ -38,6 +38,23 @@ export const summPreds = (preds: {[key:string]: Predicate}) => {
     const walksCount = Object.keys(preds[p].walks).length;
 
     res[p].avgLen = walksCount ? len/walksCount : 0;
+  }
+  return res;
+};
+
+export const summMetrics = (preds: {[key:string]: Predicate}, globalMetrics: GlobalMetrics) => {
+  const res : {[key: string]: PredicateSummary} = {};
+  for(const p of Object.keys(preds)){
+    res[p] = {};
+    res[p].coverage = (preds[p].subjCoverage + preds[p].objCoverage) / globalMetrics.totalSeeds;
+    res[p].totalSeeds = globalMetrics.totalSeeds;
+    res[p].subjCoverage    = preds[p].subjCoverage;
+    res[p].objCoverage     = preds[p].objCoverage;
+    res[p].branchingFactor = preds[p].branchingFactor;
+    res[p].normBranchingFactor = preds[p].branchingFactor < 1 ?
+                                    1/preds[p].branchingFactor :
+                                    preds[p].branchingFactor;
+
   }
   return res;
 };

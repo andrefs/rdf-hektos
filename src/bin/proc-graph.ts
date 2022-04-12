@@ -33,9 +33,6 @@ const procGraph = async (store: Store, subSelect: Query, options: CliOptions) =>
 };
 
 const run = async () => {
-  console.warn('Starting');
-  console.warn('  getting predicates');
-
   const host = 'http://localhost';
   const repo = opts.repository || 'wordnet';
   const port = '3030';

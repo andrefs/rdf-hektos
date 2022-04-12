@@ -1,4 +1,4 @@
-import {summPreds, ppMatrix, flattenObjValues} from '../lib/utils'
+import {summMetrics, ppMatrix, flattenObjValues} from '../lib/utils'
 import {promises as fs} from 'fs';
 
 import opts from '../lib/opts'
@@ -10,10 +10,9 @@ async function run(){
   const json = await fs.readFile(file, {encoding: 'utf8'});
   const {predicates:preds, globalMetrics} = JSON.parse(json);
 
-  const sum = summPreds(preds);
+  const sum = summMetrics(preds, globalMetrics);
 
   ppMatrix(flattenObjValues(sum), opts.output);
-  console.log(globalMetrics);
 }
 
 run();
