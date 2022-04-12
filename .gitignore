@@ -11,3 +11,4 @@ res*.csv
 res*.tsv
 res*.txt
 proc-*.json
+misc/*
