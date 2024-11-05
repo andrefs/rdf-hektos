@@ -1,77 +1,78 @@
-import {B, COUNT, L, N, normVar, Query, RAND, V, Q, NOT, FILTER, BIND, IS_BLANK, UNION} from './QueryBuilder';
+import { B, COUNT, L, N, normVar, Query, RAND, V, Q, NOT, FILTER, BIND, IS_BLANK, UNION } from './QueryBuilder';
+import { describe, it, expect } from 'vitest';
 import rdf from '@rdfjs/data-model';
-import sparqljs, {Parser} from 'sparqljs';
+import sparqljs, { Parser } from 'sparqljs';
 
 describe('normVar', () => {
-  test('does nothing if var is already normalized', () => {
+  it('does nothing if var is already normalized', () => {
     expect(normVar('x')).toEqual('x');
   });
-  test('removes leading ?', () => {
+  it('removes leading ?', () => {
     expect(normVar('?x')).toEqual('x');
   });
 });
 
 
 describe('V', () => {
-  test('wraps a string into an @rdfjs/Variable', () => {
+  it('wraps a string into an @rdfjs/Variable', () => {
     expect(V('x')).toMatchObject({
       value: 'x',
       termType: 'Variable'
     });
   });
-  test('does nothing to an @rdfjs/Variable', () => {
+  it('does nothing to an @rdfjs/Variable', () => {
     const v = rdf.variable('v');
     expect(V(v)).toEqual(v);
   });
 });
 
 describe('N', () => {
-  test('wraps a string into an @rdfjs/NamedNode', () => {
+  it('wraps a string into an @rdfjs/NamedNode', () => {
     expect(N('x')).toMatchObject({
       value: 'x',
       termType: 'NamedNode'
     });
   });
-  test('does nothing to an @rdfjs/NamedNode', () => {
+  it('does nothing to an @rdfjs/NamedNode', () => {
     const n = rdf.namedNode('n');
     expect(N(n)).toEqual(n);
   });
 });
 
 describe('B', () => {
-  test('wraps a string into an @rdfjs/BlankNode', () => {
+  it('wraps a string into an @rdfjs/BlankNode', () => {
     expect(B('x')).toMatchObject({
       value: 'x',
       termType: 'BlankNode'
     });
   });
-  test('does nothing to an @rdfjs/BlankNode', () => {
+  it('does nothing to an @rdfjs/BlankNode', () => {
     const b = rdf.blankNode('b');
     expect(B(b)).toEqual(b);
   });
 });
 
 describe('L', () => {
-  test('wraps a string into an @rdfjs/Literal', () => {
+  it('wraps a string into an @rdfjs/Literal', () => {
     expect(L('x')).toMatchObject({
       value: 'x',
       termType: 'Literal'
     });
   });
-  test('wraps a number into an @rdfjs/Literal', () => {
+  it('wraps a number into an @rdfjs/Literal', () => {
     expect(L(3)).toMatchObject({
       value: '3',
       termType: 'Literal'
     });
   });
-  test('does nothing to an @rdfjs/Literal', () => {
+  it('does nothing to an @rdfjs/Literal', () => {
     const l = rdf.literal('l');
     expect(L(l)).toEqual(l);
   });
 });
 
 describe('Q', () => {
-  test('wraps arguments into an @rdfjs/Quad', () => {
+  it('wraps arguments into an @rdfjs/Quad', () => {
     expect(Q(V('a'), V('b'), V('c'))).toMatchInlineSnapshot(`
 Quad {
   "graph": DefaultGraph {},
@@ -95,27 +96,27 @@ Quad {
 })
 
 describe('COUNT', () => {
-  test('correctly wraps variable and alias', ()=>{
+  it('correctly wraps variable and alias', () => {
     expect(COUNT('x', 'y')).toMatchInlineSnapshot(`
-Object {
-  "expression": Object {
-    "aggregation": "count",
-    "distinct": false,
-    "expression": Variable {
-      "termType": "Variable",
-      "value": "x",
-    },
-    "type": "aggregate",
-  },
-  "variable": Variable {
-    "termType": "Variable",
-    "value": "y",
-  },
-}
-`);
+      {
+        "expression": {
+          "aggregation": "count",
+          "distinct": false,
+          "expression": Variable {
+            "termType": "Variable",
+            "value": "x",
+          },
+          "type": "aggregate",
+        },
+        "variable": Variable {
+          "termType": "Variable",
+          "value": "y",
+        },
+      }
+    `);
   });
 
-  test('accept distinct', ()=>{
+  it('accept distinct', () => {
     expect(COUNT('x', 'y', 'distinct'))
       .toHaveProperty('expression.distinct', true);
   });
@@ -123,7 +124,7 @@ Object {
 });
 
 describe('RAND', () => {
-  test('wraps contents', () => {
+  it('wraps contents', () => {
     expect(RAND()).toEqual({
       type: 'operation',
       operator: 'rand',
@@ -133,7 +134,7 @@ describe('RAND', () => {
 });
 
 describe('FILTER', () => {
-  test('wraps contents', () => {
+  it('wraps contents', () => {
     expect(FILTER(V('x'))).toEqual({
       type: 'filter',
       expression: V('x')
@@ -142,29 +143,29 @@ describe('FILTER', () => {
 });
 
 describe('NOT', () => {
-  test('wraps contents', () => {
+  it('wraps contents', () => {
     expect(NOT('x', 'y')).toMatchInlineSnapshot(`
-Object {
-  "args": Array [
-    Variable {
-      "termType": "Variable",
-      "value": "x",
-    },
-    Variable {
-      "termType": "Variable",
-      "value": "y",
-    },
-  ],
-  "operator": "!",
-  "type": "operation",
-}
-`);
+      {
+        "args": [
+          Variable {
+            "termType": "Variable",
+            "value": "x",
+          },
+          Variable {
+            "termType": "Variable",
+            "value": "y",
+          },
+        ],
+        "operator": "!",
+        "type": "operation",
+      }
+    `);
   });
 });
 
 
 describe('IS_BLANK', () => {
-  test('wraps contents', () => {
+  it('wraps contents', () => {
     expect(IS_BLANK('x', 'y')).toEqual({
       type: 'operation',
       operator: 'isblank',
@@ -175,7 +176,7 @@ describe('IS_BLANK', () => {
 
 
 describe('BIND', () => {
-  test('wraps contents', () => {
+  it('wraps contents', () => {
     expect(BIND(RAND(), 'y')).toEqual({
       type: 'bind',
       variable: V('y'),
@@ -186,10 +187,10 @@ describe('BIND', () => {
 
 
 describe('Query', () => {
-  test('constructor', () => {
+  it('constructor', () => {
     expect(new Query()).toEqual({
-      obj:{
-        type:'query',
+      obj: {
+        type: 'query',
         queryType: 'SELECT',
         prefixes: {},
         variables: []
@@ -197,155 +198,155 @@ describe('Query', () => {
     });
   });
 
-  test('prefix', () => {
+  it('prefix', () => {
     const q = new Query()
-                  .prefix('a','b')
-                  .prefix('c','d');
+      .prefix('a', 'b')
+      .prefix('c', 'd');
     expect(q.obj.prefixes).toEqual({
       a: 'b',
       c: 'd'
     });
   });
 
-  test('distinct', () => {
+  it('distinct', () => {
     const q = new Query().distinct();
     expect(q).toHaveProperty('obj.distinct', true);
   });
 
-  test('limit', () => {
+  it('limit', () => {
     const q = new Query().limit(5);
     expect(q).toHaveProperty('obj.limit', 5);
   });
 
-  test('select', () => {
+  it('select', () => {
     expect(new Query().select('a', '?b', V('c'))).
-toMatchInlineSnapshot(`
-Query {
-  "obj": Object {
-    "prefixes": Object {},
-    "queryType": "SELECT",
-    "type": "query",
-    "variables": Array [
-      Variable {
-        "termType": "Variable",
-        "value": "a",
-      },
-      Variable {
-        "termType": "Variable",
-        "value": "b",
-      },
-      Variable {
-        "termType": "Variable",
-        "value": "c",
-      },
-    ],
-  },
-}
-`);
+      toMatchInlineSnapshot(`
+        Query {
+          "obj": {
+            "prefixes": {},
+            "queryType": "SELECT",
+            "type": "query",
+            "variables": [
+              Variable {
+                "termType": "Variable",
+                "value": "a",
+              },
+              Variable {
+                "termType": "Variable",
+                "value": "b",
+              },
+              Variable {
+                "termType": "Variable",
+                "value": "c",
+              },
+            ],
+          },
+        }
+      `);
   });
 
-  test('groupBy', () => {
+  it('groupBy', () => {
     expect(new Query().groupBy('a', '?b', V('c'))).
-toMatchInlineSnapshot(`
-Query {
-  "obj": Object {
-    "group": Array [
-      Object {
-        "expression": Variable {
-          "termType": "Variable",
-          "value": "a",
-        },
-      },
-      Object {
-        "expression": Variable {
-          "termType": "Variable",
-          "value": "b",
-        },
-      },
-      Object {
-        "expression": Variable {
-          "termType": "Variable",
-          "value": "c",
-        },
-      },
-    ],
-    "prefixes": Object {},
-    "queryType": "SELECT",
-    "type": "query",
-    "variables": Array [],
-  },
-}
-`);
+      toMatchInlineSnapshot(`
+        Query {
+          "obj": {
+            "group": [
+              {
+                "expression": Variable {
+                  "termType": "Variable",
+                  "value": "a",
+                },
+              },
+              {
+                "expression": Variable {
+                  "termType": "Variable",
+                  "value": "b",
+                },
+              },
+              {
+                "expression": Variable {
+                  "termType": "Variable",
+                  "value": "c",
+                },
+              },
+            ],
+            "prefixes": {},
+            "queryType": "SELECT",
+            "type": "query",
+            "variables": [],
+          },
+        }
+      `);
   });
 
-  test('orderBy', () => {
+  it('orderBy', () => {
     const q = new Query().orderBy('a', ['b', 'DESC'], ['c', 'ASC'], RAND());
     expect(q).toMatchInlineSnapshot(`
-Query {
-  "obj": Object {
-    "order": Array [
-      Object {
-        "descending": false,
-        "expression": Variable {
-          "termType": "Variable",
-          "value": "a",
+      Query {
+        "obj": {
+          "order": [
+            {
+              "descending": false,
+              "expression": Variable {
+                "termType": "Variable",
+                "value": "a",
+              },
+            },
+            {
+              "descending": true,
+              "expression": Variable {
+                "termType": "Variable",
+                "value": "b",
+              },
+            },
+            {
+              "descending": false,
+              "expression": Variable {
+                "termType": "Variable",
+                "value": "c",
+              },
+            },
+            {
+              "descending": false,
+              "expression": {
+                "args": [],
+                "operator": "rand",
+                "type": "operation",
+              },
+            },
+          ],
+          "prefixes": {},
+          "queryType": "SELECT",
+          "type": "query",
+          "variables": [],
         },
-      },
-      Object {
-        "descending": true,
-        "expression": Variable {
-          "termType": "Variable",
-          "value": "b",
-        },
-      },
-      Object {
-        "descending": false,
-        "expression": Variable {
-          "termType": "Variable",
-          "value": "c",
-        },
-      },
-      Object {
-        "descending": false,
-        "expression": Object {
-          "args": Array [],
-          "operator": "rand",
-          "type": "operation",
-        },
-      },
-    ],
-    "prefixes": Object {},
-    "queryType": "SELECT",
-    "type": "query",
-    "variables": Array [],
-  },
-}
-`);
+      }
+    `);
   });
 
 
-  test('produces a valid Sparql.js input', () => {
+  it('produces a valid Sparql.js input', () => {
     const q = new Query()
-                    .select('p', COUNT('p', 'total'))
-                    .where(
-                      Q(V('s'), V('p'), V('o'))
-                    )
-                    .groupBy('p')
-                    .orderBy(['total', 'DESC'], RAND());
+      .select('p', COUNT('p', 'total'))
+      .where(
+        Q(V('s'), V('p'), V('o'))
+      )
+      .groupBy('p')
+      .orderBy(['total', 'DESC'], RAND());
 
     expect(() => {
       new sparqljs.Generator().stringify(q.obj);
     }).not.toThrow();
   });
 
-  test('produces the same object as Sparql.js', () => {
+  it('produces the same object as Sparql.js', () => {
     const q = new Query()
-                    .select('p', COUNT('p', 'total'))
-                    .where(
-                      Q(V('s'), V('p'), V('o'))
-                    )
-                    .groupBy('p')
-                    .orderBy(['total', 'DESC'], RAND());
+      .select('p', COUNT('p', 'total'))
+      .where(
+        Q(V('s'), V('p'), V('o'))
+      )
+      .groupBy('p')
+      .orderBy(['total', 'DESC'], RAND());
 
     const query = `SELECT ?p (COUNT(?p) AS ?total)
                     WHERE { 	?s ?p ?o . } 
@@ -357,14 +358,14 @@ Query {
     expect(q.obj).toMatchObject(parsed);
   });
 
-  test('produces valid SPARQL', () => {
+  it('produces valid SPARQL', () => {
     const q = new Query()
-                    .select('p', COUNT('p', 'total'))
-                    .where(
-                      Q(V('s'), V('p'), V('o'))
-                    )
-                    .groupBy('p')
-                    .orderBy(['total', 'DESC'], RAND());
+      .select('p', COUNT('p', 'total'))
+      .where(
+        Q(V('s'), V('p'), V('o'))
+      )
+      .groupBy('p')
+      .orderBy(['total', 'DESC'], RAND());
 
 
     const parser = new Parser();
@@ -373,306 +374,306 @@ Query {
 });
 
 describe('Query.where', () => {
-  test('accepts quads', () => {
+  it('accepts quads', () => {
     expect(new Query().where(Q(V('a'), V('b'), V('c')))).toMatchInlineSnapshot(`
-Query {
-  "obj": Object {
-    "prefixes": Object {},
-    "queryType": "SELECT",
-    "type": "query",
-    "variables": Array [],
-    "where": Array [
-      Object {
-        "triples": Array [
-          Quad {
-            "graph": DefaultGraph {},
-            "object": Variable {
-              "termType": "Variable",
-              "value": "c",
+      Query {
+        "obj": {
+          "prefixes": {},
+          "queryType": "SELECT",
+          "type": "query",
+          "variables": [],
+          "where": [
+            {
+              "triples": [
+                Quad {
+                  "graph": DefaultGraph {},
+                  "object": Variable {
+                    "termType": "Variable",
+                    "value": "c",
+                  },
+                  "predicate": Variable {
+                    "termType": "Variable",
+                    "value": "b",
+                  },
+                  "subject": Variable {
+                    "termType": "Variable",
+                    "value": "a",
+                  },
+                  "termType": "Quad",
+                },
+              ],
+              "type": "bgp",
             },
-            "predicate": Variable {
-              "termType": "Variable",
-              "value": "b",
-            },
-            "subject": Variable {
-              "termType": "Variable",
-              "value": "a",
-            },
-            "termType": "Quad",
-          },
-        ],
-        "type": "bgp",
-      },
-    ],
-  },
-}
-`);
-});
-
-  test('accepts BIND', () => {
-    const q = new Query().select('x', 'y')
-                         .where(
-                            Q(V('x'), V('p'), V('o')),
-                            BIND(RAND(), 'y')
-                         );
-
-    expect(q.obj.where).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "triples": Array [
-      Quad {
-        "graph": DefaultGraph {},
-        "object": Variable {
-          "termType": "Variable",
-          "value": "o",
+          ],
         },
-        "predicate": Variable {
-          "termType": "Variable",
-          "value": "p",
-        },
-        "subject": Variable {
-          "termType": "Variable",
-          "value": "x",
-        },
-        "termType": "Quad",
-      },
-    ],
-    "type": "bgp",
-  },
-  Object {
-    "expression": Object {
-      "args": Array [],
-      "operator": "rand",
-      "type": "operation",
-    },
-    "type": "bind",
-    "variable": Variable {
-      "termType": "Variable",
-      "value": "y",
-    },
-  },
-]
-`);
-
+      }
+    `);
   });
 
-  test('accepts subqueries', () => {
-    const subq = new Query()
-                      .prefix('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-                      .prefix('ontolex', 'http://www.w3.org/ns/lemon/ontolex')
-                      .select('s')
-                      .where(Q(V('s'), N('rdf:type'), N('ontolex:LexicalConcept')));
+  it('accepts BIND', () => {
+    const q = new Query().select('x', 'y')
+      .where(
+        Q(V('x'), V('p'), V('o')),
+        BIND(RAND(), 'y')
+      );
 
-    const q = new Query()
-                      .select('p', COUNT('s', 'cov', 'distinct'))
-                      .where(
-                        Q(V('i'), V('p'), V('o')),
-                        subq
-                      );
-    expect(q?.obj?.where?.[1]).toMatchInlineSnapshot(`
-Object {
-  "patterns": Array [
-    Object {
-      "prefixes": Object {},
-      "queryType": "SELECT",
-      "type": "query",
-      "variables": Array [
-        Variable {
-          "termType": "Variable",
-          "value": "s",
-        },
-      ],
-      "where": Array [
-        Object {
-          "triples": Array [
+    expect(q.obj.where).toMatchInlineSnapshot(`
+      [
+        {
+          "triples": [
             Quad {
               "graph": DefaultGraph {},
-              "object": NamedNode {
-                "termType": "NamedNode",
-                "value": "ontolex:LexicalConcept",
+              "object": Variable {
+                "termType": "Variable",
+                "value": "o",
               },
-              "predicate": NamedNode {
-                "termType": "NamedNode",
-                "value": "rdf:type",
+              "predicate": Variable {
+                "termType": "Variable",
+                "value": "p",
               },
               "subject": Variable {
                 "termType": "Variable",
-                "value": "s",
+                "value": "x",
               },
               "termType": "Quad",
             },
           ],
           "type": "bgp",
         },
-      ],
-    },
-  ],
-  "type": "group",
-}
-`);
+        {
+          "expression": {
+            "args": [],
+            "operator": "rand",
+            "type": "operation",
+          },
+          "type": "bind",
+          "variable": Variable {
+            "termType": "Variable",
+            "value": "y",
+          },
+        },
+      ]
+    `);
+
   });
 
-  test('accepts groups', () => {
+  it('accepts subqueries', () => {
+    const subq = new Query()
+      .prefix('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+      .prefix('ontolex', 'http://www.w3.org/ns/lemon/ontolex')
+      .select('s')
+      .where(Q(V('s'), N('rdf:type'), N('ontolex:LexicalConcept')));
+
+    const q = new Query()
+      .select('p', COUNT('s', 'cov', 'distinct'))
+      .where(
+        Q(V('i'), V('p'), V('o')),
+        subq
+      );
+    expect(q?.obj?.where?.[1]).toMatchInlineSnapshot(`
+      {
+        "patterns": [
+          {
+            "prefixes": {},
+            "queryType": "SELECT",
+            "type": "query",
+            "variables": [
+              Variable {
+                "termType": "Variable",
+                "value": "s",
+              },
+            ],
+            "where": [
+              {
+                "triples": [
+                  Quad {
+                    "graph": DefaultGraph {},
+                    "object": NamedNode {
+                      "termType": "NamedNode",
+                      "value": "ontolex:LexicalConcept",
+                    },
+                    "predicate": NamedNode {
+                      "termType": "NamedNode",
+                      "value": "rdf:type",
+                    },
+                    "subject": Variable {
+                      "termType": "Variable",
+                      "value": "s",
+                    },
+                    "termType": "Quad",
+                  },
+                ],
+                "type": "bgp",
+              },
+            ],
+          },
+        ],
+        "type": "group",
+      }
+    `);
+  });
+
+  it('accepts groups', () => {
     const q = new Query().select('x')
-                         .where(
-                            Q(V('x'), V('y'), V('z1')),
-                            [
-                              Q(V('x'), V('y'), V('z2')),
-                              Q(V('x'), V('y'), V('z3')),
-                            ]
-                          );
+      .where(
+        Q(V('x'), V('y'), V('z1')),
+        [
+          Q(V('x'), V('y'), V('z2')),
+          Q(V('x'), V('y'), V('z3')),
+        ]
+      );
     expect(q.obj.where).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "triples": Array [
-      Quad {
-        "graph": DefaultGraph {},
-        "object": Variable {
-          "termType": "Variable",
-          "value": "z1",
+      [
+        {
+          "triples": [
+            Quad {
+              "graph": DefaultGraph {},
+              "object": Variable {
+                "termType": "Variable",
+                "value": "z1",
+              },
+              "predicate": Variable {
+                "termType": "Variable",
+                "value": "y",
+              },
+              "subject": Variable {
+                "termType": "Variable",
+                "value": "x",
+              },
+              "termType": "Quad",
+            },
+          ],
+          "type": "bgp",
         },
-        "predicate": Variable {
-          "termType": "Variable",
-          "value": "y",
+        {
+          "patterns": [
+            {
+              "triples": [
+                Quad {
+                  "graph": DefaultGraph {},
+                  "object": Variable {
+                    "termType": "Variable",
+                    "value": "z2",
+                  },
+                  "predicate": Variable {
+                    "termType": "Variable",
+                    "value": "y",
+                  },
+                  "subject": Variable {
+                    "termType": "Variable",
+                    "value": "x",
+                  },
+                  "termType": "Quad",
+                },
+                Quad {
+                  "graph": DefaultGraph {},
+                  "object": Variable {
+                    "termType": "Variable",
+                    "value": "z3",
+                  },
+                  "predicate": Variable {
+                    "termType": "Variable",
+                    "value": "y",
+                  },
+                  "subject": Variable {
+                    "termType": "Variable",
+                    "value": "x",
+                  },
+                  "termType": "Quad",
+                },
+              ],
+              "type": "bgp",
+            },
+          ],
+          "type": "group",
         },
-        "subject": Variable {
-          "termType": "Variable",
-          "value": "x",
-        },
-        "termType": "Quad",
-      },
-    ],
-    "type": "bgp",
-  },
-  Object {
-    "patterns": Array [
-      Object {
-        "triples": Array [
-          Quad {
-            "graph": DefaultGraph {},
-            "object": Variable {
-              "termType": "Variable",
-              "value": "z2",
-            },
-            "predicate": Variable {
-              "termType": "Variable",
-              "value": "y",
-            },
-            "subject": Variable {
-              "termType": "Variable",
-              "value": "x",
-            },
-            "termType": "Quad",
-          },
-          Quad {
-            "graph": DefaultGraph {},
-            "object": Variable {
-              "termType": "Variable",
-              "value": "z3",
-            },
-            "predicate": Variable {
-              "termType": "Variable",
-              "value": "y",
-            },
-            "subject": Variable {
-              "termType": "Variable",
-              "value": "x",
-            },
-            "termType": "Quad",
-          },
-        ],
-        "type": "bgp",
-      },
-    ],
-    "type": "group",
-  },
-]
-`);
+      ]
+    `);
   });
 
-  test('accepts unions', () => {
+  it('accepts unions', () => {
     const q = new Query().select('x')
-                         .where(
-                            Q(V('x'), V('y'), V('z')),
-                            UNION,
-                            Q(V('z'), V('y'), V('x')),
-                            UNION,
-                            Q(V('z'), V('x'), V('y')),
-                          );
+      .where(
+        Q(V('x'), V('y'), V('z')),
+        UNION,
+        Q(V('z'), V('y'), V('x')),
+        UNION,
+        Q(V('z'), V('x'), V('y')),
+      );
     expect(q.obj.where).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "patterns": Array [
-      Object {
-        "triples": Array [
-          Quad {
-            "graph": DefaultGraph {},
-            "object": Variable {
-              "termType": "Variable",
-              "value": "z",
+      [
+        {
+          "patterns": [
+            {
+              "triples": [
+                Quad {
+                  "graph": DefaultGraph {},
+                  "object": Variable {
+                    "termType": "Variable",
+                    "value": "z",
+                  },
+                  "predicate": Variable {
+                    "termType": "Variable",
+                    "value": "y",
+                  },
+                  "subject": Variable {
+                    "termType": "Variable",
+                    "value": "x",
+                  },
+                  "termType": "Quad",
+                },
+              ],
+              "type": "bgp",
             },
-            "predicate": Variable {
-              "termType": "Variable",
-              "value": "y",
+            {
+              "triples": [
+                Quad {
+                  "graph": DefaultGraph {},
+                  "object": Variable {
+                    "termType": "Variable",
+                    "value": "x",
+                  },
+                  "predicate": Variable {
+                    "termType": "Variable",
+                    "value": "y",
+                  },
+                  "subject": Variable {
+                    "termType": "Variable",
+                    "value": "z",
+                  },
+                  "termType": "Quad",
+                },
+              ],
+              "type": "bgp",
             },
-            "subject": Variable {
-              "termType": "Variable",
-              "value": "x",
+            {
+              "triples": [
+                Quad {
+                  "graph": DefaultGraph {},
+                  "object": Variable {
+                    "termType": "Variable",
+                    "value": "y",
+                  },
+                  "predicate": Variable {
+                    "termType": "Variable",
+                    "value": "x",
+                  },
+                  "subject": Variable {
+                    "termType": "Variable",
+                    "value": "z",
+                  },
+                  "termType": "Quad",
+                },
+              ],
+              "type": "bgp",
             },
-            "termType": "Quad",
-          },
-        ],
-        "type": "bgp",
-      },
-      Object {
-        "triples": Array [
-          Quad {
-            "graph": DefaultGraph {},
-            "object": Variable {
-              "termType": "Variable",
-              "value": "x",
-            },
-            "predicate": Variable {
-              "termType": "Variable",
-              "value": "y",
-            },
-            "subject": Variable {
-              "termType": "Variable",
-              "value": "z",
-            },
-            "termType": "Quad",
-          },
-        ],
-        "type": "bgp",
-      },
-      Object {
-        "triples": Array [
-          Quad {
-            "graph": DefaultGraph {},
-            "object": Variable {
-              "termType": "Variable",
-              "value": "y",
-            },
-            "predicate": Variable {
-              "termType": "Variable",
-              "value": "x",
-            },
-            "subject": Variable {
-              "termType": "Variable",
-              "value": "z",
-            },
-            "termType": "Quad",
-          },
-        ],
-        "type": "bgp",
-      },
-    ],
-    "type": "union",
-  },
-]
-`);
+          ],
+          "type": "union",
+        },
+      ]
+    `);
   });
 
-  
+
 });
 

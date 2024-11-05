@@ -50,7 +50,8 @@
     "rdf-data-factory": "1.1.0",
     "sparql-http-client": "2.4.0",
     "sparqljs": "3.7.3",
-    "ts-command-line-args": "2.2.1"
+    "ts-command-line-args": "2.2.1",
+    "vitest": "2.1.4"
   },
   "devDependencies": {
     "@tsconfig/node16": "1.0.3",
