@@ -236,9 +236,9 @@ class GraphOperations extends EventEmitter {
   }
 
 
-  async calcRandomWalks(preds: { [key: string]: Predicate }, pctg = 1, walkLength = 5): Promise<PredicateWalks[]> {
+  async calcRandomWalks(preds: { [key: string]: BasePredicate }, pctg = 1, walkLength = 5): Promise<{ [key: string]: PredicateWalks }> {
     this.emit('walks-started', Object.keys(preds).length);
-    const walks: PredicateWalks[] = [];
+    const walks: { [key: string]: PredicateWalks } = {};
     console.log(`  doing random walks (${Object.keys(preds).length} ` +
       `preds, ${pctg}% of paths, length ${walkLength})`);
     for (const p of Object.keys(preds)) {
@@ -247,13 +247,13 @@ class GraphOperations extends EventEmitter {
       const sampledWalks = Math.ceil(total * pctg / 100);
       const subjs = await this._randSelectSubjects(preds[p].node, sampledWalks);
       const ws = await this._randomWalks(preds[p].node, subjs, walkLength);
-      walks.push([p, sampledWalks, ws]);
+      walks[p] = [p, sampledWalks, ws];
     }
     this.emit('walks-finished');
     return walks;
   };
 
-  async calcInOutRatios(preds: { [key: string]: Predicate }): Promise<Array<[string, number]>> {
+  async calcInOutRatios(preds: { [key: string]: BasePredicate }): Promise<{ [key: string]: number }> {
     const query = `
       PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
   
@@ -273,11 +273,11 @@ class GraphOperations extends EventEmitter {
 
     const stream = await this._store.select(query);
     const res = await s2a(stream);
-    return res.map(r => {
+    return Object.fromEntries(res.map(r => {
       const p = r.get('p')?.value as string;
       const avg = Number(r.get('avg')?.value);
       return [p, avg];
-    });
+    }));
   }
 
   async calcLoops(preds: { [key: string]: Predicate }): Promise<Array<[string, number]>> {
@@ -318,7 +318,7 @@ class GraphOperations extends EventEmitter {
   }
 
 
-  async calcBranchingFactor(preds: { [key: string]: Predicate }): Promise<{ [key: string]: number }> {
+  async calcBranchingFactor(preds: { [key: string]: BasePredicate }): Promise<{ [key: string]: number }> {
     const bfs: [string, number][] = [];
     for (const p of Object.keys(preds)) {
       const res = await this._runQuery(new Query()

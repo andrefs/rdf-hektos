@@ -1,4 +1,4 @@
-import GraphOperations from './lib/GraphOperations';
+import GraphOperations, { Predicate } from './lib/GraphOperations';
 import { summPreds, ppMatrix, flattenObjValues } from './lib/utils'
 
 import Store from './lib/Store';
@@ -17,20 +17,10 @@ async function run() {
   const endpointUrl = opts.endpoint || `${host}:${port}/${repo}/sparql`;
   const store = new Store({ endpointUrl })
   const graph = new GraphOperations(store, { showProgBar: !opts.noProgressBar });
-  let preds = await graph.getPreds();
+  let basePreds = await graph.getPreds();
 
-  const walks = await graph.calcRandomWalks(preds, 1, 10);
-  for (const [p, sampledWalks, ws] of walks) {
-    preds[p].sampledWalks = sampledWalks;
-    preds[p].walks = ws;
-  }
-
-  const ratios = await graph.calcInOutRatios(preds);
-  for (const [p, r] of ratios) {
-    if (preds[p]) {
-      preds[p].ratio = r;
-    }
-  }
+  const walks = await graph.calcRandomWalks(basePreds, 1, 10);
+  const ratios = await graph.calcInOutRatios(basePreds);
 
   const a = N('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
   const synsetClass = N('http://www.w3.org/ns/lemon/ontolex#LexicalConcept');
@@ -39,25 +29,37 @@ async function run() {
   let global = await graph.globalMetrics(subq); // TODO store this somewhere
 
   const scov = await graph.calcSubjectCoverage(subq);
-  for (const [p, c] of scov) {
-    preds[p].subjCoverage = c;
-  }
-
   const ocov = await graph.calcObjectCoverage(subq);
-  for (const [p, c] of ocov) {
-    preds[p].objCoverage = c;
-  }
-
   //await calcLoops(preds);
+  const bfs = await graph.calcBranchingFactor(basePreds);
 
-  const bfs = await graph.calcBranchingFactor(preds);
-  for (const [p, bf] of bfs) {
-    preds[p].branchingFactor = bf;
+  const preds: { [key: string]: Predicate } = {};
+
+  for (const [p, basePred] of Object.entries(basePreds)) {
+    const s = scov[p] ?? 0;
+    const o = ocov[p] ?? 0;
+    const bf = bfs[p] ?? 0;
+    const [_, sw, w] = walks[p];
+    const r = ratios[p];
+
+
+    preds[p] = {
+      ...basePred,
+      subjCoverage: s,
+      objCoverage: o,
+      branchingFactor: bf,
+      sampledWalks: sw,
+      walks: w,
+      ratio: r
+    };
   }
+
+
 
   const sum = summPreds(preds);
 
-  ppMatrix(flattenObjValues(sum), opts.output);
+  const output = opts.output || `proc-${repo}-results.json`;
+  ppMatrix(flattenObjValues(sum), output);
 }
 
 run();
