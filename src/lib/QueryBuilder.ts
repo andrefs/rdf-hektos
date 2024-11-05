@@ -12,6 +12,7 @@ type Union = 'UNION';
 export const normVar = (value: string) => value.replace(/^\?/, '');
 
 type StrOr<T> = string | T;
+type VorE = SparqlJs.VariableTerm | SparqlJs.VariableExpression;
 
 export const V = (value: StrOr<SparqlJs.VariableTerm>): SparqlJs.VariableTerm => {
   if (typeof value === 'string') {
@@ -125,13 +126,13 @@ export class Query {
     return this;
   }
 
-  select(...binds: StrOr<SparqlJs.VariableTerm>[]) {
+  select(...binds: StrOr<VorE>[]) {
     this.obj = {
       ...this.obj,
       queryType: 'SELECT',
     };
-    const variables = this.obj.variables as SparqlJs.VariableTerm[];
-    variables.push(...binds.map(V));
+    const variables = this.obj.variables as VorE[];
+    variables.push(...binds.map(v => typeof v === 'object' && 'expression' in v ? v : V(v)));
     return this;
   }
 

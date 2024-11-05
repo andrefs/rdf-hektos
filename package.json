@@ -49,7 +49,7 @@
     "graphdb": "2.0.0",
     "rdf-data-factory": "1.1.0",
     "sparql-http-client": "2.4.0",
-    "sparqljs": "3.5.1",
+    "sparqljs": "3.7.3",
     "ts-command-line-args": "2.2.1"
   },
   "devDependencies": {
