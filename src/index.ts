@@ -58,7 +58,7 @@ async function run() {
 
   const sum = summPreds(preds);
 
-  const output = opts.output || `proc-${repo}-results.json`;
+  const output = opts.output || `${repo}-results.csv`;
   ppMatrix(flattenObjValues(sum), output);
 }
 

@@ -23,7 +23,12 @@ const procGraph = async (store: Store, subSelect: Query, options: CliOptions) =>
     const s = scov[p] ?? 0;
     const o = ocov[p] ?? 0;
     const bf = bfs[p] ?? 0;
-    preds[p] = { ...basePred, subjCoverage: s, objCoverage: o, branchingFactor: bf };
+    preds[p] = {
+      ...basePred,
+      subjCoverage: s,
+      objCoverage: o,
+      branchingFactor: bf
+    };
   }
 
 
