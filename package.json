@@ -20,7 +20,7 @@
   "author": "André Santos",
   "license": "ISC",
   "dependencies": {
-    "@comunica/logger-pretty": "1.22.0",
+    "@comunica/logger-pretty": "4.0.2",
     "@comunica/query-sparql": "2.0.5",
     "@comunica/types": "2.0.1",
     "@rdfjs/data-model": "2.0.2",
