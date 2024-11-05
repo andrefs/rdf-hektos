@@ -1,46 +1,51 @@
+import { it, expect } from 'vitest';
 import { N } from './QueryBuilder';
-import {flattenObj, summPreds, flattenObjValues, prettyMatrix} from './utils';
+import { flattenObj, summPreds, flattenObjValues, prettyMatrix } from './utils';
 
 const obj = {
-  a: {b: {c: 1}},
-  d: {b: {c: 2,
-          e: 3}},
-  f: {b: {g: 4}}
+  a: { b: { c: 1 } },
+  d: {
+    b: {
+      c: 2,
+      e: 3
+    }
+  },
+  f: { b: { g: 4 } }
 };
 
-test('flattenObj correctly flattens object', () => {
+it('flattenObj correctly flattens object', () => {
   expect(flattenObj(obj)).toMatchInlineSnapshot(`
-Object {
-  "a.b.c": 1,
-  "d.b.c": 2,
-  "d.b.e": 3,
-  "f.b.g": 4,
-}
-`);
+    {
+      "a.b.c": 1,
+      "d.b.c": 2,
+      "d.b.e": 3,
+      "f.b.g": 4,
+    }
+  `);
 });
 
 
 
-test('flattenObjValues correctly transforms object into matrix', () => {
+it('flattenObjValues correctly transforms object into matrix', () => {
   expect(flattenObjValues(obj)).toMatchInlineSnapshot(`
-Object {
-  "a": Object {
-    "b.c": 1,
-  },
-  "d": Object {
-    "b.c": 2,
-    "b.e": 3,
-  },
-  "f": Object {
-    "b.g": 4,
-  },
-}
-`);
+    {
+      "a": {
+        "b.c": 1,
+      },
+      "d": {
+        "b.c": 2,
+        "b.e": 3,
+      },
+      "f": {
+        "b.g": 4,
+      },
+    }
+  `);
 
 });
 
 
-test('summPreds correctly summarizes predicates', () => {
+it('summPreds correctly summarizes predicates', () => {
   const preds = {
     predA: {
       ratio: 2,
@@ -87,37 +92,37 @@ test('summPreds correctly summarizes predicates', () => {
   };
 
   expect(summPreds(preds)).toMatchInlineSnapshot(`
-Object {
-  "predA": Object {
-    "avgLen": 2.5,
-    "branchingFactor": 2,
-    "count": 3,
-    "objCoverage": 3,
-    "ratio": 2,
-    "sampledWalks": 2,
-    "subjCoverage": 2,
-    "walks": Object {
-      "found_literal": 1,
-      "found_loop": 1,
-    },
-  },
-  "predB": Object {
-    "avgLen": 2,
-    "branchingFactor": 0.3,
-    "count": 10,
-    "objCoverage": 1,
-    "ratio": 0.3,
-    "sampledWalks": 3,
-    "subjCoverage": 3,
-    "walks": Object {
-      "finished_early": 3,
-    },
-  },
-}
-`);
+    {
+      "predA": {
+        "avgLen": 2.5,
+        "branchingFactor": 2,
+        "count": 3,
+        "objCoverage": 3,
+        "ratio": 2,
+        "sampledWalks": 2,
+        "subjCoverage": 2,
+        "walks": {
+          "found_literal": 1,
+          "found_loop": 1,
+        },
+      },
+      "predB": {
+        "avgLen": 2,
+        "branchingFactor": 0.3,
+        "count": 10,
+        "objCoverage": 1,
+        "ratio": 0.3,
+        "sampledWalks": 3,
+        "subjCoverage": 3,
+        "walks": {
+          "finished_early": 3,
+        },
+      },
+    }
+  `);
 });
 
-test('prettyMatrix correctly generates a string from a matrix', () => {
+it('prettyMatrix correctly generates a string from a matrix', () => {
   const obj = {
     "predA": {
       "avgLen": 2.5,
