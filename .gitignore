@@ -12,3 +12,4 @@ res*.tsv
 res*.txt
 proc-*.json
 misc/*
+dist/
