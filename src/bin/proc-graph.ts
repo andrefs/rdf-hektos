@@ -18,7 +18,6 @@ const procGraph = async (store: Store, subSelect: Query, options: CliOptions) =>
   const scov = await graph.calcSubjectCoverage(subSelect);
   const ocov = await graph.calcObjectCoverage(subSelect);
   const bfs = await graph.calcBranchingFactor(basePreds);
-  console.log('XXXXXXXXXXXXX', { bfs, basePreds })
 
   for (const [p, basePred] of Object.entries(basePreds)) {
     const s = scov[p] ?? 0;
@@ -36,15 +35,24 @@ const procGraph = async (store: Store, subSelect: Query, options: CliOptions) =>
   return { globalMetrics: gm, predicates: preds };
 };
 
-const run = async () => {
+const a = N('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
+const synsetClass = N('http://www.w3.org/ns/lemon/ontolex#LexicalConcept');
+
+/**
+ * Resources of Interest Query
+ * This query selects the resources of interest from the graph, to be used as seeds for calculating taxonomies.
+ */
+const roiQ = new Query().select('s')
+  .where(Q(V('s'), a, synsetClass));
+
+
+const run = async (seedQ: Query) => {
   const host = 'http://localhost';
   const repo = opts.repository || 'wordnet';
   const port = '3030';
   const endpointUrl = opts.endpoint || `${host}:${port}/${repo}/sparql`;
   const store = new Store({ endpointUrl })
 
-  const a = N('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
-  const synsetClass = N('http://www.w3.org/ns/lemon/ontolex#LexicalConcept');
   const subq = new Query().select('s')
     .where(Q(V('s'), a, synsetClass));
 
@@ -57,4 +65,4 @@ const run = async () => {
 
 
 
-run();
+run(roiQ);
