@@ -339,7 +339,7 @@ class GraphOperations extends EventEmitter {
   }
 
   async globalMetrics(seedQuery: Query): Promise<GlobalMetrics> {
-    const totalResources = await this._runQuery(new Query()
+    const totalResQ = new Query()
       .select(COUNT('x', 'total', 'distinct'))
       .where(
         Q(V('x'), V('p'), V('o')),
@@ -347,7 +347,8 @@ class GraphOperations extends EventEmitter {
         Q(V('s'), V('x'), V('o')),
         UNION,
         Q(V('s'), V('p'), V('x')),
-      ));
+      );
+    const totalResources = await this._runQuery(totalResQ);
 
     const totalNodes = await this._runQuery(new Query()
       .select(COUNT('x', 'total', 'distinct'))
