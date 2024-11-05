@@ -7,9 +7,9 @@
     "test": "vitest",
     "build": "tsc",
     "postbuild": "cp package.json build/package.json && cp yarn.lock build/yarn.lock && cd build && yarn install",
-    "start": "time node --experimental-specifier-resolution=node --loader ts-node/esm ./src/index.ts",
-    "proc-graph": "time node --experimental-specifier-resolution=node --loader ts-node/esm ./src/bin/proc-graph.ts",
-    "graph-to-csv": "time node --experimental-specifier-resolution=node --loader ts-node/esm ./src/bin/sum2csv.ts"
+    "start": "time tsx ./src/index.ts",
+    "proc-graph": "time tsx ./src/bin/proc-graph.ts",
+    "graph-to-csv": "time tsx ./src/bin/sum2csv.ts"
   },
   "keywords": [
     "RDF",
@@ -17,11 +17,12 @@
     "GraphDB",
     "SPARQL"
   ],
+  "type": "module",
   "author": "André Santos",
   "license": "ISC",
   "dependencies": {
     "@comunica/logger-pretty": "4.0.2",
-    "@comunica/query-sparql": "2.0.5",
+    "@comunica/query-sparql": "4.0.2",
     "@comunica/types": "4.0.2",
     "@rdfjs/data-model": "2.0.2",
     "@rdfjs/namespace": "2.0.1",

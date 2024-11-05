@@ -1,9 +1,9 @@
-import { Query, COUNT, V, RAND, Q, N, BIND, UNION, FILTER, NOT, IS_BLANK } from './QueryBuilder';
+import { Query, COUNT, V, RAND, Q, N, BIND, UNION, FILTER, NOT, IS_BLANK } from './QueryBuilder.ts';
 import Bluebird from 'bluebird';
 import EventEmitter from 'events';
 import cliProgress from 'cli-progress';
 import { Bindings, Term } from '@rdfjs/types';
-import Store from './Store';
+import Store from './Store.ts';
 import { Quad_Object, Quad_Predicate, Quad_Subject } from 'n3';
 const multibar = new cliProgress.MultiBar({
   stopOnComplete: true,
@@ -260,9 +260,12 @@ class GraphOperations extends EventEmitter {
   
       SELECT ?p (AVG(?c) as ?avg) WHERE {
           SELECT
-            ?p ?x (COUNT(DISTINCT ?in) as ?cIn)
+            ?p
+            ?x 
+            (COUNT(DISTINCT ?in) as ?cIn)
             (COUNT(DISTINCT ?out) as ?cOut)
-            (xsd:integer(?cIn)/xsd:integer(?cOut) as ?c) WHERE {
+            (xsd:integer(?cIn)/xsd:integer(?cOut) as ?c)
+          WHERE {
               ?in ?p ?x .
               ?x ?p ?out
           }
@@ -339,7 +342,7 @@ class GraphOperations extends EventEmitter {
   }
 
   async globalMetrics(seedQuery: Query): Promise<GlobalMetrics> {
-    const totalResources = await this._runQuery(new Query()
+    const totalResQ = new Query()
       .select(COUNT('x', 'total', 'distinct'))
       .where(
         Q(V('x'), V('p'), V('o')),
@@ -347,7 +350,8 @@ class GraphOperations extends EventEmitter {
         Q(V('s'), V('x'), V('o')),
         UNION,
         Q(V('s'), V('p'), V('x')),
-      ));
+      );
+    const totalResources = await this._runQuery(totalResQ);
 
     const totalNodes = await this._runQuery(new Query()
       .select(COUNT('x', 'total', 'distinct'))

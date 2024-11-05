@@ -1,9 +1,9 @@
-import GraphOperations, { Predicate } from '../lib/GraphOperations';
+import GraphOperations, { Predicate } from '../lib/GraphOperations.ts';
 import { promises as fs } from 'fs';
 
-import Store from '../lib/Store';
-import opts, { CliOptions } from '../lib/proc-graph-opts'
-import { N, Q, Query, V } from '../lib/QueryBuilder';
+import Store from '../lib/Store.ts';
+import opts, { CliOptions } from '../lib/proc-graph-opts.ts'
+import { N, Q, Query, V } from '../lib/QueryBuilder.js';
 
 const procGraph = async (store: Store, subSelect: Query, options: CliOptions) => {
   console.warn('Starting');
@@ -23,7 +23,12 @@ const procGraph = async (store: Store, subSelect: Query, options: CliOptions) =>
     const s = scov[p] ?? 0;
     const o = ocov[p] ?? 0;
     const bf = bfs[p] ?? 0;
-    preds[p] = { ...basePred, subjCoverage: s, objCoverage: o, branchingFactor: bf };
+    preds[p] = {
+      ...basePred,
+      subjCoverage: s,
+      objCoverage: o,
+      branchingFactor: bf
+    };
   }
 
 

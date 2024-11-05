@@ -8,6 +8,8 @@
   ],
   "noImplicitAny": true,
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "sourceMap": true,
     "outDir": "dist"
   }

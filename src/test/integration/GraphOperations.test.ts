@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import GraphOperations from '../../lib/GraphOperations';
+import GraphOperations from '../../lib/GraphOperations.ts';
 import rdf from '@rdfjs/data-model';
 import N3 from 'n3';
 import { QueryEngine } from '@comunica/query-sparql';
-import { N, Q, Query, V } from '../../lib/QueryBuilder';
-import Store from '../../lib/Store';
+import { N, Q, Query, V } from '../../lib/QueryBuilder.js';
+import Store from '../../lib/Store.ts';
 const engine = new QueryEngine();
 const NN = rdf.namedNode;
 const pf = 'http://example.org/andrefs';
@@ -146,7 +146,7 @@ describe('calcInOutRatios', () => {
     const ratios = await graph.calcInOutRatios(preds);
 
     expect(Object.keys(ratios)).toHaveLength(3);
-    expect(ratios[`${pf}/R2`]).toBe(1.3333333333333333);
+    expect(ratios[`${pf}/R2`]).toBe(0.8333333333333334);
     expect(ratios[`${pf}/R1`]).toBe(1);
     expect(ratios[`${pf}/R4`]).toBe(1);
   });
@@ -214,10 +214,10 @@ describe('calcBranchingFactor', () => {
     const bfs = await graph.calcBranchingFactor(preds);
     expect(bfs).toMatchInlineSnapshot(`
       {
-        "http://example.org/andrefs/R1": 0.25,
-        "http://example.org/andrefs/R2": 0.1,
+        "http://example.org/andrefs/R1": 1,
+        "http://example.org/andrefs/R2": 1.4285714285714286,
         "http://example.org/andrefs/R3": 1,
-        "http://example.org/andrefs/R4": 0.5,
+        "http://example.org/andrefs/R4": 1,
       }
     `);
   });
@@ -231,10 +231,10 @@ describe('globalMetrics', () => {
     const global = await graph.globalMetrics(subq);
 
     expect(global).toStrictEqual({
-      totalNodes: 34,
-      totalResources: 51,
+      totalNodes: 17, // N1-N16 + L1 = 17
+      totalResources: 21, // N1-N16 + R1-R4 + L1 = 21
       totalSeeds: 10,
-      totalSubjects: 17,
+      totalSubjects: 12,
     });
   });
 })

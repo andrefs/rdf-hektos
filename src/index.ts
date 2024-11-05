@@ -1,9 +1,9 @@
-import GraphOperations, { Predicate } from './lib/GraphOperations';
-import { summPreds, ppMatrix, flattenObjValues } from './lib/utils'
+import GraphOperations, { Predicate } from './lib/GraphOperations.ts';
+import { summPreds, ppMatrix, flattenObjValues } from './lib/utils.ts'
 
-import Store from './lib/Store';
-import opts from './lib/proc-graph-opts'
-import { N, Q, Query, V } from './lib/QueryBuilder';
+import Store from './lib/Store.ts';
+import opts from './lib/proc-graph-opts.ts'
+import { N, Q, Query, V } from './lib/QueryBuilder.ts';
 
 async function run() {
   console.warn('Starting');
@@ -58,7 +58,7 @@ async function run() {
 
   const sum = summPreds(preds);
 
-  const output = opts.output || `proc-${repo}-results.json`;
+  const output = opts.output || `${repo}-results.csv`;
   ppMatrix(flattenObjValues(sum), output);
 }
 

@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { GlobalMetrics, Predicate, Walk } from './GraphOperations';
+import { GlobalMetrics, Predicate, Walk } from './GraphOperations.ts';
 
 interface PredicateSummary {
   [key: string]: any,

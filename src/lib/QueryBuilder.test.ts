@@ -1,4 +1,4 @@
-import { B, COUNT, L, N, normVar, Query, RAND, V, Q, NOT, FILTER, BIND, IS_BLANK, UNION } from './QueryBuilder';
+import { B, COUNT, L, N, normVar, Query, RAND, V, Q, NOT, FILTER, BIND, IS_BLANK, UNION } from './QueryBuilder.ts';
 import { describe, it, expect } from 'vitest';
 import rdf from '@rdfjs/data-model';
 import sparqljs, { Parser } from 'sparqljs';

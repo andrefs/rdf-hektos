@@ -1,7 +1,7 @@
-import { summMetrics, ppMatrix, flattenObjValues } from '../lib/utils'
+import { summMetrics, ppMatrix, flattenObjValues } from '../lib/utils.ts'
 import fs from 'node:fs/promises';
 
-import opts from '../lib/sum2csv-opts'
+import opts from '../lib/sum2csv-opts.ts'
 
 async function run() {
   console.warn('Starting');
