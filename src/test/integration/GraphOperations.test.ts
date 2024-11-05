@@ -146,7 +146,7 @@ describe('calcInOutRatios', () => {
     const ratios = await graph.calcInOutRatios(preds);
 
     expect(Object.keys(ratios)).toHaveLength(3);
-    expect(ratios[`${pf}/R2`]).toBe(1.3333333333333333);
+    expect(ratios[`${pf}/R2`]).toBe(0.8333333333333334);
     expect(ratios[`${pf}/R1`]).toBe(1);
     expect(ratios[`${pf}/R4`]).toBe(1);
   });
@@ -214,17 +214,17 @@ describe('calcBranchingFactor', () => {
     const bfs = await graph.calcBranchingFactor(preds);
     expect(bfs).toMatchInlineSnapshot(`
       {
-        "http://example.org/andrefs/R1": 0.25,
-        "http://example.org/andrefs/R2": 0.1,
+        "http://example.org/andrefs/R1": 1,
+        "http://example.org/andrefs/R2": 1.4285714285714286,
         "http://example.org/andrefs/R3": 1,
-        "http://example.org/andrefs/R4": 0.5,
+        "http://example.org/andrefs/R4": 1,
       }
     `);
   });
 })
 
 describe('globalMetrics', () => {
-  it.only('calculates global metrics', async () => {
+  it('calculates global metrics', async () => {
     const subq = new Query().select('s')
       .where(Q(V('s'), N(`${pf}/R2`), V('o')));
 

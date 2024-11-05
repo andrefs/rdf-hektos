@@ -260,9 +260,12 @@ class GraphOperations extends EventEmitter {
   
       SELECT ?p (AVG(?c) as ?avg) WHERE {
           SELECT
-            ?p ?x (COUNT(DISTINCT ?in) as ?cIn)
+            ?p
+            ?x 
+            (COUNT(DISTINCT ?in) as ?cIn)
             (COUNT(DISTINCT ?out) as ?cOut)
-            (xsd:integer(?cIn)/xsd:integer(?cOut) as ?c) WHERE {
+            (xsd:integer(?cIn)/xsd:integer(?cOut) as ?c)
+          WHERE {
               ?in ?p ?x .
               ?x ?p ?out
           }
