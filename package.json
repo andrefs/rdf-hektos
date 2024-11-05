@@ -22,7 +22,7 @@
   "dependencies": {
     "@comunica/logger-pretty": "4.0.2",
     "@comunica/query-sparql": "2.0.5",
-    "@comunica/types": "2.0.1",
+    "@comunica/types": "4.0.2",
     "@rdfjs/data-model": "2.0.2",
     "@rdfjs/namespace": "2.0.1",
     "@rdfjs/types": "1.1.2",
