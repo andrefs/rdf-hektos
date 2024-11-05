@@ -232,7 +232,6 @@ class GraphOperations extends EventEmitter {
       .orderBy('sortKey')
       .limit(howMany);
     const nodes = await this._runQuery(q, true);
-    console.log('XXXXXXXXXXXXXX', { p, howMany, nodes })
     const res = nodes.map(x => x.get('x') as Term);
     return res;
   }
