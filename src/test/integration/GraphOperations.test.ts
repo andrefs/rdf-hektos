@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import GraphOperations from '../../lib/GraphOperations';
+import GraphOperations from '../../lib/GraphOperations.ts';
 import rdf from '@rdfjs/data-model';
 import N3 from 'n3';
 import { QueryEngine } from '@comunica/query-sparql';
-import { N, Q, Query, V } from '../../lib/QueryBuilder';
-import Store from '../../lib/Store';
+import { N, Q, Query, V } from '../../lib/QueryBuilder.js';
+import Store from '../../lib/Store.ts';
 const engine = new QueryEngine();
 const NN = rdf.namedNode;
 const pf = 'http://example.org/andrefs';

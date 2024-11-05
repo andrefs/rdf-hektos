@@ -17,11 +17,12 @@
     "GraphDB",
     "SPARQL"
   ],
+  "type": "module",
   "author": "André Santos",
   "license": "ISC",
   "dependencies": {
     "@comunica/logger-pretty": "4.0.2",
-    "@comunica/query-sparql": "3.0.1",
+    "@comunica/query-sparql": "4.0.2",
     "@comunica/types": "4.0.2",
     "@rdfjs/data-model": "2.0.2",
     "@rdfjs/namespace": "2.0.1",

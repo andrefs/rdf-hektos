@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import GraphOperations from './GraphOperations';
+import { describe, it, expect, vi } from 'vitest';
+import GraphOperations from './GraphOperations.ts';
 import { Readable } from 'stream';
 import rdf from '@rdfjs/data-model';
-import Store from './Store';
+import Store from './Store.ts';
 
 const store = new Store({ endpointUrl: '' });
 const mockSelect = vi.spyOn(store, 'select');

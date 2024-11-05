@@ -1,12 +1,11 @@
-import {QueryEngine} from '@comunica/query-sparql';
-import {LoggerPretty} from "@comunica/logger-pretty";
+import { QueryEngine } from '@comunica/query-sparql';
 import { EventEmitter } from 'stream';
 
 class Store {
   engine: QueryEngine;
   source: string;
 
-  constructor({endpointUrl}: {endpointUrl: string}){
+  constructor({ endpointUrl }: { endpointUrl: string }) {
     this.engine = new QueryEngine();
     this.source = endpointUrl;
   }
@@ -24,8 +23,8 @@ class Store {
 
     res.on('end', () => {
       const postQuery = Date.now();
-      const duration = (postQuery-preQuery)/1000;
-      if(duration > 5){
+      const duration = (postQuery - preQuery) / 1000;
+      if (duration > 5) {
         console.warn(`Slow query (${duration}):\n${q}`);
       }
     });

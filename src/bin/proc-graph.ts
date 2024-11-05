@@ -1,9 +1,9 @@
-import GraphOperations, { Predicate } from '../lib/GraphOperations';
+import GraphOperations, { Predicate } from '../lib/GraphOperations.ts';
 import { promises as fs } from 'fs';
 
-import Store from '../lib/Store';
-import opts, { CliOptions } from '../lib/proc-graph-opts'
-import { N, Q, Query, V } from '../lib/QueryBuilder';
+import Store from '../lib/Store.ts';
+import opts, { CliOptions } from '../lib/proc-graph-opts.ts'
+import { N, Q, Query, V } from '../lib/QueryBuilder.js';
 
 const procGraph = async (store: Store, subSelect: Query, options: CliOptions) => {
   console.warn('Starting');

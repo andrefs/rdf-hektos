@@ -1,9 +1,9 @@
-import { Query, COUNT, V, RAND, Q, N, BIND, UNION, FILTER, NOT, IS_BLANK } from './QueryBuilder';
+import { Query, COUNT, V, RAND, Q, N, BIND, UNION, FILTER, NOT, IS_BLANK } from './QueryBuilder.ts';
 import Bluebird from 'bluebird';
 import EventEmitter from 'events';
 import cliProgress from 'cli-progress';
 import { Bindings, Term } from '@rdfjs/types';
-import Store from './Store';
+import Store from './Store.ts';
 import { Quad_Object, Quad_Predicate, Quad_Subject } from 'n3';
 const multibar = new cliProgress.MultiBar({
   stopOnComplete: true,

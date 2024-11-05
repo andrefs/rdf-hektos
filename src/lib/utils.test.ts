@@ -1,6 +1,6 @@
 import { it, expect } from 'vitest';
-import { N } from './QueryBuilder';
-import { flattenObj, summPreds, flattenObjValues, prettyMatrix } from './utils';
+import { N } from './QueryBuilder.js';
+import { flattenObj, summPreds, flattenObjValues, prettyMatrix } from './utils.ts';
 
 const obj = {
   a: { b: { c: 1 } },
