@@ -17,7 +17,8 @@ const procGraph = async (store: Store, subSelect: Query, options: CliOptions) =>
 
   const scov = await graph.calcSubjectCoverage(subSelect);
   const ocov = await graph.calcObjectCoverage(subSelect);
-  const bfs = await graph.calcBranchingFactor(preds);
+  const bfs = await graph.calcBranchingFactor(basePreds);
+  console.log('XXXXXXXXXXXXX', { bfs, basePreds })
 
   for (const [p, basePred] of Object.entries(basePreds)) {
     const s = scov[p] ?? 0;

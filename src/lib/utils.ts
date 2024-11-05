@@ -13,35 +13,35 @@ interface PredicateSummary {
   avgLen?: number
 };
 
-export const summPreds = (preds: { [key: string]: Predicate }) => {
-  const res: { [key: string]: PredicateSummary } = {};
-  for (const p of Object.keys(preds)) {
-    const resP = {
-      ratio: preds[p].ratio,
-      count: preds[p].count,
-      subjCoverage: preds[p].subjCoverage,
-      objCoverage: preds[p].objCoverage,
-      sampledWalks: preds[p].sampledWalks,
-      branchingFactor: preds[p].branchingFactor,
-    }
-
-    let len = 0;
-    const walks: { [key: string]: number } = {};
-    for (const w of Object.values(preds[p]?.walks ?? [])) {
-      len += w.nodes.length;
-      for (const s of w.status) {
-        walks[s] = walks[s] || 0;
-        walks[s]++;
-      }
-    }
-
-    const walksCount = Object.keys(preds[p]?.walks ?? []).length;
-
-    const avgLen = walksCount ? len / walksCount : 0;
-    res[p] = { ...resP, walks, avgLen };
-  }
-  return res;
-};
+//export const summPreds = (preds: { [key: string]: Predicate }) => {
+//  const res: { [key: string]: PredicateSummary } = {};
+//  for (const p of Object.keys(preds)) {
+//    const resP = {
+//      ratio: preds[p].ratio,
+//      count: preds[p].count,
+//      subjCoverage: preds[p].subjCoverage,
+//      objCoverage: preds[p].objCoverage,
+//      sampledWalks: preds[p].sampledWalks,
+//      branchingFactor: preds[p].branchingFactor,
+//    }
+//
+//    let len = 0;
+//    const walks: { [key: string]: number } = {};
+//    for (const w of Object.values(preds[p]?.walks ?? [])) {
+//      len += w.nodes.length;
+//      for (const s of w.status) {
+//        walks[s] = walks[s] || 0;
+//        walks[s]++;
+//      }
+//    }
+//
+//    const walksCount = Object.keys(preds[p]?.walks ?? []).length;
+//
+//    const avgLen = walksCount ? len / walksCount : 0;
+//    res[p] = { ...resP, walks, avgLen };
+//  }
+//  return res;
+//};
 
 export const summMetrics = (preds: { [key: string]: Predicate }, globalMetrics: GlobalMetrics) => {
   const res: { [key: string]: PredicateSummary } = {};

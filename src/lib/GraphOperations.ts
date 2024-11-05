@@ -323,8 +323,10 @@ class GraphOperations extends EventEmitter {
 
 
   async calcBranchingFactor(preds: { [key: string]: BasePredicate }): Promise<{ [key: string]: number }> {
+    console.log('XXXXXXXXXXXXxxxx 0', { preds })
     const bfs: [string, number][] = [];
     for (const p of Object.keys(preds)) {
+      console.log('XXXXXXXXXXXXxxxx 1', { p })
       const res = await this._runQuery(new Query()
         .select(
           COUNT('s', 'nonLeaves', 'distinct'),
@@ -335,6 +337,7 @@ class GraphOperations extends EventEmitter {
         ));
       const nrCount = res[0].get('nonRoots')?.value;
       const nlCount = res[0].get('nonLeaves')?.value;
+      console.log('XXXXXXXXXXXXxxxx 2', { p, nrCount, nlCount })
       bfs.push([p, Number(nrCount) / Number(nlCount)]);
     }
 

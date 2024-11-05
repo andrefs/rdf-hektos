@@ -1,4 +1,4 @@
-# rdf-preds-summarizer [![Node.js CI](https://github.com/andrefs/rdf-preds-summarizer/actions/workflows/test.yml/badge.svg)](https://github.com/andrefs/rdf-preds-summarizer/actions/workflows/test.yml)
+# rdf-hektos [![Node.js CI](https://github.com/andrefs/rdf-hektos/actions/workflows/test.yml/badge.svg)](https://github.com/andrefs/rdf-hektos/actions/workflows/test.yml)
 
 ## Dependencies
 
@@ -23,7 +23,7 @@ How to run for a knowledge graph KG:
 
 ## Example
 
-Run `rdf-preds-summarizer` for WordNet:
+Run `rdf-hektos` for WordNet:
 
 1. Download the `wordnet.nt` file (you can find it gzipped [here](http://wordnet-rdf.princeton.edu/static/wordnet.nt.gz)).
 1. Unzip it if you need to.
