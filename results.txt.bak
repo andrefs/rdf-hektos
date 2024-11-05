@@ -1,0 +1,41 @@
+yarn run v1.22.17
+$ time node --experimental-specifier-resolution=node --loader ts-node/esm ./src/bin/sum2csv.ts -i proc-wordnet-results.json
+Predicate	coverage	totalSeeds	subjCoverage	objCoverage	branchingFactor	normBranchingFactor
+http://wordnet-rdf.princeton.edu/ontology#mero_part	0.154697727330611	117791	9111	9111	2.127872397945391	2.127872397945391
+http://wordnet-rdf.princeton.edu/ontology#mero_member	0.20864072806920733	117791	12288	12288	2.1990265008112493	2.1990265008112493
+http://wordnet-rdf.princeton.edu/ontology#holo_member	0.20864072806920733	117791	12288	12288	0.4547466797835711	2.1990265008112493
+http://wordnet-rdf.princeton.edu/ontology#domain_topic	0.11335331222249577	117791	6676	6676	0.06937577255871447	14.414253897550111
+http://www.w3.org/ns/lemon/ontolex#canonicalForm		117791			1.3034745149828633	1.3034745149828633
+http://wordnet-rdf.princeton.edu/ontology#derivation		117791			0.9594062913722053	1.042311280416699
+http://wordnet-rdf.princeton.edu/ontology#antonym		117791			1	1
+http://wordnet-rdf.princeton.edu/ontology#entails	0.006927524174172899	117791	408	408	0.7384615384615385	1.3541666666666665
+http://wordnet-rdf.princeton.edu/ontology#domain_region	0.02276914195481828	117791	1341	1341	0.12427325581395349	8.046783625730994
+http://www.w3.org/ns/lemon/ontolex#isLexicalizedSenseOf		117791			0.5682919062873905	1.7596590571435848
+http://www.w3.org/2002/07/owl#sameAs	2	117791	117791	117791	0.9976823356623171	1.0023230483840773
+http://wordnet-rdf.princeton.edu/ontology#instance_hypernym	0.1458345714018898	117791	8589	8589	0.12219064841126324	8.183932346723044
+http://wordnet-rdf.princeton.edu/ontology#participle		117791			0.8082191780821918	1.2372881355932204
+http://wordnet-rdf.princeton.edu/ontology#causes	0.0037524089276769874	117791	221	221	0.91324200913242	1.095
+http://wordnet-rdf.princeton.edu/ontology#pertainym		117791			0.7616403246475865	1.3129556926528323
+http://www.w3.org/1999/02/22-rdf-syntax-ns#value		117791			0.9947619088045776	1.0052656732722276
+http://www.w3.org/ns/lemon/synsem#synBehavior		117791			8.570698319182117	8.570698319182117
+http://wordnet-rdf.princeton.edu/ontology#also	0.045792972298392916	117791	2697	2697	1.1506024096385543	1.1506024096385543
+http://wordnet-rdf.princeton.edu/ontology#exemplifies	0.016469849139577726	117791	970	970	0.02779864763335838	35.97297297297297
+http://wordnet-rdf.princeton.edu/ontology#partOfSpeech	2	117791	117791	117791	0.000018063192271843818	55361.200000000004
+http://wordnet-rdf.princeton.edu/ontology#mero_substance	0.01353244305592108	117791	797	797	0.8273273273273273	1.208711433756806
+http://wordnet-rdf.princeton.edu/ontology#has_domain_region	0.02276914195481828	117791	1341	1341	8.046783625730994	8.046783625730994
+http://wordnet-rdf.princeton.edu/ontology#is_exemplified_by	0.016469849139577726	117791	970	970	35.972972972972975	35.972972972972975
+http://www.w3.org/ns/lemon/ontolex#writtenRep		117791			0.7207920027789572	1.3873627844712182
+http://purl.org/dc/terms/subject	2	117791	117791	117791	0.0003820325831345349	2617.577777777778
+http://wordnet-rdf.princeton.edu/ontology#instance_hyponym	0.1458345714018898	117791	8589	8589	8.183932346723044	8.183932346723044
+http://www.w3.org/2000/01/rdf-schema#label		117791			0.0003538105395105284	2826.3714285714286
+http://wordnet-rdf.princeton.edu/ontology#hyponym	1.5140715334787886	117791	89172	89172	4.380126892141679	4.380126892141679
+http://wordnet-rdf.princeton.edu/ontology#definition	2	117791	117791	117791	1	1
+http://wordnet-rdf.princeton.edu/ontology#similar	0.39351053985448803	117791	23176	23176	1	1
+http://wordnet-rdf.princeton.edu/ontology#holo_part	0.154697727330611	117791	9111	9111	0.46995299199593443	2.127872397945391
+http://wordnet-rdf.princeton.edu/ontology#has_domain_topic	0.11335331222249577	117791	6676	6676	14.414253897550111	14.414253897550111
+http://wordnet-rdf.princeton.edu/ontology#hypernym	1.5140715334787886	117791	89172	89172	0.22830388813485863	4.380126892141679
+http://wordnet-rdf.princeton.edu/ontology#holo_substance	0.01353244305592108	117791	797	797	1.208711433756806	1.208711433756806
+http://www.w3.org/1999/02/22-rdf-syntax-ns#type	2	117791	117791	117791	0.000006197348361214515	161359.33333333334
+http://www.w3.org/ns/lemon/ontolex#sense		117791			1.3034745149828633	1.3034745149828633
+http://wordnet-rdf.princeton.edu/ontology#attribute	0.02169945072204158	117791	1278	1278	1	1
+Done in 3.75s.

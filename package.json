@@ -3,14 +3,13 @@
   "version": "0.0.1",
   "description": "Extract a property summary from an RDF graph",
   "scripts": {
-    "test": "yarn node --experimental-vm-modules $(yarn bin jest)",
+    "test": "yarn node --experimental-vm-modules $(yarn bin jest) --coverage",
     "build": "tsc",
     "postbuild": "cp package.json build/package.json && cp yarn.lock build/yarn.lock && cd build && yarn install",
     "start": "time node --experimental-specifier-resolution=node --loader ts-node/esm ./src/index.ts",
     "proc-graph": "time node --experimental-specifier-resolution=node --loader ts-node/esm ./src/bin/proc-graph.ts",
     "graph-to-csv": "time node --experimental-specifier-resolution=node --loader ts-node/esm ./src/bin/sum2csv.ts"
   },
-  "type": "module",
   "keywords": [
     "RDF",
     "graph",
@@ -53,7 +52,8 @@
     "ts-command-line-args": "2.2.1"
   },
   "devDependencies": {
-    "@types/jest": "27.4.1",
+    "@tsconfig/node16": "1.0.3",
+    "@types/jest": "28.1.1",
     "@types/node": "17.0.21",
     "jest": "27.5.1",
     "n3": "1.13.0",

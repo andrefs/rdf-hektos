@@ -13,7 +13,7 @@ export const normVar = (value: string) => value.replace(/^\?/, '');
 
 type StrOr<T> = string | T;
 
-export const V = (value: StrOr<RdfJs.Variable>): RdfJs.Variable => {
+export const V = (value: StrOr<SparqlJs.VariableTerm>): SparqlJs.VariableTerm => {
   if(typeof value === 'string'){
     const _val = normVar(value);
     let r = rdf.variable(_val);
@@ -125,12 +125,12 @@ export class Query {
     return this;
   }
 
-  select(...binds: StrOr<SparqlJs.Variable>[]){
+  select(...binds: StrOr<SparqlJs.VariableTerm>[]){
     this.obj = {
       ...this.obj,
       queryType: 'SELECT',
     };
-    const variables = this.obj.variables as SparqlJs.Variable[];
+    const variables = this.obj.variables as SparqlJs.VariableTerm[];
     variables.push(...binds.map(V));
     return this;
   }
@@ -145,7 +145,7 @@ export class Query {
     return this;
   }
 
-  groupBy(...vars: StrOr<RdfJs.Variable>[]){
+  groupBy(...vars: StrOr<SparqlJs.VariableTerm>[]){
     this.obj.group = vars.map(v => ({
       expression: V(v)
     }));

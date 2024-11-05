@@ -4,7 +4,7 @@ import EventEmitter from 'events';
 import cliProgress from 'cli-progress';
 import {Bindings, Term} from '@rdfjs/types';
 import Store from './Store';
-import { Quad_Predicate } from 'n3';
+import { Quad_Object, Quad_Predicate, Quad_Subject } from 'n3';
 const multibar = new cliProgress.MultiBar({
     stopOnComplete: true,
     clearOnComplete: false,
@@ -131,9 +131,9 @@ class GraphOperations extends EventEmitter {
   }
 
 
-  async rightRWStep(s, p, o): Promise<Term | undefined>{
+  async rightRWStep(s: Quad_Subject, p: Term, o: string): Promise<Term | undefined>{
     const q = new Query().select(o)
-                         .where(Q(s, p, V(o)), BIND(RAND(), 'sortKey'))
+                         .where(Q(s as Quad_Subject, p as Quad_Predicate, V(o)), BIND(RAND(), 'sortKey'))
                          .orderBy('sortKey')
                          .limit(1);
 
@@ -142,10 +142,10 @@ class GraphOperations extends EventEmitter {
     //if(res?.termType === 'BlankNode'){
     //  return this.rightRWStep(res, p, V(o));
     //}
-    return res;
+    return Promise.resolve(res);
   }
 
-  async leftRWStep(s, p, o): Promise<Term | undefined>{
+  async leftRWStep(s: string, p: Quad_Predicate, o: Quad_Object): Promise<Term | undefined>{
     const q = new Query().select(s)
                          .where(Q(V(s), p, o), BIND(RAND(), 'sortKey'))
                          .orderBy('sortKey')
@@ -156,10 +156,10 @@ class GraphOperations extends EventEmitter {
     //if(res?.termType === 'BlankNode'){
     //  return this.leftRWStep(V(s), p, res);
     //}
-    return res;
+    return Promise.resolve(res);
   }
 
-  isRandomWalkOver(x: Term, visitedNodes: Set<string>){
+  isRandomWalkOver(x: Term|undefined, visitedNodes: Set<string>){
     return  !x ?                         FINISHED_EARLY :
             x.termType === 'BlankNode' ? FOUND_BLANK    :
             x.termType === 'Literal' ?   FOUND_LITERAL  :
@@ -185,8 +185,8 @@ class GraphOperations extends EventEmitter {
     }
 
     while(path.length < len && !pathIsLoop(path) && (!rightFinished || !leftFinished)){
-      if(!rightFinished && !pathIsLoop(path)){
-        const x = await this.rightRWStep(rightNode, pred, 'x');
+      if(!rightFinished && !pathIsLoop(path) && rightNode?.termType === 'NamedNode'){
+        const x: Term | undefined = await this.rightRWStep(rightNode as Quad_Subject, pred as Quad_Predicate, 'x');
         const _s = this.isRandomWalkOver(x, visitedNodes);
         if(x){
           visitedNodes.add(x.value);
@@ -200,7 +200,7 @@ class GraphOperations extends EventEmitter {
       }
 
       if(!leftFinished && path.length < len && !pathIsLoop(path)){
-        const x = await this.leftRWStep('x', pred, leftNode);
+        const x: Term|undefined = await this.leftRWStep('x', pred as Quad_Predicate, leftNode as Quad_Object);
         const _s = this.isRandomWalkOver(x, visitedNodes);
         if(x){
           visitedNodes.add(x.value);
@@ -398,4 +398,7 @@ export interface GlobalMetrics {
 export type PredicateWalks = [string, number, {[key:string]: Walk}];
 
 export default GraphOperations;
+
+
+
 
