@@ -1,11 +1,11 @@
 import GraphOperations from './lib/GraphOperations';
-import {summPreds, ppMatrix, flattenObjValues} from './lib/utils'
+import { summPreds, ppMatrix, flattenObjValues } from './lib/utils'
 
 import Store from './lib/Store';
-import opts from './lib/opts'
+import opts from './lib/proc-graph-opts'
 import { N, Q, Query, V } from './lib/QueryBuilder';
 
-async function run(){
+async function run() {
   console.warn('Starting');
   console.warn('  getting predicates');
 
@@ -15,19 +15,19 @@ async function run(){
   //const endpointUrl = `${host}:${port}/repositories/${repo}`;
   const port = '3030';
   const endpointUrl = opts.endpoint || `${host}:${port}/${repo}/sparql`;
-  const store = new Store({endpointUrl})
-  const graph = new GraphOperations(store, {showProgBar: !opts.noProgressBar});
+  const store = new Store({ endpointUrl })
+  const graph = new GraphOperations(store, { showProgBar: !opts.noProgressBar });
   let preds = await graph.getPreds();
 
   const walks = await graph.calcRandomWalks(preds, 1, 10);
-  for(const [p, sampledWalks, ws] of walks){
+  for (const [p, sampledWalks, ws] of walks) {
     preds[p].sampledWalks = sampledWalks;
     preds[p].walks = ws;
   }
 
   const ratios = await graph.calcInOutRatios(preds);
-  for(const [p, r] of ratios){
-    if(preds[p]){
+  for (const [p, r] of ratios) {
+    if (preds[p]) {
       preds[p].ratio = r;
     }
   }
@@ -35,23 +35,23 @@ async function run(){
   const a = N('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
   const synsetClass = N('http://www.w3.org/ns/lemon/ontolex#LexicalConcept');
   const subq = new Query().select('s')
-                    .where(Q(V('s'), a, synsetClass));
+    .where(Q(V('s'), a, synsetClass));
   let global = await graph.globalMetrics(subq); // TODO store this somewhere
 
   const scov = await graph.calcSubjectCoverage(subq);
-  for(const [p, c] of scov){
+  for (const [p, c] of scov) {
     preds[p].subjCoverage = c;
   }
 
   const ocov = await graph.calcObjectCoverage(subq);
-  for(const [p, c] of ocov){
+  for (const [p, c] of ocov) {
     preds[p].objCoverage = c;
   }
 
   //await calcLoops(preds);
-  
+
   const bfs = await graph.calcBranchingFactor(preds);
-  for(const [p, bf] of bfs){
+  for (const [p, bf] of bfs) {
     preds[p].branchingFactor = bf;
   }
 

@@ -1,18 +1,20 @@
-import {summMetrics, ppMatrix, flattenObjValues} from '../lib/utils'
-import {promises as fs} from 'fs';
+import { summMetrics, ppMatrix, flattenObjValues } from '../lib/utils'
+import fs from 'node:fs/promises';
 
-import opts from '../lib/opts'
+import opts from '../lib/sum2csv-opts'
 
-async function run(){
+async function run() {
   console.warn('Starting');
-  const file = opts.input ;
+  const file = opts.input;
   console.warn(`Loading file ${file}`);
-  const json = await fs.readFile(file, {encoding: 'utf8'});
-  const {predicates:preds, globalMetrics} = JSON.parse(json);
+  const json = await fs.readFile(file, { encoding: 'utf8' });
+  const { predicates: preds, globalMetrics } = JSON.parse(json);
 
   const sum = summMetrics(preds, globalMetrics);
 
-  ppMatrix(flattenObjValues(sum), opts.output);
+  const output = opts.output || 'results.csv';
+
+  ppMatrix(flattenObjValues(sum), output);
 }
 
 run();
