@@ -1,4 +1,4 @@
-import GraphOperations from '../lib/GraphOperations';
+import GraphOperations, { Predicate } from '../lib/GraphOperations';
 import { promises as fs } from 'fs';
 
 import Store from '../lib/Store';
@@ -10,24 +10,22 @@ const procGraph = async (store: Store, subSelect: Query, options: CliOptions) =>
   console.warn('  getting predicates');
 
   const graph = new GraphOperations(store, { showProgBar: !options.noProgressBar });
-  let preds = await graph.getPreds();
-
+  let basePreds = await graph.getPreds();
   let gm = await graph.globalMetrics(subSelect);
 
+  const preds: { [key: string]: Predicate } = {};
+
   const scov = await graph.calcSubjectCoverage(subSelect);
-  for (const [p, c] of scov) {
-    preds[p].subjCoverage = c;
-  }
-
   const ocov = await graph.calcObjectCoverage(subSelect);
-  for (const [p, c] of ocov) {
-    preds[p].objCoverage = c;
+  const bfs = await graph.calcBranchingFactor(preds);
+
+  for (const [p, basePred] of Object.entries(basePreds)) {
+    const s = scov[p] ?? 0;
+    const o = ocov[p] ?? 0;
+    const bf = bfs[p] ?? 0;
+    preds[p] = { ...basePred, subjCoverage: s, objCoverage: o, branchingFactor: bf };
   }
 
-  const bfs = await graph.calcBranchingFactor(preds);
-  for (const [p, bf] of bfs) {
-    preds[p].branchingFactor = bf;
-  }
 
   return { globalMetrics: gm, predicates: preds };
 };
