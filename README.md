@@ -17,7 +17,7 @@ yarn install
 
 How to run for a knowledge graph KG:
 
-1. Create a folder on `fuseki/kgs/$KG`
+1. Create a folder on `fuseki/data/kgs/$KG`
 1. Inside `fuseki/data/kgs/$KG` put your N-Triples file and name it `$KG.nt`
 1. `(cd fuseki; ./run.sh)`
 1. `yarn run proc-graph` (results will be saved in `proc-$KG-results.json`)

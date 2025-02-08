@@ -19,7 +19,7 @@ LABEL maintainer="jouni.tuominen@aalto.fi"
 
 RUN apk add --update pwgen bash wget ca-certificates findutils coreutils ruby && rm -rf /var/cache/apk/*
 
-# Update below according to htps://jena.apache.org/download/
+# Update below according to https://jena.apache.org/download/
 ENV FUSEKI_SHA512 21850b9d106d40962cb8358cf5731509ed9f38be7f47a0fc7e2fa22247d89faf7b4ef3ecb58cac590b7592b3b8340b80214ab7ca67b9d1231acb68df62b8bd3d
 ENV FUSEKI_VERSION 4.4.0
 ENV JENA_SHA512 e0fdb8a87560347e1691aec28ad9ebae59a6b32cce80a02b6ce2215826195347bb550ded9ccb0a44961724c26ad801e22c04fad9a2cab4bebae6ffff73ff4d96 
@@ -57,9 +57,9 @@ RUN wget -O jena.tar.gz $MIRROR/jena/binaries/apache-jena-$JENA_VERSION.tar.gz |
     wget -O jena.tar.gz $ARCHIVE/jena/binaries/apache-jena-$JENA_VERSION.tar.gz && \
     sha512sum -c jena.tar.gz.sha512 && \
     tar zxf jena.tar.gz && \
-	mkdir -p $JENA_BIN && \
-	mv apache-jena*/lib $JENA_HOME && \
-	mv apache-jena*/bin/tdbloader2* $JENA_BIN && \
+    mkdir -p $JENA_BIN && \
+    mv apache-jena*/lib $JENA_HOME && \
+    mv apache-jena*/bin/tdbloader2* $JENA_BIN && \
     rm -rf apache-jena* && \
     rm jena.tar.gz*
 
