@@ -3,7 +3,7 @@ import Bluebird from 'bluebird';
 import EventEmitter from 'events';
 import cliProgress from 'cli-progress';
 import { Bindings, Term } from '@rdfjs/types';
-import Store from './Store.ts';
+import SparqlWebStore from './stores/SparqlWebStore.ts';
 import { Quad_Object, Quad_Predicate, Quad_Subject } from 'n3';
 const multibar = new cliProgress.MultiBar({
   stopOnComplete: true,
@@ -39,11 +39,11 @@ interface GraphOperationsOpts {
 
 
 class GraphOperations extends EventEmitter {
-  _store: Store;
+  _store: SparqlWebStore;
   _concurrency: number;
   _bars: { [key: string]: cliProgress.SingleBar } = {};
 
-  constructor(store: Store, { showProgBar, concurrency }: GraphOperationsOpts = {}) {
+  constructor(store: SparqlWebStore, { showProgBar, concurrency }: GraphOperationsOpts = {}) {
     super();
     this._concurrency = concurrency ?? 1;
     if (showProgBar) {

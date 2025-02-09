@@ -1,11 +1,13 @@
 import { QueryEngine } from '@comunica/query-sparql';
 import { EventEmitter } from 'stream';
+import { Store } from './Store.ts';
 
-class Store {
+class SparqlWebStore extends Store {
   engine: QueryEngine;
   source: string;
 
   constructor({ endpointUrl }: { endpointUrl: string }) {
+    super();
     this.engine = new QueryEngine();
     this.source = endpointUrl;
   }
@@ -33,4 +35,4 @@ class Store {
   }
 };
 
-export default Store;
+export default SparqlWebStore;

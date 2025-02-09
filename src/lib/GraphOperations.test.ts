@@ -2,9 +2,9 @@ import { describe, it, expect, vi } from 'vitest';
 import GraphOperations from './GraphOperations.ts';
 import { Readable } from 'stream';
 import rdf from '@rdfjs/data-model';
-import Store from './Store.ts';
+import SparqlWebStore from './stores/SparqlWebStore.ts';
 
-const store = new Store({ endpointUrl: '' });
+const store = new SparqlWebStore({ endpointUrl: '' });
 const mockSelect = vi.spyOn(store, 'select');
 
 

@@ -1,11 +1,11 @@
 import GraphOperations, { Predicate } from '../lib/GraphOperations.ts';
 import { promises as fs } from 'fs';
 
-import Store from '../lib/Store.ts';
+import SparqlWebStore from '../lib/stores/SparqlWebStore.ts';
 import opts, { CliOptions } from '../lib/proc-graph-opts.ts'
 import { N, Q, Query, V } from '../lib/QueryBuilder.js';
 
-const procGraph = async (store: Store, subSelect: Query, options: CliOptions) => {
+const procGraph = async (store: SparqlWebStore, subSelect: Query, options: CliOptions) => {
   console.warn('Starting');
   console.warn('  getting predicates');
 
@@ -51,7 +51,7 @@ const run = async (seedQ: Query) => {
   const repo = opts.repository || 'wordnet';
   const port = '3030';
   const endpointUrl = opts.endpoint || `${host}:${port}/${repo}/sparql`;
-  const store = new Store({ endpointUrl })
+  const store = new SparqlWebStore({ endpointUrl })
 
   const subq = new Query().select('s')
     .where(Q(V('s'), a, synsetClass));
