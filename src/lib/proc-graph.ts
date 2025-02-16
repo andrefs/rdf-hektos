@@ -39,10 +39,30 @@ export async function procGraph(store: SparqlWebStore, subSelect: Query, options
   return { globalMetrics: gm, predicates: preds };
 };
 
+/**
+ * Convert a list of resources of interest (ROIs) to a select VALUES subquery
+ * @param rois The list of ROIs
+ * @param roiVar The variable name for the ROI
+ * @returns The subquery
+ */
 export function roisToSubQ(rois: string[], roiVar: string) {
   const roiQ = new Query().select(roiVar)
     .where(
       VALUES(rois.map(r => ({ [roiVar]: N(r) })))
     );
   return roiQ;
+}
+
+/**
+ * Convert a class URI to a select subquery
+ * @param classUri The URI of the class
+ * @param classVar The variable name for the class
+ * @param a The predicate to use for the class (default: rdf:type)
+ * @returns The subquery
+ */
+export function classToSubQ(classUri: string, classVar: string, a = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type') {
+  const classNode = N(classUri);
+  const subq = new Query().select(classVar)
+    .where(Q(V(classVar), N(a), classNode));
+  return subq;
 }
