@@ -8,10 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const query_sparql_1 = require("@comunica/query-sparql");
-const Store_1 = require("./Store");
-class SparqlWebStore extends Store_1.Store {
+const Store_1 = __importDefault(require("./Store"));
+class SparqlWebStore extends Store_1.default {
     constructor({ endpointUrl }) {
         super();
         this.engine = new query_sparql_1.QueryEngine();
