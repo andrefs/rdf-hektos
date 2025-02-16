@@ -1,5 +1,5 @@
 {
-  "name": "rdf-props-summarizer",
+  "name": "rdf-hektos",
   "version": "0.1.0",
   "description": "Extract a property summary from an RDF graph",
   "scripts": {
