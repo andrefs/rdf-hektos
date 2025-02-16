@@ -53,7 +53,7 @@ function procGraph(store, subSelect, options) {
  */
 function roisToSubQ(rois, roiVar) {
     const roiQ = new QueryBuilder_1.Query().select(roiVar)
-        .where((0, QueryBuilder_1.VALUES)(rois.map(r => ({ [roiVar]: (0, QueryBuilder_1.N)(r) }))));
+        .where((0, QueryBuilder_1.VALUES)(rois.map(r => ({ [`?${roiVar}`]: (0, QueryBuilder_1.N)(r) }))));
     return roiQ;
 }
 /**
