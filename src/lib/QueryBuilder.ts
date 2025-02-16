@@ -1,7 +1,7 @@
 import rdf from '@rdfjs/data-model';
 import { Literal, Quad } from 'rdf-data-factory';
-import RdfJs from '@rdfjs/types';
-import SparqlJs, { OperationExpression } from 'sparqljs';
+import * as RdfJs from '@rdfjs/types';
+import * as SparqlJs from 'sparqljs';
 
 const generator = new SparqlJs.Generator();
 
@@ -69,7 +69,7 @@ export const COUNT = (value: StrOr<RdfJs.Variable>, as: StrOr<RdfJs.Variable>, d
   };
 };
 
-export const RAND = (): OperationExpression => ({
+export const RAND = (): SparqlJs.OperationExpression => ({
   type: 'operation',
   operator: 'rand',
   args: []
@@ -96,6 +96,11 @@ export const BIND = (exp: SparqlJs.Expression, v: string | RdfJs.Variable): Spar
   type: 'bind',
   variable: V(v),
   expression: exp
+});
+
+export const VALUES = (values: SparqlJs.ValuePatternRow[]): SparqlJs.ValuesPattern => ({
+  type: 'values',
+  values
 });
 
 export class Query {
@@ -215,6 +220,10 @@ function _where(args: WhereArg[]): [SparqlJs.Pattern[], Prefixes] {
       res.push(a);
       continue;
     }
+    if (a.type === 'values') {
+      res.push(a);
+      continue;
+    }
   }
   if (bgp.length) {
     res.push({ type: 'bgp', triples: bgp });
@@ -249,6 +258,6 @@ const isUnionPattern = (obj: any): obj is SparqlJs.UnionPattern => {
 
 
 
-type WhereArg = Query | Quad | SparqlJs.BindPattern | SparqlJs.FilterPattern | Union | WhereArg[];
-type OrderByArg = OperationExpression | StrOr<RdfJs.Variable> | [StrOr<RdfJs.Variable>, 'ASC' | 'DESC'];
+type WhereArg = Query | Quad | SparqlJs.BindPattern | SparqlJs.FilterPattern | SparqlJs.ValuesPattern | Union | WhereArg[];
+type OrderByArg = SparqlJs.OperationExpression | StrOr<RdfJs.Variable> | [StrOr<RdfJs.Variable>, 'ASC' | 'DESC'];
 

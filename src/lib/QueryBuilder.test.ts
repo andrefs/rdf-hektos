@@ -1,7 +1,7 @@
-import { B, COUNT, L, N, normVar, Query, RAND, V, Q, NOT, FILTER, BIND, IS_BLANK, UNION } from './QueryBuilder.ts';
+import { B, COUNT, L, N, normVar, Query, RAND, V, Q, NOT, FILTER, BIND, IS_BLANK, UNION, VALUES } from './QueryBuilder.ts';
 import { describe, it, expect } from 'vitest';
 import rdf from '@rdfjs/data-model';
-import sparqljs, { Parser } from 'sparqljs';
+import * as SparqlJs from 'sparqljs';
 
 describe('normVar', () => {
   it('does nothing if var is already normalized', () => {
@@ -185,6 +185,14 @@ describe('BIND', () => {
   });
 });
 
+describe('VALUES', () => {
+  it('wraps contents', () => {
+    expect(VALUES([{ '?x': N('http://example.org/a'), '?y': N('http://example.org/b') }])).toEqual({
+      type: 'values',
+      values: [{ '?x': N('http://example.org/a'), '?y': N('http://example.org/b') }]
+    })
+  })
+})
 
 describe('Query', () => {
   it('constructor', () => {
@@ -335,7 +343,7 @@ describe('Query', () => {
       .orderBy(['total', 'DESC'], RAND());
 
     expect(() => {
-      new sparqljs.Generator().stringify(q.obj);
+      new SparqlJs.Generator().stringify(q.obj);
     }).not.toThrow();
   });
 
@@ -353,7 +361,7 @@ describe('Query', () => {
                     GROUP BY ?p 
                     ORDER BY DESC(?total) RAND()`;
 
-    const parser = new Parser();
+    const parser = new SparqlJs.Parser();
     const parsed = parser.parse(query);
     expect(q.obj).toMatchObject(parsed);
   });
@@ -368,7 +376,7 @@ describe('Query', () => {
       .orderBy(['total', 'DESC'], RAND());
 
 
-    const parser = new Parser();
+    const parser = new SparqlJs.Parser();
     expect(() => parser.parse(q.toSparql())).not.toThrow();
   });
 });
@@ -456,6 +464,59 @@ describe('Query.where', () => {
     `);
 
   });
+
+  it('accepts VALUES', () => {
+    const q = new Query().select('x', 'y')
+      .where(
+        Q(V('x'), V('p'), V('o')),
+        VALUES([{ '?x': N('http://example.org/a'), '?y': N('http://example.org/b') }])
+      );
+
+    expect(q.obj.where).toMatchInlineSnapshot(`
+      [
+        {
+          "triples": [
+            Quad {
+              "graph": DefaultGraph {},
+              "object": Variable {
+                "termType": "Variable",
+                "value": "o",
+              },
+              "predicate": Variable {
+                "termType": "Variable",
+                "value": "p",
+              },
+              "subject": Variable {
+                "termType": "Variable",
+                "value": "x",
+              },
+              "termType": "Quad",
+            },
+          ],
+          "type": "bgp",
+        },
+        {
+          "type": "values",
+          "values": [
+            {
+              "?x": NamedNode {
+                "termType": "NamedNode",
+                "value": "http://example.org/a",
+              },
+              "?y": NamedNode {
+                "termType": "NamedNode",
+                "value": "http://example.org/b",
+              },
+            },
+          ],
+        },
+      ]
+    `);
+    expect(() => {
+      new SparqlJs.Generator().stringify(q.obj);
+    }).not.toThrow();
+
+  })
 
   it('accepts subqueries', () => {
     const subq = new Query()
