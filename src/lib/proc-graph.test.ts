@@ -23,13 +23,13 @@ describe('roisToSubQ', () => {
               "type": "values",
               "values": [
                 {
-                  "s": NamedNode {
+                  "?s": NamedNode {
                     "termType": "NamedNode",
                     "value": "http://example.org/a",
                   },
                 },
                 {
-                  "s": NamedNode {
+                  "?s": NamedNode {
                     "termType": "NamedNode",
                     "value": "http://example.org/b",
                   },

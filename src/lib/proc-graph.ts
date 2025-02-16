@@ -48,7 +48,7 @@ export async function procGraph(store: SparqlWebStore, subSelect: Query, options
 export function roisToSubQ(rois: string[], roiVar: string) {
   const roiQ = new Query().select(roiVar)
     .where(
-      VALUES(rois.map(r => ({ [roiVar]: N(r) })))
+      VALUES(rois.map(r => ({ [`?${roiVar}`]: N(r) })))
     );
   return roiQ;
 }
