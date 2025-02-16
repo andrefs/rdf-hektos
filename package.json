@@ -6,7 +6,7 @@
     "typecheck": "tsc -b tsconfig.json",
     "test": "vitest",
     "build": "tsc",
-    "postbuild": "cp package.json build/package.json && cp yarn.lock build/yarn.lock && cd build && yarn install",
+    "postbuild": "cp package.json build/package.json && cp package-lock.json build/package-lock.json && cd build && npm install",
     "proc-graph": "time tsx ./src/bin/proc-graph.ts",
     "graph-to-csv": "time tsx ./src/bin/sum2csv.ts"
   },
