@@ -1,6 +1,6 @@
 {
   "name": "rdf-props-summarizer",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Extract a property summary from an RDF graph",
   "scripts": {
     "typecheck": "tsc -b tsconfig.json",
