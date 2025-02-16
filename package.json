@@ -36,12 +36,12 @@
     "sparql-http-client": "3.0.1",
     "sparqljs": "3.7.3",
     "ts-command-line-args": "2.5.1",
-    "vitest": "2.1.4"
+    "vitest": "3.0.5"
   },
   "devDependencies": {
     "@types/node": "22.13.4",
     "n3": "1.23.1",
     "ts-node": "10.9.2",
-    "typescript": "5.6.3"
+    "typescript": "5.7.3"
   }
 }
