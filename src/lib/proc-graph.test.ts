@@ -1,5 +1,5 @@
 import { it, describe, expect } from 'vitest';
-import { classToSubQ, roisToSubQ } from './proc-graph';
+import { classToSubQ, roisToSubQ } from './proc-graph.ts';
 import * as SparqlJs from 'sparqljs';
 
 describe('roisToSubQ', () => {

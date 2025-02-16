@@ -1,7 +1,8 @@
 import rdf from '@rdfjs/data-model';
-import { Literal, Quad } from 'rdf-data-factory';
+import { Literal, Quad, DataFactory } from 'rdf-data-factory';
 import * as RdfJs from '@rdfjs/types';
 import * as SparqlJs from 'sparqljs';
+const factory = new DataFactory();
 
 const generator = new SparqlJs.Generator();
 
@@ -50,8 +51,7 @@ export const B = (value: StrOr<RdfJs.BlankNode>) => {
 
 export const L = (value: number | StrOr<Literal>, languageOrDataType?: string) => {
   if (typeof value === 'string' || typeof value === 'number') {
-    let l = rdf.literal(String(value), languageOrDataType);
-    l.termType = 'Literal';
+    let l = factory.literal(String(value), languageOrDataType);
     return l;
   }
   return value;

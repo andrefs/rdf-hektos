@@ -104,7 +104,7 @@ export const ppMatrix = async (data: { [key: string]: any }, outputFile: string)
 
 
 export const prettyMatrix = (data: { [key: string]: any }): string => {
-  const table = [];
+  const table: string[][] = [];
   const keys: { [key: string]: boolean } = {};
   for (const x of Object.values(data)) {
     for (const k of Object.keys(x)) {

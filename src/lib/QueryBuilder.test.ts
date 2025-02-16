@@ -2,6 +2,8 @@ import { B, COUNT, L, N, normVar, Query, RAND, V, Q, NOT, FILTER, BIND, IS_BLANK
 import { describe, it, expect } from 'vitest';
 import rdf from '@rdfjs/data-model';
 import * as SparqlJs from 'sparqljs';
+import { DataFactory } from 'rdf-data-factory';
+const factory = new DataFactory();
 
 describe('normVar', () => {
   it('does nothing if var is already normalized', () => {
@@ -66,7 +68,7 @@ describe('L', () => {
     });
   });
   it('does nothing to an @rdfjs/Literal', () => {
-    const l = rdf.literal('l');
+    const l = factory.literal('l');
     expect(L(l)).toEqual(l);
   });
 });

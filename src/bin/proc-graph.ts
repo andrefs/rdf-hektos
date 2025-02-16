@@ -7,6 +7,11 @@ import { classToSubQ, procGraph, roisToSubQ } from '../lib/proc-graph.ts';
 
 
 const run = async () => {
+  if (!opts.dataset && !opts.endpoint) {
+    console.error('No dataset or endpoint specified: at least one of --dataset or --endpoint must be provided');
+    process.exit(1);
+  }
+
   const host = 'http://localhost';
   const ds = opts.dataset;
   const port = '3030';
@@ -15,7 +20,7 @@ const run = async () => {
     console.warn(`Using endpoint: ${endpointUrl}`);
   }
 
-  let subQ: Query;
+  let subQ!: Query;
   if (!opts.rois && !opts.roisFile && !opts.roiClass) {
     console.error('No resources of interest specified: at least one of --rois, --roisFile, or --roiClass must be provided');
     process.exit(1);
@@ -29,8 +34,6 @@ const run = async () => {
   } else if (opts.roiClass) {
     subQ = classToSubQ(opts.roiClass, 's');
   }
-
-
 
   const store = new SparqlWebStore({ endpointUrl })
   const res = await procGraph(store, subQ, opts);

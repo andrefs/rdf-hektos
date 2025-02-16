@@ -179,7 +179,7 @@ class GraphOperations extends EventEmitter {
     const path = [node];
     let rightFinished = false;
     let leftFinished = false;
-    const status = [];
+    const status: string[] = [];
 
     const pathIsLoop = (path: Term[]) => path.length > 1 && path[0].value === path[path.length - 1].value;
 

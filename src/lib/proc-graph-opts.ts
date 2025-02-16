@@ -5,10 +5,10 @@ export interface CliOptions {
   input?: string,
   concurrency?: number,
   endpoint?: string,
-  dataset: string,
+  dataset?: string,
   help?: boolean,
   verbose?: boolean,
-  rois: string[],
+  rois?: string[],
   roisFile?: string,
   roiClass?: string,
 };
