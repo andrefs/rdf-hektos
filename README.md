@@ -39,11 +39,11 @@ Run `rdf-hektos` for WordNet:
 ## Use as a library
 
 ```typescript
-import {SparqlWebStore} from 'rdf-hektos';
-const rois = ['http://example.org/A', http://example.org/B];
-const subQ = roisToSubQ(rois, 's');
-const endpointUrl = 'http://localhost:3030/dataset/sparql';
-const store = new  SparqlWebStore({endpointUrl});
+import { SparqlWebStore, roisToSubQ, procGraph } from "rdf-hektos";
+const rois = ["http://example.org/A", "http://example.org/B"];
+const subQ = roisToSubQ(rois, "s");
+const endpointUrl = "http://localhost:3030/dataset/sparql";
+const store = new SparqlWebStore({ endpointUrl });
 
 const res = await procGraph(store, subQ, {});
 ```
