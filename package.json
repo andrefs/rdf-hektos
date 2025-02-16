@@ -6,10 +6,16 @@
     "typecheck": "tsc -b tsconfig.json",
     "test": "vitest",
     "build": "tsc",
-    "postbuild": "cp package.json build/package.json && cp package-lock.json build/package-lock.json && cd build && npm install",
+    "preversion": "npm run build",
+    "postbuild": "cp package.json dist/package.json && cp package-lock.json dist/package-lock.json && cd dist && npm install",
     "proc-graph": "time tsx ./src/bin/proc-graph.ts",
     "graph-to-csv": "time tsx ./src/bin/sum2csv.ts"
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "RDF",
     "graph",
