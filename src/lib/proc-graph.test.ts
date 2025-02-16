@@ -66,7 +66,10 @@ describe('classToSubQ', () => {
             {
               "triples": [
                 Quad {
-                  "graph": DefaultGraph {},
+                  "graph": DefaultGraph {
+                    "termType": "DefaultGraph",
+                    "value": "",
+                  },
                   "object": NamedNode {
                     "termType": "NamedNode",
                     "value": "http://example.org/Class",
@@ -80,6 +83,7 @@ describe('classToSubQ', () => {
                     "value": "s",
                   },
                   "termType": "Quad",
+                  "value": "",
                 },
               ],
               "type": "bgp",
@@ -113,7 +117,10 @@ describe('classToSubQ', () => {
             {
               "triples": [
                 Quad {
-                  "graph": DefaultGraph {},
+                  "graph": DefaultGraph {
+                    "termType": "DefaultGraph",
+                    "value": "",
+                  },
                   "object": NamedNode {
                     "termType": "NamedNode",
                     "value": "http://example.org/Class",
@@ -127,6 +134,7 @@ describe('classToSubQ', () => {
                     "value": "s",
                   },
                   "termType": "Quad",
+                  "value": "",
                 },
               ],
               "type": "bgp",

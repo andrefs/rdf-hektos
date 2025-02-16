@@ -74,26 +74,30 @@ describe('L', () => {
 
 describe('Q', () => {
   it('wraps arguments into an @rdfjs/Quad', () => {
-    expect(Q(V('a'), V('b'), V('c'))).toMatchInlineSnapshot(`
-Quad {
-  "graph": DefaultGraph {},
-  "object": Variable {
-    "termType": "Variable",
-    "value": "c",
-  },
-  "predicate": Variable {
-    "termType": "Variable",
-    "value": "b",
-  },
-  "subject": Variable {
-    "termType": "Variable",
-    "value": "a",
-  },
-  "termType": "Quad",
-}
-`);
+    const q = Q(V('a'), V('b'), V('c'));
+    expect(q).toMatchInlineSnapshot(`
+      Quad {
+        "graph": DefaultGraph {
+          "termType": "DefaultGraph",
+          "value": "",
+        },
+        "object": Variable {
+          "termType": "Variable",
+          "value": "c",
+        },
+        "predicate": Variable {
+          "termType": "Variable",
+          "value": "b",
+        },
+        "subject": Variable {
+          "termType": "Variable",
+          "value": "a",
+        },
+        "termType": "Quad",
+        "value": "",
+      }
+    `);
   });
-
 })
 
 describe('COUNT', () => {
@@ -395,7 +399,10 @@ describe('Query.where', () => {
             {
               "triples": [
                 Quad {
-                  "graph": DefaultGraph {},
+                  "graph": DefaultGraph {
+                    "termType": "DefaultGraph",
+                    "value": "",
+                  },
                   "object": Variable {
                     "termType": "Variable",
                     "value": "c",
@@ -409,6 +416,7 @@ describe('Query.where', () => {
                     "value": "a",
                   },
                   "termType": "Quad",
+                  "value": "",
                 },
               ],
               "type": "bgp",
@@ -431,7 +439,10 @@ describe('Query.where', () => {
         {
           "triples": [
             Quad {
-              "graph": DefaultGraph {},
+              "graph": DefaultGraph {
+                "termType": "DefaultGraph",
+                "value": "",
+              },
               "object": Variable {
                 "termType": "Variable",
                 "value": "o",
@@ -445,6 +456,7 @@ describe('Query.where', () => {
                 "value": "x",
               },
               "termType": "Quad",
+              "value": "",
             },
           ],
           "type": "bgp",
@@ -478,7 +490,10 @@ describe('Query.where', () => {
         {
           "triples": [
             Quad {
-              "graph": DefaultGraph {},
+              "graph": DefaultGraph {
+                "termType": "DefaultGraph",
+                "value": "",
+              },
               "object": Variable {
                 "termType": "Variable",
                 "value": "o",
@@ -492,6 +507,7 @@ describe('Query.where', () => {
                 "value": "x",
               },
               "termType": "Quad",
+              "value": "",
             },
           ],
           "type": "bgp",
@@ -549,7 +565,10 @@ describe('Query.where', () => {
               {
                 "triples": [
                   Quad {
-                    "graph": DefaultGraph {},
+                    "graph": DefaultGraph {
+                      "termType": "DefaultGraph",
+                      "value": "",
+                    },
                     "object": NamedNode {
                       "termType": "NamedNode",
                       "value": "ontolex:LexicalConcept",
@@ -563,6 +582,7 @@ describe('Query.where', () => {
                       "value": "s",
                     },
                     "termType": "Quad",
+                    "value": "",
                   },
                 ],
                 "type": "bgp",
@@ -589,7 +609,10 @@ describe('Query.where', () => {
         {
           "triples": [
             Quad {
-              "graph": DefaultGraph {},
+              "graph": DefaultGraph {
+                "termType": "DefaultGraph",
+                "value": "",
+              },
               "object": Variable {
                 "termType": "Variable",
                 "value": "z1",
@@ -603,6 +626,7 @@ describe('Query.where', () => {
                 "value": "x",
               },
               "termType": "Quad",
+              "value": "",
             },
           ],
           "type": "bgp",
@@ -612,7 +636,10 @@ describe('Query.where', () => {
             {
               "triples": [
                 Quad {
-                  "graph": DefaultGraph {},
+                  "graph": DefaultGraph {
+                    "termType": "DefaultGraph",
+                    "value": "",
+                  },
                   "object": Variable {
                     "termType": "Variable",
                     "value": "z2",
@@ -626,9 +653,13 @@ describe('Query.where', () => {
                     "value": "x",
                   },
                   "termType": "Quad",
+                  "value": "",
                 },
                 Quad {
-                  "graph": DefaultGraph {},
+                  "graph": DefaultGraph {
+                    "termType": "DefaultGraph",
+                    "value": "",
+                  },
                   "object": Variable {
                     "termType": "Variable",
                     "value": "z3",
@@ -642,6 +673,7 @@ describe('Query.where', () => {
                     "value": "x",
                   },
                   "termType": "Quad",
+                  "value": "",
                 },
               ],
               "type": "bgp",
@@ -669,7 +701,10 @@ describe('Query.where', () => {
             {
               "triples": [
                 Quad {
-                  "graph": DefaultGraph {},
+                  "graph": DefaultGraph {
+                    "termType": "DefaultGraph",
+                    "value": "",
+                  },
                   "object": Variable {
                     "termType": "Variable",
                     "value": "z",
@@ -683,6 +718,7 @@ describe('Query.where', () => {
                     "value": "x",
                   },
                   "termType": "Quad",
+                  "value": "",
                 },
               ],
               "type": "bgp",
@@ -690,7 +726,10 @@ describe('Query.where', () => {
             {
               "triples": [
                 Quad {
-                  "graph": DefaultGraph {},
+                  "graph": DefaultGraph {
+                    "termType": "DefaultGraph",
+                    "value": "",
+                  },
                   "object": Variable {
                     "termType": "Variable",
                     "value": "x",
@@ -704,6 +743,7 @@ describe('Query.where', () => {
                     "value": "z",
                   },
                   "termType": "Quad",
+                  "value": "",
                 },
               ],
               "type": "bgp",
@@ -711,7 +751,10 @@ describe('Query.where', () => {
             {
               "triples": [
                 Quad {
-                  "graph": DefaultGraph {},
+                  "graph": DefaultGraph {
+                    "termType": "DefaultGraph",
+                    "value": "",
+                  },
                   "object": Variable {
                     "termType": "Variable",
                     "value": "y",
@@ -725,6 +768,7 @@ describe('Query.where', () => {
                     "value": "z",
                   },
                   "termType": "Quad",
+                  "value": "",
                 },
               ],
               "type": "bgp",
