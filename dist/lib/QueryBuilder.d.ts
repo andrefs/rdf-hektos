@@ -1,0 +1,35 @@
+import { Literal, Quad } from 'rdf-data-factory';
+import * as RdfJs from '@rdfjs/types';
+import * as SparqlJs from 'sparqljs';
+export declare const UNION = "UNION";
+type Union = 'UNION';
+export declare const normVar: (value: string) => string;
+type StrOr<T> = string | T;
+type VorE = SparqlJs.VariableTerm | SparqlJs.VariableExpression;
+export declare const V: (value: StrOr<SparqlJs.VariableTerm>) => SparqlJs.VariableTerm;
+export declare const Q: (s: RdfJs.Quad_Subject, p: RdfJs.Quad_Predicate, o: RdfJs.Quad_Object, graph?: import("rdf-data-factory").DefaultGraph) => RdfJs.Quad & Quad;
+export declare const N: (value: StrOr<RdfJs.NamedNode>) => import("rdf-data-factory").NamedNode<string>;
+export declare const B: (value: StrOr<RdfJs.BlankNode>) => import("rdf-data-factory").BlankNode;
+export declare const L: (value: number | StrOr<Literal>, languageOrDataType?: string) => Literal;
+export declare const COUNT: (value: StrOr<RdfJs.Variable>, as: StrOr<RdfJs.Variable>, distinct?: boolean | string) => SparqlJs.VariableExpression;
+export declare const RAND: () => SparqlJs.OperationExpression;
+export declare const FILTER: (exp: SparqlJs.Expression) => SparqlJs.FilterPattern;
+export declare const NOT: (...args: StrOr<SparqlJs.Expression>[]) => SparqlJs.Expression;
+export declare const IS_BLANK: (...args: StrOr<RdfJs.Variable>[]) => SparqlJs.Expression;
+export declare const BIND: (exp: SparqlJs.Expression, v: string | RdfJs.Variable) => SparqlJs.BindPattern;
+export declare const VALUES: (values: SparqlJs.ValuePatternRow[]) => SparqlJs.ValuesPattern;
+export declare class Query {
+    obj: SparqlJs.SelectQuery;
+    constructor();
+    prefix(pref: string, url: string): this;
+    distinct(): this;
+    limit(lim: number): this;
+    select(...binds: StrOr<VorE>[]): this;
+    where(...args: WhereArg[]): this;
+    groupBy(...vars: StrOr<SparqlJs.VariableTerm>[]): this;
+    orderBy(...args: OrderByArg[]): this;
+    toSparql(): string;
+}
+type WhereArg = Query | Quad | SparqlJs.BindPattern | SparqlJs.FilterPattern | SparqlJs.ValuesPattern | Union | WhereArg[];
+type OrderByArg = SparqlJs.OperationExpression | StrOr<RdfJs.Variable> | [StrOr<RdfJs.Variable>, 'ASC' | 'DESC'];
+export {};
