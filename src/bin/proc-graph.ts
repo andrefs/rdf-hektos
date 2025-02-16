@@ -35,7 +35,7 @@ const run = async () => {
   const store = new SparqlWebStore({ endpointUrl })
   const res = await procGraph(store, subQ, opts);
 
-  const file = opts.output || `proc-${ds}-results.json`;
+  const file = opts.output || `${ds}-metrics.json`;
   console.warn(`Saving output to ${file}`)
   await fs.writeFile(file, JSON.stringify(res, null, 2));
 }
