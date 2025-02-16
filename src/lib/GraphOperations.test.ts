@@ -1,8 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
-import GraphOperations from './GraphOperations.ts';
+import GraphOperations from './GraphOperations';
 import { Readable } from 'stream';
-import rdf from '@rdfjs/data-model';
-import SparqlWebStore from './stores/SparqlWebStore.ts';
+import SparqlWebStore from './stores/SparqlWebStore';
+import { DataFactory } from 'rdf-data-factory';
+const factory = new DataFactory();
 
 const store = new SparqlWebStore({ endpointUrl: '' });
 const mockSelect = vi.spyOn(store, 'select');
@@ -21,14 +22,14 @@ const wrapReadable = async (conts: object[]) => Promise.resolve(Readable.from(co
 it('getPreds', async () => {
   //const s = new Readable.from([{a:1}, {b:2}, {c:3}]);
   const s = wrapReadable([{
-    'p': rdf.namedNode(`${pf}/R1`),
-    'total': rdf.literal("4", rdf.namedNode(`${xml}#integer`))
+    'p': factory.namedNode(`${pf}/R1`),
+    'total': factory.literal("4", factory.namedNode(`${xml}#integer`))
   }, {
-    'p': rdf.namedNode(`${pf}/R2`),
-    'total': rdf.literal("6", rdf.namedNode(`${xml}#integer`))
+    'p': factory.namedNode(`${pf}/R2`),
+    'total': factory.literal("6", factory.namedNode(`${xml}#integer`))
   }, {
-    'p': rdf.namedNode(`${pf}/R3`),
-    'total': rdf.literal("1", rdf.namedNode(`${xml}#integer`))
+    'p': factory.namedNode(`${pf}/R3`),
+    'total': factory.literal("1", factory.namedNode(`${xml}#integer`))
   }]);
 
   mockSelect.mockReturnValueOnce(s);
@@ -45,14 +46,14 @@ it('getPreds', async () => {
 describe('_randomWalk', () => {
   it('finds loop', async () => {
     mockSelect
-      .mockReturnValueOnce(wrapReadable([{ 'x': rdf.namedNode(`${pf}/N3`) }]))
-      .mockReturnValueOnce(wrapReadable([{ 'x': rdf.namedNode(`${pf}/N2`) }]))
-      .mockReturnValueOnce(wrapReadable([{ 'x': rdf.namedNode(`${pf}/N4`) }]))
-      .mockReturnValueOnce(wrapReadable([{ 'x': rdf.namedNode(`${pf}/N4`) }]));
+      .mockReturnValueOnce(wrapReadable([{ 'x': factory.namedNode(`${pf}/N3`) }]))
+      .mockReturnValueOnce(wrapReadable([{ 'x': factory.namedNode(`${pf}/N2`) }]))
+      .mockReturnValueOnce(wrapReadable([{ 'x': factory.namedNode(`${pf}/N4`) }]))
+      .mockReturnValueOnce(wrapReadable([{ 'x': factory.namedNode(`${pf}/N4`) }]));
 
     const r = await graph._randomWalk(
-      rdf.namedNode(`${pf}/R1`),
-      rdf.namedNode(`${pf}/N1`), 6);
+      factory.namedNode(`${pf}/R1`),
+      factory.namedNode(`${pf}/N1`), 6);
 
     expect(r).toHaveProperty('status', ['found_loop']);
     expect(r.nodes).toHaveLength(5);
@@ -65,14 +66,14 @@ describe('_randomWalk', () => {
 
   it('finishes early', async () => {
     mockSelect
-      .mockReturnValueOnce(wrapReadable([{ 'x': rdf.namedNode(`${pf}/N11`) }]))
+      .mockReturnValueOnce(wrapReadable([{ 'x': factory.namedNode(`${pf}/N11`) }]))
       .mockReturnValueOnce(wrapReadable([]))
-      .mockReturnValueOnce(wrapReadable([{ 'x': rdf.namedNode(`${pf}/N12`) }]))
+      .mockReturnValueOnce(wrapReadable([{ 'x': factory.namedNode(`${pf}/N12`) }]))
       .mockReturnValueOnce(wrapReadable([]));
 
     const r = await graph._randomWalk(
-      rdf.namedNode(`${pf}/R4`),
-      rdf.namedNode(`${pf}/N3`), 4);
+      factory.namedNode(`${pf}/R4`),
+      factory.namedNode(`${pf}/N3`), 4);
 
     expect(r).toHaveProperty('status', ['finished_early', 'finished_early']);
     expect(r.nodes).toHaveLength(3);
@@ -84,12 +85,12 @@ describe('_randomWalk', () => {
 
   it('finds literal', async () => {
     mockSelect
-      .mockReturnValueOnce(wrapReadable([{ 'x': rdf.literal('L1') }]))
+      .mockReturnValueOnce(wrapReadable([{ 'x': factory.literal('L1') }]))
       .mockReturnValueOnce(wrapReadable([]));
 
     const r = await graph._randomWalk(
-      rdf.namedNode(`${pf}/R3`),
-      rdf.namedNode(`${pf}/N7`), 4);
+      factory.namedNode(`${pf}/R3`),
+      factory.namedNode(`${pf}/N7`), 4);
 
     expect(r).toHaveProperty('status', ['found_literal', 'finished_early']);
     expect(r.nodes).toHaveLength(2);
@@ -99,11 +100,11 @@ describe('_randomWalk', () => {
 
   it('finds literal in first node', async () => {
     mockSelect
-      .mockReturnValueOnce(wrapReadable([{ 'x': rdf.namedNode(`${pf}/N7`) }]))
+      .mockReturnValueOnce(wrapReadable([{ 'x': factory.namedNode(`${pf}/N7`) }]))
 
     const r = await graph._randomWalk(
-      rdf.namedNode(`${pf}/R3`),
-      rdf.literal('L1'), 2);
+      factory.namedNode(`${pf}/R3`),
+      factory.literal('L1'), 2);
 
     expect(r).toHaveProperty('status', ['found_literal', 'finished']);
     expect(r.nodes).toHaveLength(2);
@@ -114,13 +115,13 @@ describe('_randomWalk', () => {
 
   it('finishes', async () => {
     mockSelect
-      .mockReturnValueOnce(wrapReadable([{ 'x': rdf.namedNode(`${pf}/N11`) }]))
+      .mockReturnValueOnce(wrapReadable([{ 'x': factory.namedNode(`${pf}/N11`) }]))
       .mockReturnValueOnce(wrapReadable([]))
-      .mockReturnValueOnce(wrapReadable([{ 'x': rdf.namedNode(`${pf}/N12`) }]));
+      .mockReturnValueOnce(wrapReadable([{ 'x': factory.namedNode(`${pf}/N12`) }]));
 
     const r = await graph._randomWalk(
-      rdf.namedNode(`${pf}/R4`),
-      rdf.namedNode(`${pf}/N3`), 2);
+      factory.namedNode(`${pf}/R4`),
+      factory.namedNode(`${pf}/N3`), 2);
 
     expect(r).toHaveProperty('status', ['finished']);
     expect(r.nodes).toHaveLength(2);
@@ -138,24 +139,24 @@ describe('_randomWalks', () => {
       .mockReturnValueOnce(Promise.resolve({
         status: ['finished'],
         nodes: [
-          rdf.namedNode(`${pf}/N5`),
-          rdf.namedNode(`${pf}/N8`),
-          rdf.namedNode(`${pf}/N13`)
+          factory.namedNode(`${pf}/N5`),
+          factory.namedNode(`${pf}/N8`),
+          factory.namedNode(`${pf}/N13`)
         ]
       }))
       .mockReturnValueOnce(Promise.resolve({
         status: ['finished'],
         nodes: [
-          rdf.namedNode(`${pf}/N6`),
-          rdf.namedNode(`${pf}/N9`),
-          rdf.namedNode(`${pf}/N14`)
+          factory.namedNode(`${pf}/N6`),
+          factory.namedNode(`${pf}/N9`),
+          factory.namedNode(`${pf}/N14`)
         ]
       }));
 
     const r = await graph._randomWalks(
-      rdf.namedNode(`${pf}/R2`),
-      [rdf.namedNode(`${pf}/N5`),
-      rdf.namedNode(`${pf}/N6`)], 2);
+      factory.namedNode(`${pf}/R2`),
+      [factory.namedNode(`${pf}/N5`),
+      factory.namedNode(`${pf}/N6`)], 2);
 
     expect(r).toHaveProperty([`${pf}/N5`, 'status'], ['finished']);
     expect(r).toHaveProperty([`${pf}/N6`, 'status'], ['finished']);
@@ -175,10 +176,10 @@ describe('_randSelectSubjects', () => {
   it('selects subjects', async () => {
     mockSelect
       .mockReturnValueOnce(wrapReadable([
-        { 'x': rdf.namedNode(`${pf}/N3`) },
-        { 'x': rdf.namedNode(`${pf}/N11`) }]));
+        { 'x': factory.namedNode(`${pf}/N3`) },
+        { 'x': factory.namedNode(`${pf}/N11`) }]));
 
-    const r = await graph._randSelectSubjects(rdf.namedNode(`${pf}/R4`), 2);
+    const r = await graph._randSelectSubjects(factory.namedNode(`${pf}/R4`), 2);
 
     expect(mockSelect.mock.calls.length).toBe(1);
     expect(r).toHaveLength(2);

@@ -1,6 +1,5 @@
-import { B, COUNT, L, N, normVar, Query, RAND, V, Q, NOT, FILTER, BIND, IS_BLANK, UNION, VALUES } from './QueryBuilder.ts';
+import { B, COUNT, L, N, normVar, Query, RAND, V, Q, NOT, FILTER, BIND, IS_BLANK, UNION, VALUES } from './QueryBuilder';
 import { describe, it, expect } from 'vitest';
-import rdf from '@rdfjs/data-model';
 import * as SparqlJs from 'sparqljs';
 import { DataFactory } from 'rdf-data-factory';
 const factory = new DataFactory();
@@ -23,7 +22,7 @@ describe('V', () => {
     });
   });
   it('does nothing to an @rdfjs/Variable', () => {
-    const v = rdf.variable('v');
+    const v = factory.variable('v');
     expect(V(v)).toEqual(v);
   });
 });
@@ -36,7 +35,7 @@ describe('N', () => {
     });
   });
   it('does nothing to an @rdfjs/NamedNode', () => {
-    const n = rdf.namedNode('n');
+    const n = factory.namedNode('n');
     expect(N(n)).toEqual(n);
   });
 });
@@ -49,7 +48,7 @@ describe('B', () => {
     });
   });
   it('does nothing to an @rdfjs/BlankNode', () => {
-    const b = rdf.blankNode('b');
+    const b = factory.blankNode('b');
     expect(B(b)).toEqual(b);
   });
 });

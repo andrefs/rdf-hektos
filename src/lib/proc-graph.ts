@@ -1,7 +1,7 @@
-import GraphOperations, { Predicate } from "./GraphOperations.ts";
-import { CliOptions } from "./proc-graph-opts.ts";
-import { N, Q, Query, V, VALUES } from "./QueryBuilder.ts";
-import SparqlWebStore from "./stores/SparqlWebStore.ts";
+import GraphOperations, { Predicate } from "./GraphOperations";
+import { CliOptions } from "./proc-graph-opts";
+import { N, Q, Query, V, VALUES } from "./QueryBuilder";
+import SparqlWebStore from "./stores/SparqlWebStore";
 
 /**
  * Process the graph

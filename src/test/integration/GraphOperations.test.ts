@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import GraphOperations from '../../lib/GraphOperations.ts';
-import rdf from '@rdfjs/data-model';
+import GraphOperations from '../../lib/GraphOperations';
 import N3 from 'n3';
 import { QueryEngine } from '@comunica/query-sparql';
 import { N, Q, Query, V } from '../../lib/QueryBuilder.js';
-import SparqlWebStore from '../../lib/stores/SparqlWebStore.ts';
+import { DataFactory } from 'rdf-data-factory';
+const factory = new DataFactory();
 const engine = new QueryEngine();
-const NN = rdf.namedNode;
+const NN = factory.namedNode;
 const pf = 'http://example.org/andrefs';
 const n3 = new N3.Store();
 
@@ -23,7 +23,7 @@ n3.addQuad(NN(`${pf}/N4`), NN(`${pf}/R2`), NN(`${pf}/N6`));
 
 n3.addQuad(NN(`${pf}/N5`), NN(`${pf}/R2`), NN(`${pf}/N7`));
 n3.addQuad(NN(`${pf}/N5`), NN(`${pf}/R2`), NN(`${pf}/N8`));
-n3.addQuad(NN(`${pf}/N7`), NN(`${pf}/R3`), rdf.literal("L1"));
+n3.addQuad(NN(`${pf}/N7`), NN(`${pf}/R3`), factory.literal("L1"));
 n3.addQuad(NN(`${pf}/N8`), NN(`${pf}/R2`), NN(`${pf}/N13`));
 n3.addQuad(NN(`${pf}/N13`), NN(`${pf}/R2`), NN(`${pf}/N15`));
 
@@ -57,8 +57,8 @@ describe('_randomWalk', () => {
   it('finds loop', async () => {
 
     const r = await graph._randomWalk(
-      rdf.namedNode(`${pf}/R1`),
-      rdf.namedNode(`${pf}/N1`), 6);
+      factory.namedNode(`${pf}/R1`),
+      factory.namedNode(`${pf}/N1`), 6);
 
     expect(r).toHaveProperty('status', ['found_loop']);
     expect(r.nodes).toHaveLength(5);
@@ -71,8 +71,8 @@ describe('_randomWalk', () => {
 
   it('finishes early', async () => {
     const r = await graph._randomWalk(
-      rdf.namedNode(`${pf}/R4`),
-      rdf.namedNode(`${pf}/N3`), 4);
+      factory.namedNode(`${pf}/R4`),
+      factory.namedNode(`${pf}/N3`), 4);
 
     expect(r).toHaveProperty('status', ['finished_early', 'finished_early']);
     expect(r.nodes).toHaveLength(3);
@@ -84,8 +84,8 @@ describe('_randomWalk', () => {
 
   it('finds literal', async () => {
     const r = await graph._randomWalk(
-      rdf.namedNode(`${pf}/R3`),
-      rdf.namedNode(`${pf}/N7`), 4);
+      factory.namedNode(`${pf}/R3`),
+      factory.namedNode(`${pf}/N7`), 4);
 
     expect(r).toHaveProperty('status', ['found_literal', 'finished_early']);
     expect(r.nodes).toHaveLength(2);
@@ -95,8 +95,8 @@ describe('_randomWalk', () => {
 
   it('finishes', async () => {
     const r = await graph._randomWalk(
-      rdf.namedNode(`${pf}/R4`),
-      rdf.namedNode(`${pf}/N3`), 2);
+      factory.namedNode(`${pf}/R4`),
+      factory.namedNode(`${pf}/N3`), 2);
 
     expect(r).toHaveProperty('status', ['finished']);
     expect(r.nodes).toHaveLength(2);
@@ -109,9 +109,9 @@ describe('_randomWalk', () => {
 describe('_randomWalks', () => {
   it('returns walks', async () => {
     const r = await graph._randomWalks(
-      rdf.namedNode(`${pf}/R2`),
-      [rdf.namedNode(`${pf}/N8`),
-      rdf.namedNode(`${pf}/N9`)], 3);
+      factory.namedNode(`${pf}/R2`),
+      [factory.namedNode(`${pf}/N8`),
+      factory.namedNode(`${pf}/N9`)], 3);
 
     expect(r).toHaveProperty([`${pf}/N8`, 'status'], ['finished']);
     expect(r).toHaveProperty([`${pf}/N9`, 'status'], ['finished']);
@@ -129,7 +129,7 @@ describe('_randomWalks', () => {
 
 describe('_randSelectSubjects', () => {
   it('selects subjects', async () => {
-    const r = await graph._randSelectSubjects(rdf.namedNode(`${pf}/R4`), 3);
+    const r = await graph._randSelectSubjects(factory.namedNode(`${pf}/R4`), 3);
 
     const values = r.map(x => x.value).sort();
 

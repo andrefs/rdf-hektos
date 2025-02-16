@@ -1,4 +1,3 @@
-import rdf from '@rdfjs/data-model';
 import { Literal, Quad, DataFactory } from 'rdf-data-factory';
 import * as RdfJs from '@rdfjs/types';
 import * as SparqlJs from 'sparqljs';
@@ -18,23 +17,21 @@ type VorE = SparqlJs.VariableTerm | SparqlJs.VariableExpression;
 export const V = (value: StrOr<SparqlJs.VariableTerm>): SparqlJs.VariableTerm => {
   if (typeof value === 'string') {
     const _val = normVar(value);
-    let r = rdf.variable(_val);
-    r.termType = 'Variable';
+    let r = factory.variable(_val);
     return r;
   }
   return value;
 };
 
-export const Q = (s: RdfJs.Quad_Subject, p: RdfJs.Quad_Predicate, o: RdfJs.Quad_Object, graph = rdf.defaultGraph()) => {
-  let r = rdf.quad(s, p, o, graph);
+export const Q = (s: RdfJs.Quad_Subject, p: RdfJs.Quad_Predicate, o: RdfJs.Quad_Object, graph = factory.defaultGraph()) => {
+  let r = factory.quad(s, p, o, graph);
   r.termType = 'Quad';
   return r;
 };
 
 export const N = (value: StrOr<RdfJs.NamedNode>) => {
   if (typeof value === 'string') {
-    let n = rdf.namedNode(value);
-    n.termType = 'NamedNode';
+    let n = factory.namedNode(value);
     return n;
   }
   return value;
@@ -42,8 +39,7 @@ export const N = (value: StrOr<RdfJs.NamedNode>) => {
 
 export const B = (value: StrOr<RdfJs.BlankNode>) => {
   if (typeof value === 'string') {
-    let b = rdf.blankNode(value);
-    b.termType = 'BlankNode';
+    let b = factory.blankNode(value);
     return b;
   }
   return value;

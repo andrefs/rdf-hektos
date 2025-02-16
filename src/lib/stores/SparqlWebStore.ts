@@ -1,6 +1,6 @@
 import { QueryEngine } from '@comunica/query-sparql';
 import { EventEmitter } from 'stream';
-import { Store } from './Store.ts';
+import { Store } from './Store';
 
 class SparqlWebStore extends Store {
   engine: QueryEngine;

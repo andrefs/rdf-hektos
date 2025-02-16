@@ -1,9 +1,9 @@
-import { Query, COUNT, V, RAND, Q, N, BIND, UNION, FILTER, NOT, IS_BLANK } from './QueryBuilder.ts';
+import { Query, COUNT, V, RAND, Q, N, BIND, UNION, FILTER, NOT, IS_BLANK } from './QueryBuilder';
 import Bluebird from 'bluebird';
 import EventEmitter from 'events';
 import cliProgress from 'cli-progress';
 import { Bindings, Term } from '@rdfjs/types';
-import SparqlWebStore from './stores/SparqlWebStore.ts';
+import SparqlWebStore from './stores/SparqlWebStore';
 import { Quad_Object, Quad_Predicate, Quad_Subject } from 'n3';
 const multibar = new cliProgress.MultiBar({
   stopOnComplete: true,

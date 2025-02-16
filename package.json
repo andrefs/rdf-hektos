@@ -22,7 +22,6 @@
     "GraphDB",
     "SPARQL"
   ],
-  "type": "module",
   "author": "André Santos",
   "license": "ISC",
   "dependencies": {

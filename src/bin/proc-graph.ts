@@ -1,9 +1,9 @@
 import { promises as fs } from 'fs';
 
-import SparqlWebStore from '../lib/stores/SparqlWebStore.ts';
-import opts, { CliOptions } from '../lib/proc-graph-opts.ts'
-import { N, Q, Query, V } from '../lib/QueryBuilder.js';
-import { classToSubQ, procGraph, roisToSubQ } from '../lib/proc-graph.ts';
+import SparqlWebStore from '../lib/stores/SparqlWebStore';
+import opts from '../lib/proc-graph-opts'
+import { Query } from '../lib/QueryBuilder';
+import { classToSubQ, procGraph, roisToSubQ } from '../lib/proc-graph';
 
 
 const run = async () => {
