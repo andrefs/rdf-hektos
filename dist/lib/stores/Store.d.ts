@@ -1,3 +1,3 @@
-export declare abstract class Store {
+export default abstract class Store {
     abstract select(query: string): any;
 }

@@ -17,4 +17,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./lib/proc-graph"), exports);
 __exportStar(require("./lib/utils"), exports);
 __exportStar(require("./lib/stores/SparqlWebStore"), exports);
+__exportStar(require("./lib/stores"), exports);
 //# sourceMappingURL=index.js.map
