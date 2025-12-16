@@ -71,12 +71,13 @@ declare class GraphOperations extends EventEmitter {
         [key: string]: number;
     }>;
     /**
-     * Calculate the ration of triples with each predicate where seeds are the subject vs object
+     * Calculate the ratio of triples with each predicate where seeds are the
+     * subject vs object (i.e. directionality of a predicate with respect to the seeds)
      * @param preds The predicates to calculate the ratio for
      * @param subSelect The subquery to select the seeds
      * @returns The ratio of triples with each predicate where seeds are the subject vs object
      */
-    calcPredSeedDirectionRatio(preds: {
+    calcPredSeedDir(preds: {
         [key: string]: BasePredicate;
     }, subSelect: Query): Promise<{
         [key: string]: number;

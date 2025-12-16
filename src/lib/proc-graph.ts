@@ -28,7 +28,7 @@ export async function procGraph(
   const scov = await graph.calcSubjectCoverage(subSelect);
   const ocov = await graph.calcObjectCoverage(subSelect);
   const bfs = await graph.calcBranchingFactor(basePreds);
-  const dirRatio = await graph.calcPredSeedDirectionRatio(basePreds, subSelect);
+  const dirRatio = await graph.calcPredSeedDir(basePreds, subSelect);
 
   for (const [p, basePred] of Object.entries(basePreds)) {
     const s = scov[p] ?? 0;

@@ -231,7 +231,7 @@ describe("calcPredSeedDirectionRatio", () => {
       .select("r")
       .where(VALUES([{ "?r": N(`${pf}/N3`) }, { "?r": N(`${pf}/N6`) }]));
 
-    const dirRatios = await graph.calcPredSeedDirectionRatio(preds, subq);
+    const dirRatios = await graph.calcPredSeedDir(preds, subq);
     expect(dirRatios).toStrictEqual({
       "http://example.org/andrefs/R1": 1,
       "http://example.org/andrefs/R2": 2,

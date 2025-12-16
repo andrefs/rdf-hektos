@@ -37,7 +37,7 @@ function procGraph(store, subSelect, options) {
         const scov = yield graph.calcSubjectCoverage(subSelect);
         const ocov = yield graph.calcObjectCoverage(subSelect);
         const bfs = yield graph.calcBranchingFactor(basePreds);
-        const dirRatio = yield graph.calcPredSeedDirectionRatio(basePreds, subSelect);
+        const dirRatio = yield graph.calcPredSeedDir(basePreds, subSelect);
         for (const [p, basePred] of Object.entries(basePreds)) {
             const s = (_a = scov[p]) !== null && _a !== void 0 ? _a : 0;
             const o = (_b = ocov[p]) !== null && _b !== void 0 ? _b : 0;

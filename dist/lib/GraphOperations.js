@@ -376,12 +376,13 @@ class GraphOperations extends events_1.default {
         });
     }
     /**
-     * Calculate the ration of triples with each predicate where seeds are the subject vs object
+     * Calculate the ratio of triples with each predicate where seeds are the
+     * subject vs object (i.e. directionality of a predicate with respect to the seeds)
      * @param preds The predicates to calculate the ratio for
      * @param subSelect The subquery to select the seeds
      * @returns The ratio of triples with each predicate where seeds are the subject vs object
      */
-    calcPredSeedDirectionRatio(preds, subSelect) {
+    calcPredSeedDir(preds, subSelect) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
             const drs = [];

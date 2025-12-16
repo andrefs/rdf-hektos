@@ -189,7 +189,7 @@ const graph = new GraphOperations_1.default({
         const subq = new QueryBuilder_js_1.Query()
             .select("r")
             .where((0, QueryBuilder_js_1.VALUES)([{ "?r": (0, QueryBuilder_js_1.N)(`${pf}/N3`) }, { "?r": (0, QueryBuilder_js_1.N)(`${pf}/N6`) }]));
-        const dirRatios = yield graph.calcPredSeedDirectionRatio(preds, subq);
+        const dirRatios = yield graph.calcPredSeedDir(preds, subq);
         (0, vitest_1.expect)(dirRatios).toStrictEqual({
             "http://example.org/andrefs/R1": 1,
             "http://example.org/andrefs/R2": 2,
