@@ -387,16 +387,24 @@ class GraphOperations extends events_1.default {
             var _a, _b;
             const sds = [];
             for (const p of Object.keys(preds)) {
-                const q = new QueryBuilder_1.Query()
+                const q1 = new QueryBuilder_1.Query()
                     .select((0, QueryBuilder_1.COUNT)("r", "from"))
                     .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("r"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("o")), subSelect);
-                const from = yield this._runQuery(q);
+                console.log("XXXXXXXXXXXXXx q1:", q1.toSparql());
+                const from = yield this._runQuery(q1);
                 const q2 = new QueryBuilder_1.Query()
                     .select((0, QueryBuilder_1.COUNT)("r", "to"))
                     .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("r")), subSelect);
+                console.log("XXXXXXXXXXXXXx q2:", q2.toSparql());
                 const to = yield this._runQuery(q2);
                 const fromCount = Number((_a = from[0].get("from")) === null || _a === void 0 ? void 0 : _a.value);
                 const toCount = Number((_b = to[0].get("to")) === null || _b === void 0 ? void 0 : _b.value);
+                console.log("XXXXXXXXXXXXXx", {
+                    p,
+                    fromCount,
+                    toCount,
+                    ratio: fromCount / toCount,
+                });
                 sds.push([p, fromCount / toCount]);
             }
             return Object.fromEntries(sds);
