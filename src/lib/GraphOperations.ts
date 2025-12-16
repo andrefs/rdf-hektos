@@ -467,17 +467,28 @@ class GraphOperations extends EventEmitter {
     subSelect: Query,
   ): Promise<{ [key: string]: number }> {
     const sds: [string, number][] = [];
+
     for (const p of Object.keys(preds)) {
-      const q = new Query()
+      const q1 = new Query()
         .select(COUNT("r", "from"))
         .where(Q(V("r"), N(p), V("o")), subSelect);
-      const from = await this._runQuery(q);
+      console.log("XXXXXXXXXXXXXx q1:", q1.toSparql());
+      const from = await this._runQuery(q1);
+
       const q2 = new Query()
         .select(COUNT("r", "to"))
         .where(Q(V("s"), N(p), V("r")), subSelect);
+      console.log("XXXXXXXXXXXXXx q2:", q2.toSparql());
       const to = await this._runQuery(q2);
+
       const fromCount = Number(from[0].get("from")?.value);
       const toCount = Number(to[0].get("to")?.value);
+      console.log("XXXXXXXXXXXXXx", {
+        p,
+        fromCount,
+        toCount,
+        ratio: fromCount / toCount,
+      });
       sds.push([p, fromCount / toCount]);
     }
     return Object.fromEntries(sds);
