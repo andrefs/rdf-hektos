@@ -376,16 +376,16 @@ class GraphOperations extends events_1.default {
         });
     }
     /**
-     * Calculate the ratio of triples with each predicate where seeds are the
-     * subject vs object (i.e. directionality of a predicate with respect to the seeds)
+     * Calculate the seed directionality for each predicate, i.e., the ratio of triples with each predicate where seeds are the
+     * subject vs object
      * @param preds The predicates to calculate the ratio for
      * @param subSelect The subquery to select the seeds
      * @returns The ratio of triples with each predicate where seeds are the subject vs object
      */
-    calcPredSeedDir(preds, subSelect) {
+    calcSeedDirectionality(preds, subSelect) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
-            const drs = [];
+            const sds = [];
             for (const p of Object.keys(preds)) {
                 const q = new QueryBuilder_1.Query()
                     .select((0, QueryBuilder_1.COUNT)("r", "from"))
@@ -397,9 +397,9 @@ class GraphOperations extends events_1.default {
                 const to = yield this._runQuery(q2);
                 const fromCount = Number((_a = from[0].get("from")) === null || _a === void 0 ? void 0 : _a.value);
                 const toCount = Number((_b = to[0].get("to")) === null || _b === void 0 ? void 0 : _b.value);
-                drs.push([p, fromCount / toCount]);
+                sds.push([p, fromCount / toCount]);
             }
-            return Object.fromEntries(drs);
+            return Object.fromEntries(sds);
         });
     }
     globalMetrics(seedQuery) {

@@ -454,19 +454,19 @@ class GraphOperations extends EventEmitter {
   }
 
   /**
-   * Calculate the ratio of triples with each predicate where seeds are the
-   * subject vs object (i.e. directionality of a predicate with respect to the seeds)
+   * Calculate the seed directionality for each predicate, i.e., the ratio of triples with each predicate where seeds are the
+   * subject vs object
    * @param preds The predicates to calculate the ratio for
    * @param subSelect The subquery to select the seeds
    * @returns The ratio of triples with each predicate where seeds are the subject vs object
    */
-  async calcPredSeedDir(
+  async calcSeedDirectionality(
     preds: {
       [key: string]: BasePredicate;
     },
     subSelect: Query,
   ): Promise<{ [key: string]: number }> {
-    const drs: [string, number][] = [];
+    const sds: [string, number][] = [];
     for (const p of Object.keys(preds)) {
       const q = new Query()
         .select(COUNT("r", "from"))
@@ -478,9 +478,9 @@ class GraphOperations extends EventEmitter {
       const to = await this._runQuery(q2);
       const fromCount = Number(from[0].get("from")?.value);
       const toCount = Number(to[0].get("to")?.value);
-      drs.push([p, fromCount / toCount]);
+      sds.push([p, fromCount / toCount]);
     }
-    return Object.fromEntries(drs);
+    return Object.fromEntries(sds);
   }
 
   async globalMetrics(seedQuery: Query): Promise<GlobalMetrics> {
@@ -530,7 +530,7 @@ export interface Predicate extends BasePredicate {
   branchingFactor: number;
   subjCoverage: number;
   objCoverage: number;
-  seedPredDirRatio: number;
+  seedDirectionality: number;
 }
 
 export interface Walk {

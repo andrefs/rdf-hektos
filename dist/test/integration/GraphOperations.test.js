@@ -183,14 +183,14 @@ const graph = new GraphOperations_1.default({
     `);
     }));
 });
-(0, vitest_1.describe)("calcPredSeedDirectionRatio", () => {
-    (0, vitest_1.it)("calculates direction ratios", () => __awaiter(void 0, void 0, void 0, function* () {
+(0, vitest_1.describe)("calcSeedDirectionality", () => {
+    (0, vitest_1.it)("calculates seed directionality", () => __awaiter(void 0, void 0, void 0, function* () {
         const preds = yield graph.getPreds();
         const subq = new QueryBuilder_js_1.Query()
             .select("r")
             .where((0, QueryBuilder_js_1.VALUES)([{ "?r": (0, QueryBuilder_js_1.N)(`${pf}/N3`) }, { "?r": (0, QueryBuilder_js_1.N)(`${pf}/N6`) }]));
-        const dirRatios = yield graph.calcPredSeedDir(preds, subq);
-        (0, vitest_1.expect)(dirRatios).toStrictEqual({
+        const seedDirs = yield graph.calcSeedDirectionality(preds, subq);
+        (0, vitest_1.expect)(seedDirs).toStrictEqual({
             "http://example.org/andrefs/R1": 1,
             "http://example.org/andrefs/R2": 2,
             "http://example.org/andrefs/R3": NaN,

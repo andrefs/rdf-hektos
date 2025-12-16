@@ -71,13 +71,13 @@ declare class GraphOperations extends EventEmitter {
         [key: string]: number;
     }>;
     /**
-     * Calculate the ratio of triples with each predicate where seeds are the
-     * subject vs object (i.e. directionality of a predicate with respect to the seeds)
+     * Calculate the seed directionality for each predicate, i.e., the ratio of triples with each predicate where seeds are the
+     * subject vs object
      * @param preds The predicates to calculate the ratio for
      * @param subSelect The subquery to select the seeds
      * @returns The ratio of triples with each predicate where seeds are the subject vs object
      */
-    calcPredSeedDir(preds: {
+    calcSeedDirectionality(preds: {
         [key: string]: BasePredicate;
     }, subSelect: Query): Promise<{
         [key: string]: number;
@@ -97,7 +97,7 @@ export interface Predicate extends BasePredicate {
     branchingFactor: number;
     subjCoverage: number;
     objCoverage: number;
-    seedPredDirRatio: number;
+    seedDirectionality: number;
 }
 export interface Walk {
     status: string[];
