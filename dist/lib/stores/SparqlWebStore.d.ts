@@ -1,6 +1,6 @@
-import { QueryEngine } from '@comunica/query-sparql';
-import { EventEmitter } from 'stream';
-import Store from './Store';
+import { QueryEngine } from "@comunica/query-sparql";
+import { EventEmitter } from "stream";
+import Store from "./Store";
 declare class SparqlWebStore extends Store {
     engine: QueryEngine;
     source: string;

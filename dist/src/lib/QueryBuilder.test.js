@@ -1,74 +1,90 @@
-import { B, COUNT, L, N, normVar, Query, RAND, V, Q, NOT, FILTER, BIND, IS_BLANK, UNION, VALUES } from './QueryBuilder.ts';
-import { describe, it, expect } from 'vitest';
-import rdf from '@rdfjs/data-model';
-import * as SparqlJs from 'sparqljs';
-import { DataFactory } from 'rdf-data-factory';
+import {
+    B,
+    COUNT,
+    L,
+    N,
+    normVar,
+    Query,
+    RAND,
+    V,
+    Q,
+    NOT,
+    FILTER,
+    BIND,
+    IS_BLANK,
+    UNION,
+    VALUES,
+} from "./QueryBuilder.ts";
+import { describe, it, expect } from "vitest";
+import rdf from "@rdfjs/data-model";
+import * as SparqlJs from "sparqljs";
+import { DataFactory } from "rdf-data-factory";
 const factory = new DataFactory();
-describe('normVar', () => {
-    it('does nothing if var is already normalized', () => {
-        expect(normVar('x')).toEqual('x');
+describe("normVar", () => {
+    it("does nothing if var is already normalized", () => {
+        expect(normVar("x")).toEqual("x");
     });
-    it('removes leading ?', () => {
-        expect(normVar('?x')).toEqual('x');
+    it("removes leading ?", () => {
+        expect(normVar("?x")).toEqual("x");
     });
 });
-describe('V', () => {
-    it('wraps a string into an @rdfjs/Variable', () => {
-        expect(V('x')).toMatchObject({
-            value: 'x',
-            termType: 'Variable'
+describe("V", () => {
+    it("wraps a string into an @rdfjs/Variable", () => {
+        expect(V("x")).toMatchObject({
+            value: "x",
+            termType: "Variable",
         });
     });
-    it('does nothing to an @rdfjs/Variable', () => {
-        const v = rdf.variable('v');
+    it("does nothing to an @rdfjs/Variable", () => {
+        const v = rdf.variable("v");
         expect(V(v)).toEqual(v);
     });
 });
-describe('N', () => {
-    it('wraps a string into an @rdfjs/NamedNode', () => {
-        expect(N('x')).toMatchObject({
-            value: 'x',
-            termType: 'NamedNode'
+describe("N", () => {
+    it("wraps a string into an @rdfjs/NamedNode", () => {
+        expect(N("x")).toMatchObject({
+            value: "x",
+            termType: "NamedNode",
         });
     });
-    it('does nothing to an @rdfjs/NamedNode', () => {
-        const n = rdf.namedNode('n');
+    it("does nothing to an @rdfjs/NamedNode", () => {
+        const n = rdf.namedNode("n");
         expect(N(n)).toEqual(n);
     });
 });
-describe('B', () => {
-    it('wraps a string into an @rdfjs/BlankNode', () => {
-        expect(B('x')).toMatchObject({
-            value: 'x',
-            termType: 'BlankNode'
+describe("B", () => {
+    it("wraps a string into an @rdfjs/BlankNode", () => {
+        expect(B("x")).toMatchObject({
+            value: "x",
+            termType: "BlankNode",
         });
     });
-    it('does nothing to an @rdfjs/BlankNode', () => {
-        const b = rdf.blankNode('b');
+    it("does nothing to an @rdfjs/BlankNode", () => {
+        const b = rdf.blankNode("b");
         expect(B(b)).toEqual(b);
     });
 });
-describe('L', () => {
-    it('wraps a string into an @rdfjs/Literal', () => {
-        expect(L('x')).toMatchObject({
-            value: 'x',
-            termType: 'Literal'
+describe("L", () => {
+    it("wraps a string into an @rdfjs/Literal", () => {
+        expect(L("x")).toMatchObject({
+            value: "x",
+            termType: "Literal",
         });
     });
-    it('wraps a number into an @rdfjs/Literal', () => {
+    it("wraps a number into an @rdfjs/Literal", () => {
         expect(L(3)).toMatchObject({
-            value: '3',
-            termType: 'Literal'
+            value: "3",
+            termType: "Literal",
         });
     });
-    it('does nothing to an @rdfjs/Literal', () => {
-        const l = factory.literal('l');
+    it("does nothing to an @rdfjs/Literal", () => {
+        const l = factory.literal("l");
         expect(L(l)).toEqual(l);
     });
 });
-describe('Q', () => {
-    it('wraps arguments into an @rdfjs/Quad', () => {
-        expect(Q(V('a'), V('b'), V('c'))).toMatchInlineSnapshot(`
+describe("Q", () => {
+    it("wraps arguments into an @rdfjs/Quad", () => {
+        expect(Q(V("a"), V("b"), V("c"))).toMatchInlineSnapshot(`
 Quad {
   "graph": DefaultGraph {},
   "object": Variable {
@@ -88,9 +104,9 @@ Quad {
 `);
     });
 });
-describe('COUNT', () => {
-    it('correctly wraps variable and alias', () => {
-        expect(COUNT('x', 'y')).toMatchInlineSnapshot(`
+describe("COUNT", () => {
+    it("correctly wraps variable and alias", () => {
+        expect(COUNT("x", "y")).toMatchInlineSnapshot(`
       {
         "expression": {
           "aggregation": "count",
@@ -108,31 +124,33 @@ describe('COUNT', () => {
       }
     `);
     });
-    it('accept distinct', () => {
-        expect(COUNT('x', 'y', 'distinct'))
-            .toHaveProperty('expression.distinct', true);
+    it("accept distinct", () => {
+        expect(COUNT("x", "y", "distinct")).toHaveProperty(
+            "expression.distinct",
+            true,
+        );
     });
 });
-describe('RAND', () => {
-    it('wraps contents', () => {
+describe("RAND", () => {
+    it("wraps contents", () => {
         expect(RAND()).toEqual({
-            type: 'operation',
-            operator: 'rand',
-            args: []
+            type: "operation",
+            operator: "rand",
+            args: [],
         });
     });
 });
-describe('FILTER', () => {
-    it('wraps contents', () => {
-        expect(FILTER(V('x'))).toEqual({
-            type: 'filter',
-            expression: V('x')
+describe("FILTER", () => {
+    it("wraps contents", () => {
+        expect(FILTER(V("x"))).toEqual({
+            type: "filter",
+            expression: V("x"),
         });
     });
 });
-describe('NOT', () => {
-    it('wraps contents', () => {
-        expect(NOT('x', 'y')).toMatchInlineSnapshot(`
+describe("NOT", () => {
+    it("wraps contents", () => {
+        expect(NOT("x", "y")).toMatchInlineSnapshot(`
       {
         "args": [
           Variable {
@@ -150,63 +168,69 @@ describe('NOT', () => {
     `);
     });
 });
-describe('IS_BLANK', () => {
-    it('wraps contents', () => {
-        expect(IS_BLANK('x', 'y')).toEqual({
-            type: 'operation',
-            operator: 'isblank',
-            args: ['x', 'y'].map(v => V(v))
+describe("IS_BLANK", () => {
+    it("wraps contents", () => {
+        expect(IS_BLANK("x", "y")).toEqual({
+            type: "operation",
+            operator: "isblank",
+            args: ["x", "y"].map((v) => V(v)),
         });
     });
 });
-describe('BIND', () => {
-    it('wraps contents', () => {
-        expect(BIND(RAND(), 'y')).toEqual({
-            type: 'bind',
-            variable: V('y'),
-            expression: RAND()
+describe("BIND", () => {
+    it("wraps contents", () => {
+        expect(BIND(RAND(), "y")).toEqual({
+            type: "bind",
+            variable: V("y"),
+            expression: RAND(),
         });
     });
 });
-describe('VALUES', () => {
-    it('wraps contents', () => {
-        expect(VALUES([{ '?x': N('http://example.org/a'), '?y': N('http://example.org/b') }])).toEqual({
-            type: 'values',
-            values: [{ '?x': N('http://example.org/a'), '?y': N('http://example.org/b') }]
+describe("VALUES", () => {
+    it("wraps contents", () => {
+        expect(
+            VALUES([
+                {
+                    "?x": N("http://example.org/a"),
+                    "?y": N("http://example.org/b"),
+                },
+            ]),
+        ).toEqual({
+            type: "values",
+            values: [
+                { "?x": N("http://example.org/a"), "?y": N("http://example.org/b") },
+            ],
         });
     });
 });
-describe('Query', () => {
-    it('constructor', () => {
+describe("Query", () => {
+    it("constructor", () => {
         expect(new Query()).toEqual({
             obj: {
-                type: 'query',
-                queryType: 'SELECT',
+                type: "query",
+                queryType: "SELECT",
                 prefixes: {},
-                variables: []
-            }
+                variables: [],
+            },
         });
     });
-    it('prefix', () => {
-        const q = new Query()
-            .prefix('a', 'b')
-            .prefix('c', 'd');
+    it("prefix", () => {
+        const q = new Query().prefix("a", "b").prefix("c", "d");
         expect(q.obj.prefixes).toEqual({
-            a: 'b',
-            c: 'd'
+            a: "b",
+            c: "d",
         });
     });
-    it('distinct', () => {
+    it("distinct", () => {
         const q = new Query().distinct();
-        expect(q).toHaveProperty('obj.distinct', true);
+        expect(q).toHaveProperty("obj.distinct", true);
     });
-    it('limit', () => {
+    it("limit", () => {
         const q = new Query().limit(5);
-        expect(q).toHaveProperty('obj.limit', 5);
+        expect(q).toHaveProperty("obj.limit", 5);
     });
-    it('select', () => {
-        expect(new Query().select('a', '?b', V('c'))).
-            toMatchInlineSnapshot(`
+    it("select", () => {
+        expect(new Query().select("a", "?b", V("c"))).toMatchInlineSnapshot(`
         Query {
           "obj": {
             "prefixes": {},
@@ -230,9 +254,8 @@ describe('Query', () => {
         }
       `);
     });
-    it('groupBy', () => {
-        expect(new Query().groupBy('a', '?b', V('c'))).
-            toMatchInlineSnapshot(`
+    it("groupBy", () => {
+        expect(new Query().groupBy("a", "?b", V("c"))).toMatchInlineSnapshot(`
         Query {
           "obj": {
             "group": [
@@ -263,8 +286,8 @@ describe('Query', () => {
         }
       `);
     });
-    it('orderBy', () => {
-        const q = new Query().orderBy('a', ['b', 'DESC'], ['c', 'ASC'], RAND());
+    it("orderBy", () => {
+        const q = new Query().orderBy("a", ["b", "DESC"], ["c", "ASC"], RAND());
         expect(q).toMatchInlineSnapshot(`
       Query {
         "obj": {
@@ -307,22 +330,22 @@ describe('Query', () => {
       }
     `);
     });
-    it('produces a valid Sparql.js input', () => {
+    it("produces a valid Sparql.js input", () => {
         const q = new Query()
-            .select('p', COUNT('p', 'total'))
-            .where(Q(V('s'), V('p'), V('o')))
-            .groupBy('p')
-            .orderBy(['total', 'DESC'], RAND());
+            .select("p", COUNT("p", "total"))
+            .where(Q(V("s"), V("p"), V("o")))
+            .groupBy("p")
+            .orderBy(["total", "DESC"], RAND());
         expect(() => {
             new SparqlJs.Generator().stringify(q.obj);
         }).not.toThrow();
     });
-    it('produces the same object as Sparql.js', () => {
+    it("produces the same object as Sparql.js", () => {
         const q = new Query()
-            .select('p', COUNT('p', 'total'))
-            .where(Q(V('s'), V('p'), V('o')))
-            .groupBy('p')
-            .orderBy(['total', 'DESC'], RAND());
+            .select("p", COUNT("p", "total"))
+            .where(Q(V("s"), V("p"), V("o")))
+            .groupBy("p")
+            .orderBy(["total", "DESC"], RAND());
         const query = `SELECT ?p (COUNT(?p) AS ?total)
                     WHERE { 	?s ?p ?o . } 
                     GROUP BY ?p 
@@ -331,19 +354,19 @@ describe('Query', () => {
         const parsed = parser.parse(query);
         expect(q.obj).toMatchObject(parsed);
     });
-    it('produces valid SPARQL', () => {
+    it("produces valid SPARQL", () => {
         const q = new Query()
-            .select('p', COUNT('p', 'total'))
-            .where(Q(V('s'), V('p'), V('o')))
-            .groupBy('p')
-            .orderBy(['total', 'DESC'], RAND());
+            .select("p", COUNT("p", "total"))
+            .where(Q(V("s"), V("p"), V("o")))
+            .groupBy("p")
+            .orderBy(["total", "DESC"], RAND());
         const parser = new SparqlJs.Parser();
         expect(() => parser.parse(q.toSparql())).not.toThrow();
     });
 });
-describe('Query.where', () => {
-    it('accepts quads', () => {
-        expect(new Query().where(Q(V('a'), V('b'), V('c')))).toMatchInlineSnapshot(`
+describe("Query.where", () => {
+    it("accepts quads", () => {
+        expect(new Query().where(Q(V("a"), V("b"), V("c")))).toMatchInlineSnapshot(`
       Query {
         "obj": {
           "prefixes": {},
@@ -377,9 +400,10 @@ describe('Query.where', () => {
       }
     `);
     });
-    it('accepts BIND', () => {
-        const q = new Query().select('x', 'y')
-            .where(Q(V('x'), V('p'), V('o')), BIND(RAND(), 'y'));
+    it("accepts BIND", () => {
+        const q = new Query()
+            .select("x", "y")
+            .where(Q(V("x"), V("p"), V("o")), BIND(RAND(), "y"));
         expect(q.obj.where).toMatchInlineSnapshot(`
       [
         {
@@ -418,9 +442,15 @@ describe('Query.where', () => {
       ]
     `);
     });
-    it('accepts VALUES', () => {
-        const q = new Query().select('x', 'y')
-            .where(Q(V('x'), V('p'), V('o')), VALUES([{ '?x': N('http://example.org/a'), '?y': N('http://example.org/b') }]));
+    it("accepts VALUES", () => {
+        const q = new Query()
+            .select("x", "y")
+            .where(
+                Q(V("x"), V("p"), V("o")),
+                VALUES([
+                    { "?x": N("http://example.org/a"), "?y": N("http://example.org/b") },
+                ]),
+            );
         expect(q.obj.where).toMatchInlineSnapshot(`
       [
         {
@@ -465,17 +495,25 @@ describe('Query.where', () => {
             new SparqlJs.Generator().stringify(q.obj);
         }).not.toThrow();
     });
-    it('accepts subqueries', () => {
+    it("accepts subqueries", () => {
         var _a, _b;
         const subq = new Query()
-            .prefix('rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-            .prefix('ontolex', 'http://www.w3.org/ns/lemon/ontolex')
-            .select('s')
-            .where(Q(V('s'), N('rdf:type'), N('ontolex:LexicalConcept')));
+            .prefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+            .prefix("ontolex", "http://www.w3.org/ns/lemon/ontolex")
+            .select("s")
+            .where(Q(V("s"), N("rdf:type"), N("ontolex:LexicalConcept")));
         const q = new Query()
-            .select('p', COUNT('s', 'cov', 'distinct'))
-            .where(Q(V('i'), V('p'), V('o')), subq);
-        expect((_b = (_a = q === null || q === void 0 ? void 0 : q.obj) === null || _a === void 0 ? void 0 : _a.where) === null || _b === void 0 ? void 0 : _b[1]).toMatchInlineSnapshot(`
+            .select("p", COUNT("s", "cov", "distinct"))
+            .where(Q(V("i"), V("p"), V("o")), subq);
+        expect(
+            (_b =
+                (_a = q === null || q === void 0 ? void 0 : q.obj) === null ||
+                    _a === void 0
+                    ? void 0
+                    : _a.where) === null || _b === void 0
+                ? void 0
+                : _b[1],
+        ).toMatchInlineSnapshot(`
       {
         "patterns": [
           {
@@ -517,12 +555,13 @@ describe('Query.where', () => {
       }
     `);
     });
-    it('accepts groups', () => {
-        const q = new Query().select('x')
-            .where(Q(V('x'), V('y'), V('z1')), [
-            Q(V('x'), V('y'), V('z2')),
-            Q(V('x'), V('y'), V('z3')),
-        ]);
+    it("accepts groups", () => {
+        const q = new Query()
+            .select("x")
+            .where(Q(V("x"), V("y"), V("z1")), [
+                Q(V("x"), V("y"), V("z2")),
+                Q(V("x"), V("y"), V("z3")),
+            ]);
         expect(q.obj.where).toMatchInlineSnapshot(`
       [
         {
@@ -591,9 +630,16 @@ describe('Query.where', () => {
       ]
     `);
     });
-    it('accepts unions', () => {
-        const q = new Query().select('x')
-            .where(Q(V('x'), V('y'), V('z')), UNION, Q(V('z'), V('y'), V('x')), UNION, Q(V('z'), V('x'), V('y')));
+    it("accepts unions", () => {
+        const q = new Query()
+            .select("x")
+            .where(
+                Q(V("x"), V("y"), V("z")),
+                UNION,
+                Q(V("z"), V("y"), V("x")),
+                UNION,
+                Q(V("z"), V("x"), V("y")),
+            );
         expect(q.obj.where).toMatchInlineSnapshot(`
       [
         {

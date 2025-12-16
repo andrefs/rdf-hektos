@@ -93,10 +93,11 @@ class GraphOperations extends events_1.default {
                 .select("p", (0, QueryBuilder_1.COUNT)("p", "total"))
                 .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.V)("p"), (0, QueryBuilder_1.V)("o")))
                 .groupBy("p");
+            console.log("XXXXXXXXXXXXX getPreds", q.toSparql());
             this.emit("preds-starting");
             const res = yield this._runQuery(q);
             this.emit("preds-finished", res.length);
-            return Object.fromEntries(res.map((r) => {
+            const preds = Object.fromEntries(res.map((r) => {
                 var _a, _b;
                 return [
                     (_a = r.get("p")) === null || _a === void 0 ? void 0 : _a.value,
@@ -106,6 +107,8 @@ class GraphOperations extends events_1.default {
                     },
                 ];
             }));
+            console.log("XXXXXXXXXXXXX getPreds:", { preds });
+            return preds;
         });
     }
     _randomWalks(pred, nodes, len) {
@@ -423,7 +426,7 @@ class GraphOperations extends events_1.default {
             const totalSubjects = yield this._runQuery(new QueryBuilder_1.Query()
                 .select((0, QueryBuilder_1.COUNT)("x", "total", "distinct"))
                 .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("x"), (0, QueryBuilder_1.V)("p"), (0, QueryBuilder_1.V)("o"))));
-            const totalSeeds = yield this._runQuery(seedQuery);
+            const totalSeeds = yield this._runQuery(new QueryBuilder_1.Query().select("s").where(seedQuery));
             return {
                 totalResources: Number((_a = totalResources[0].get("total")) === null || _a === void 0 ? void 0 : _a.value),
                 totalNodes: Number((_b = totalNodes[0].get("total")) === null || _b === void 0 ? void 0 : _b.value),

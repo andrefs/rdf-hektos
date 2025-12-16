@@ -1,6 +1,6 @@
 import GraphOperations, { Predicate } from "./GraphOperations";
 import { CliOptions } from "./proc-graph-opts";
-import { N, Q, Query, V, VALUES } from "./QueryBuilder";
+import { N, Q, Query, V, VALUES, WhereArg } from "./QueryBuilder";
 import SparqlWebStore from "./stores/SparqlWebStore";
 
 /**
@@ -11,7 +11,7 @@ import SparqlWebStore from "./stores/SparqlWebStore";
  */
 export async function procGraph(
   store: SparqlWebStore,
-  subSelect: Query,
+  subSelect: WhereArg,
   options: CliOptions,
 ) {
   console.warn("Starting");

@@ -1,4 +1,4 @@
-import { Query } from "./QueryBuilder";
+import { Query, WhereArg } from "./QueryBuilder";
 import EventEmitter from "events";
 import cliProgress from "cli-progress";
 import { Bindings, Term } from "@rdfjs/types";
@@ -49,7 +49,7 @@ declare class GraphOperations extends EventEmitter {
      * @param subSelect The subquery to select the seeds
      * @returns The subject coverage for each predicate
      */
-    calcSubjectCoverage(subSelect: Query): Promise<{
+    calcSubjectCoverage(subSelect: WhereArg): Promise<{
         [key: string]: number;
     }>;
     /**
@@ -57,7 +57,7 @@ declare class GraphOperations extends EventEmitter {
      * @param subSelect The subquery to select the seeds
      * @returns The object coverage for each predicate
      */
-    calcObjectCoverage(subSelect: Query): Promise<{
+    calcObjectCoverage(subSelect: WhereArg): Promise<{
         [key: string]: number;
     }>;
     /**
@@ -79,10 +79,10 @@ declare class GraphOperations extends EventEmitter {
      */
     calcSeedDirectionality(preds: {
         [key: string]: BasePredicate;
-    }, subSelect: Query): Promise<{
+    }, subSelect: WhereArg): Promise<{
         [key: string]: number;
     }>;
-    globalMetrics(seedQuery: Query): Promise<GlobalMetrics>;
+    globalMetrics(seedQuery: WhereArg): Promise<GlobalMetrics>;
 }
 export interface BasePredicate {
     count: number;

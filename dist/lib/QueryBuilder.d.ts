@@ -1,8 +1,8 @@
-import { Literal, Quad } from 'rdf-data-factory';
-import * as RdfJs from '@rdfjs/types';
-import * as SparqlJs from 'sparqljs';
+import { Literal, Quad } from "rdf-data-factory";
+import * as RdfJs from "@rdfjs/types";
+import * as SparqlJs from "sparqljs";
 export declare const UNION = "UNION";
-type Union = 'UNION';
+type Union = "UNION";
 export declare const normVar: (value: string) => string;
 type StrOr<T> = string | T;
 type VorE = SparqlJs.VariableTerm | SparqlJs.VariableExpression;
@@ -30,6 +30,6 @@ export declare class Query {
     orderBy(...args: OrderByArg[]): this;
     toSparql(): string;
 }
-type WhereArg = Query | Quad | SparqlJs.BindPattern | SparqlJs.FilterPattern | SparqlJs.ValuesPattern | Union | WhereArg[];
-type OrderByArg = SparqlJs.OperationExpression | StrOr<RdfJs.Variable> | [StrOr<RdfJs.Variable>, 'ASC' | 'DESC'];
+export type WhereArg = Query | Quad | SparqlJs.BindPattern | SparqlJs.FilterPattern | SparqlJs.ValuesPattern | Union | WhereArg[];
+type OrderByArg = SparqlJs.OperationExpression | StrOr<RdfJs.Variable> | [StrOr<RdfJs.Variable>, "ASC" | "DESC"];
 export {};

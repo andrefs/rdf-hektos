@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const query_sparql_1 = require("@comunica/query-sparql");
 const Store_1 = __importDefault(require("./Store"));
+const logger_pretty_1 = require("@comunica/logger-pretty");
 class SparqlWebStore extends Store_1.default {
     constructor({ endpointUrl }) {
         super();
@@ -23,14 +24,17 @@ class SparqlWebStore extends Store_1.default {
     select(q) {
         return __awaiter(this, void 0, void 0, function* () {
             const preQuery = Date.now();
+            console.log("XXXXXXXXXXXXXXx SparqlWebStore", { q });
             const res = yield this.engine.queryBindings(q, {
-                sources: [{
-                        type: 'sparql',
-                        value: this.source
-                    }],
-                //log: new LoggerPretty({ level: 'trace' })
+                sources: [
+                    {
+                        type: "sparql",
+                        value: this.source,
+                    },
+                ],
+                log: new logger_pretty_1.LoggerPretty({ level: "trace" }),
             });
-            res.on('end', () => {
+            res.on("end", () => {
                 const postQuery = Date.now();
                 const duration = (postQuery - preQuery) / 1000;
                 if (duration > 5) {
@@ -41,6 +45,5 @@ class SparqlWebStore extends Store_1.default {
         });
     }
 }
-;
 exports.default = SparqlWebStore;
 //# sourceMappingURL=SparqlWebStore.js.map

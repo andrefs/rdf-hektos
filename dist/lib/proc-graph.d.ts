@@ -1,6 +1,6 @@
 import { Predicate } from "./GraphOperations";
 import { CliOptions } from "./proc-graph-opts";
-import { Query } from "./QueryBuilder";
+import { Query, WhereArg } from "./QueryBuilder";
 import SparqlWebStore from "./stores/SparqlWebStore";
 /**
  * Process the graph
@@ -8,7 +8,7 @@ import SparqlWebStore from "./stores/SparqlWebStore";
  * @param subSelect The query to select the resources of interest
  * @param options The options for the process
  */
-export declare function procGraph(store: SparqlWebStore, subSelect: Query, options: CliOptions): Promise<{
+export declare function procGraph(store: SparqlWebStore, subSelect: WhereArg, options: CliOptions): Promise<{
     globalMetrics: import("./GraphOperations").GlobalMetrics;
     predicates: {
         [key: string]: Predicate;

@@ -10,6 +10,7 @@ import {
   FILTER,
   NOT,
   IS_BLANK,
+  WhereArg,
 } from "./QueryBuilder";
 import Bluebird from "bluebird";
 import EventEmitter from "events";
@@ -116,10 +117,12 @@ class GraphOperations extends EventEmitter {
       .where(Q(V("s"), V("p"), V("o")))
       .groupBy("p");
 
+    console.log("XXXXXXXXXXXXX getPreds", q.toSparql());
+
     this.emit("preds-starting");
     const res = await this._runQuery(q);
     this.emit("preds-finished", res.length);
-    return Object.fromEntries(
+    const preds = Object.fromEntries(
       res.map((r) => {
         return [
           r.get("p")?.value,
@@ -130,6 +133,8 @@ class GraphOperations extends EventEmitter {
         ];
       }),
     );
+    console.log("XXXXXXXXXXXXX getPreds:", { preds });
+    return preds;
   }
 
   async _randomWalks(
@@ -390,7 +395,7 @@ class GraphOperations extends EventEmitter {
    */
   // FIXME this needs a DISTINCT maybe (right now seems to return the same as subject coverage)?
   async calcSubjectCoverage(
-    subSelect: Query,
+    subSelect: WhereArg,
   ): Promise<{ [key: string]: number }> {
     const q = new Query()
       .select("p", COUNT("s", "cov"))
@@ -412,7 +417,7 @@ class GraphOperations extends EventEmitter {
    */
   // FIXME this needs a DISTINCT maybe (right now seems to return the same as subject coverage)?
   async calcObjectCoverage(
-    subSelect: Query,
+    subSelect: WhereArg,
   ): Promise<{ [key: string]: number }> {
     const q = new Query()
       .select("p", COUNT("o", "cov"))
@@ -464,7 +469,7 @@ class GraphOperations extends EventEmitter {
     preds: {
       [key: string]: BasePredicate;
     },
-    subSelect: Query,
+    subSelect: WhereArg,
   ): Promise<{ [key: string]: number }> {
     const sds: [string, number][] = [];
 
@@ -494,7 +499,7 @@ class GraphOperations extends EventEmitter {
     return Object.fromEntries(sds);
   }
 
-  async globalMetrics(seedQuery: Query): Promise<GlobalMetrics> {
+  async globalMetrics(seedQuery: WhereArg): Promise<GlobalMetrics> {
     const totalResQ = new Query()
       .select(COUNT("x", "total", "distinct"))
       .where(
@@ -518,7 +523,9 @@ class GraphOperations extends EventEmitter {
         .where(Q(V("x"), V("p"), V("o"))),
     );
 
-    const totalSeeds = await this._runQuery(seedQuery);
+    const totalSeeds = await this._runQuery(
+      new Query().select("s").where(seedQuery),
+    );
 
     return {
       totalResources: Number(totalResources[0].get("total")?.value),

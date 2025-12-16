@@ -38,11 +38,11 @@ const rdf_data_factory_1 = require("rdf-data-factory");
 const SparqlJs = __importStar(require("sparqljs"));
 const factory = new rdf_data_factory_1.DataFactory();
 const generator = new SparqlJs.Generator();
-exports.UNION = 'UNION';
-const normVar = (value) => value.replace(/^\?/, '');
+exports.UNION = "UNION";
+const normVar = (value) => value.replace(/^\?/, "");
 exports.normVar = normVar;
 const V = (value) => {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
         const _val = (0, exports.normVar)(value);
         let r = factory.variable(_val);
         return r;
@@ -52,12 +52,12 @@ const V = (value) => {
 exports.V = V;
 const Q = (s, p, o, graph = factory.defaultGraph()) => {
     let r = factory.quad(s, p, o, graph);
-    r.termType = 'Quad';
+    r.termType = "Quad";
     return r;
 };
 exports.Q = Q;
 const N = (value) => {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
         let n = factory.namedNode(value);
         return n;
     }
@@ -65,7 +65,7 @@ const N = (value) => {
 };
 exports.N = N;
 const B = (value) => {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
         let b = factory.blankNode(value);
         return b;
     }
@@ -73,7 +73,7 @@ const B = (value) => {
 };
 exports.B = B;
 const L = (value, languageOrDataType) => {
-    if (typeof value === 'string' || typeof value === 'number') {
+    if (typeof value === "string" || typeof value === "number") {
         let l = factory.literal(String(value), languageOrDataType);
         return l;
     }
@@ -84,56 +84,56 @@ const COUNT = (value, as, distinct) => {
     return {
         expression: {
             expression: (0, exports.V)(value),
-            type: 'aggregate',
-            aggregation: 'count',
-            distinct: !!distinct
+            type: "aggregate",
+            aggregation: "count",
+            distinct: !!distinct,
         },
-        variable: (0, exports.V)(as)
+        variable: (0, exports.V)(as),
     };
 };
 exports.COUNT = COUNT;
 const RAND = () => ({
-    type: 'operation',
-    operator: 'rand',
-    args: []
+    type: "operation",
+    operator: "rand",
+    args: [],
 });
 exports.RAND = RAND;
 const FILTER = (exp) => ({
-    type: 'filter',
-    expression: exp
+    type: "filter",
+    expression: exp,
 });
 exports.FILTER = FILTER;
 const NOT = (...args) => ({
-    type: 'operation',
-    operator: '!',
-    args: args.map(v => typeof v === 'string' ? (0, exports.V)(v) : v)
+    type: "operation",
+    operator: "!",
+    args: args.map((v) => (typeof v === "string" ? (0, exports.V)(v) : v)),
 });
 exports.NOT = NOT;
 const IS_BLANK = (...args) => ({
-    type: 'operation',
-    operator: 'isblank',
-    args: args.map(v => (0, exports.V)(v))
+    type: "operation",
+    operator: "isblank",
+    args: args.map((v) => (0, exports.V)(v)),
 });
 exports.IS_BLANK = IS_BLANK;
 const BIND = (exp, v) => ({
-    type: 'bind',
+    type: "bind",
     variable: (0, exports.V)(v),
-    expression: exp
+    expression: exp,
 });
 exports.BIND = BIND;
 const VALUES = (values) => ({
-    type: 'values',
-    values
+    type: "values",
+    values,
 });
 exports.VALUES = VALUES;
 class Query {
     constructor() {
         const vars = [];
         this.obj = {
-            type: 'query',
+            type: "query",
             prefixes: {},
-            queryType: 'SELECT',
-            variables: vars
+            queryType: "SELECT",
+            variables: vars,
         };
     }
     prefix(pref, url) {
@@ -149,9 +149,9 @@ class Query {
         return this;
     }
     select(...binds) {
-        this.obj = Object.assign(Object.assign({}, this.obj), { queryType: 'SELECT' });
+        this.obj = Object.assign(Object.assign({}, this.obj), { queryType: "SELECT" });
         const variables = this.obj.variables;
-        variables.push(...binds.map(v => typeof v === 'object' && 'expression' in v ? v : (0, exports.V)(v)));
+        variables.push(...binds.map((v) => typeof v === "object" && "expression" in v ? v : (0, exports.V)(v)));
         return this;
     }
     where(...args) {
@@ -163,18 +163,18 @@ class Query {
         return this;
     }
     groupBy(...vars) {
-        this.obj.group = vars.map(v => ({
-            expression: (0, exports.V)(v)
+        this.obj.group = vars.map((v) => ({
+            expression: (0, exports.V)(v),
         }));
         return this;
     }
     orderBy(...args) {
-        this.obj.order = args.map(a => {
+        this.obj.order = args.map((a) => {
             let v = a;
             let descending = false;
             if (Array.isArray(a)) {
                 v = a[0];
-                descending = a[1] === 'DESC';
+                descending = a[1] === "DESC";
             }
             v = (0, exports.V)(v);
             const r = { expression: v, descending };
@@ -187,9 +187,8 @@ class Query {
     }
 }
 exports.Query = Query;
-;
 const isQuad = (obj) => {
-    return obj.termType === 'Quad';
+    return obj.termType === "Quad";
 };
 function _where(args) {
     const res = [];
@@ -202,7 +201,7 @@ function _where(args) {
             continue;
         }
         if (bgp.length) {
-            res.push({ type: 'bgp', triples: bgp });
+            res.push({ type: "bgp", triples: bgp });
             bgp = [];
         }
         if (a === exports.UNION) {
@@ -214,26 +213,26 @@ function _where(args) {
                 prefixes = Object.assign(Object.assign({}, prefixes), a.obj.prefixes);
                 a.obj.prefixes = {};
             }
-            res.push({ type: 'group', patterns: [a.obj] });
+            res.push({ type: "group", patterns: [a.obj] });
             continue;
         }
         if (Array.isArray(a)) {
             const [nested] = _where(a);
-            const g = { type: 'group', patterns: nested };
+            const g = { type: "group", patterns: nested };
             res.push(g);
             continue;
         }
-        if (a.type === 'bind' || a.type === 'filter') {
+        if (a.type === "bind" || a.type === "filter") {
             res.push(a);
             continue;
         }
-        if (a.type === 'values') {
+        if (a.type === "values") {
             res.push(a);
             continue;
         }
     }
     if (bgp.length) {
-        res.push({ type: 'bgp', triples: bgp });
+        res.push({ type: "bgp", triples: bgp });
     }
     const readyRes = [];
     for (let i = 0; i < res.length; i++) {
@@ -242,12 +241,12 @@ function _where(args) {
             continue;
         }
         const first = readyRes.pop();
-        const union = isUnionPattern(first) ?
-            first :
-            { type: 'union', patterns: [first] };
+        const union = isUnionPattern(first)
+            ? first
+            : { type: "union", patterns: [first] };
         const second = res[++i];
         if (second === exports.UNION || isUnionPattern(second)) {
-            throw 'Error';
+            throw "Error";
         }
         else {
             union.patterns.push(second);
@@ -257,8 +256,7 @@ function _where(args) {
     }
     return [readyRes, prefixes];
 }
-;
 const isUnionPattern = (obj) => {
-    return obj.type === 'union';
+    return obj.type === "union";
 };
 //# sourceMappingURL=QueryBuilder.js.map
