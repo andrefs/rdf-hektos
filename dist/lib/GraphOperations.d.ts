@@ -4,6 +4,7 @@ import cliProgress from "cli-progress";
 import { Bindings, Term } from "@rdfjs/types";
 import SparqlWebStore from "./stores/SparqlWebStore";
 import { Quad_Object, Quad_Predicate, Quad_Subject } from "n3";
+import { Quad } from "rdf-data-factory";
 interface GraphOperationsOpts {
     showProgBar?: boolean;
     concurrency?: number;
@@ -46,18 +47,18 @@ declare class GraphOperations extends EventEmitter {
     }): Promise<Array<[string, number]>>;
     /**
      * Calculate the subject coverage for each predicate
-     * @param subSelect The subquery to select the seeds
+     * @param seedsPat A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
      * @returns The subject coverage for each predicate
      */
-    calcSubjectCoverage(subSelect: WhereArg): Promise<{
+    calcSubjectCoverage(seedsPat: Quad | WhereArg): Promise<{
         [key: string]: number;
     }>;
     /**
      * Calculate the object coverage for each predicate
-     * @param subSelect The subquery to select the seeds
+     * @param seedsPat A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
      * @returns The object coverage for each predicate
      */
-    calcObjectCoverage(subSelect: WhereArg): Promise<{
+    calcObjectCoverage(seedsPat: Quad | WhereArg): Promise<{
         [key: string]: number;
     }>;
     /**
@@ -74,12 +75,12 @@ declare class GraphOperations extends EventEmitter {
      * Calculate the seed directionality for each predicate, i.e., the ratio of triples with each predicate where seeds are the
      * subject vs object
      * @param preds The predicates to calculate the ratio for
-     * @param subSelect The subquery to select the seeds
+     * @param seedsPat A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
      * @returns The ratio of triples with each predicate where seeds are the subject vs object
      */
     calcSeedDirectionality(preds: {
         [key: string]: BasePredicate;
-    }, subSelect: WhereArg): Promise<{
+    }, seedsPat: Quad | WhereArg): Promise<{
         [key: string]: number;
     }>;
     globalMetrics(seedQuery: WhereArg): Promise<GlobalMetrics>;

@@ -18,6 +18,7 @@ import cliProgress from "cli-progress";
 import { Bindings, Term } from "@rdfjs/types";
 import SparqlWebStore from "./stores/SparqlWebStore";
 import { Quad_Object, Quad_Predicate, Quad_Subject } from "n3";
+import { Quad } from "rdf-data-factory";
 const multibar = new cliProgress.MultiBar(
   {
     stopOnComplete: true,
@@ -390,16 +391,16 @@ class GraphOperations extends EventEmitter {
 
   /**
    * Calculate the subject coverage for each predicate
-   * @param subSelect The subquery to select the seeds
+   * @param seedsPat A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
    * @returns The subject coverage for each predicate
    */
   // FIXME this needs a DISTINCT maybe (right now seems to return the same as subject coverage)?
   async calcSubjectCoverage(
-    subSelect: WhereArg,
+    seedsPat: Quad | WhereArg,
   ): Promise<{ [key: string]: number }> {
     const q = new Query()
       .select("p", COUNT("s", "cov"))
-      .where(Q(V("s"), V("p"), V("o")), subSelect)
+      .where(Q(V("seed"), V("p"), V("o")), seedsPat)
       .groupBy("p");
     const cov = await this._runQuery(q);
     return Object.fromEntries(
@@ -412,16 +413,16 @@ class GraphOperations extends EventEmitter {
 
   /**
    * Calculate the object coverage for each predicate
-   * @param subSelect The subquery to select the seeds
+   * @param seedsPat A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
    * @returns The object coverage for each predicate
    */
   // FIXME this needs a DISTINCT maybe (right now seems to return the same as subject coverage)?
   async calcObjectCoverage(
-    subSelect: WhereArg,
+    seedsPat: Quad | WhereArg,
   ): Promise<{ [key: string]: number }> {
     const q = new Query()
       .select("p", COUNT("o", "cov"))
-      .where(Q(V("s"), V("p"), V("o")), subSelect)
+      .where(Q(V("seed"), V("p"), V("o")), seedsPat)
       .groupBy("p");
     const cov = await this._runQuery(q);
     return Object.fromEntries(
@@ -462,27 +463,27 @@ class GraphOperations extends EventEmitter {
    * Calculate the seed directionality for each predicate, i.e., the ratio of triples with each predicate where seeds are the
    * subject vs object
    * @param preds The predicates to calculate the ratio for
-   * @param subSelect The subquery to select the seeds
+   * @param seedsPat A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
    * @returns The ratio of triples with each predicate where seeds are the subject vs object
    */
   async calcSeedDirectionality(
     preds: {
       [key: string]: BasePredicate;
     },
-    subSelect: WhereArg,
+    seedsPat: Quad | WhereArg,
   ): Promise<{ [key: string]: number }> {
     const sds: [string, number][] = [];
 
     for (const p of Object.keys(preds)) {
       const q1 = new Query()
-        .select(COUNT("r", "from"))
-        .where(Q(V("r"), N(p), V("o")), subSelect);
+        .select(COUNT("seed", "from"))
+        .where(Q(V("seed"), N(p), V("o")), seedsPat);
       console.log("XXXXXXXXXXXXXx q1:", q1.toSparql());
       const from = await this._runQuery(q1);
 
       const q2 = new Query()
-        .select(COUNT("r", "to"))
-        .where(Q(V("s"), N(p), V("r")), subSelect);
+        .select(COUNT("seed", "to"))
+        .where(Q(V("s"), N(p), V("seed")), seedsPat);
       console.log("XXXXXXXXXXXXXx q2:", q2.toSparql());
       const to = await this._runQuery(q2);
 

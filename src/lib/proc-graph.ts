@@ -61,6 +61,15 @@ export function roisToSubQ(rois: string[], roiVar: string) {
 }
 
 /**
+ * Convert a list of resources of interest (ROIs) to a VALUES clause
+ * @param rois The list of ROIs
+ * @returns The VALUES clause
+ */
+export function roisToValues(rois: string[], roiVar = "seed") {
+  return VALUES(rois.map((r) => ({ [`?${roiVar}`]: N(r) })));
+}
+
+/**
  * Convert a class URI to a select subquery
  * @param classUri The URI of the class
  * @param classVar The variable name for the class

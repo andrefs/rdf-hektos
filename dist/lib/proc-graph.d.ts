@@ -22,6 +22,12 @@ export declare function procGraph(store: SparqlWebStore, subSelect: WhereArg, op
  */
 export declare function roisToSubQ(rois: string[], roiVar: string): Query;
 /**
+ * Convert a list of resources of interest (ROIs) to a VALUES clause
+ * @param rois The list of ROIs
+ * @returns The VALUES clause
+ */
+export declare function roisToValues(rois: string[], roiVar?: string): import("sparqljs").ValuesPattern;
+/**
  * Convert a class URI to a select subquery
  * @param classUri The URI of the class
  * @param classVar The variable name for the class

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.procGraph = procGraph;
 exports.roisToSubQ = roisToSubQ;
+exports.roisToValues = roisToValues;
 exports.classToSubQ = classToSubQ;
 const GraphOperations_1 = __importDefault(require("./GraphOperations"));
 const QueryBuilder_1 = require("./QueryBuilder");
@@ -59,6 +60,14 @@ function roisToSubQ(rois, roiVar) {
         .select(roiVar)
         .where((0, QueryBuilder_1.VALUES)(rois.map((r) => ({ [`?${roiVar}`]: (0, QueryBuilder_1.N)(r) }))));
     return roiQ;
+}
+/**
+ * Convert a list of resources of interest (ROIs) to a VALUES clause
+ * @param rois The list of ROIs
+ * @returns The VALUES clause
+ */
+function roisToValues(rois, roiVar = "seed") {
+    return (0, QueryBuilder_1.VALUES)(rois.map((r) => ({ [`?${roiVar}`]: (0, QueryBuilder_1.N)(r) })));
 }
 /**
  * Convert a class URI to a select subquery

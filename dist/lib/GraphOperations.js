@@ -316,15 +316,15 @@ class GraphOperations extends events_1.default {
     }
     /**
      * Calculate the subject coverage for each predicate
-     * @param subSelect The subquery to select the seeds
+     * @param seedsPat A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
      * @returns The subject coverage for each predicate
      */
     // FIXME this needs a DISTINCT maybe (right now seems to return the same as subject coverage)?
-    calcSubjectCoverage(subSelect) {
+    calcSubjectCoverage(seedsPat) {
         return __awaiter(this, void 0, void 0, function* () {
             const q = new QueryBuilder_1.Query()
                 .select("p", (0, QueryBuilder_1.COUNT)("s", "cov"))
-                .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.V)("p"), (0, QueryBuilder_1.V)("o")), subSelect)
+                .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("seed"), (0, QueryBuilder_1.V)("p"), (0, QueryBuilder_1.V)("o")), seedsPat)
                 .groupBy("p");
             const cov = yield this._runQuery(q);
             return Object.fromEntries(cov.map((c) => {
@@ -338,15 +338,15 @@ class GraphOperations extends events_1.default {
     }
     /**
      * Calculate the object coverage for each predicate
-     * @param subSelect The subquery to select the seeds
+     * @param seedsPat A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
      * @returns The object coverage for each predicate
      */
     // FIXME this needs a DISTINCT maybe (right now seems to return the same as subject coverage)?
-    calcObjectCoverage(subSelect) {
+    calcObjectCoverage(seedsPat) {
         return __awaiter(this, void 0, void 0, function* () {
             const q = new QueryBuilder_1.Query()
                 .select("p", (0, QueryBuilder_1.COUNT)("o", "cov"))
-                .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.V)("p"), (0, QueryBuilder_1.V)("o")), subSelect)
+                .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("seed"), (0, QueryBuilder_1.V)("p"), (0, QueryBuilder_1.V)("o")), seedsPat)
                 .groupBy("p");
             const cov = yield this._runQuery(q);
             return Object.fromEntries(cov.map((c) => {
@@ -382,22 +382,22 @@ class GraphOperations extends events_1.default {
      * Calculate the seed directionality for each predicate, i.e., the ratio of triples with each predicate where seeds are the
      * subject vs object
      * @param preds The predicates to calculate the ratio for
-     * @param subSelect The subquery to select the seeds
+     * @param seedsPat A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
      * @returns The ratio of triples with each predicate where seeds are the subject vs object
      */
-    calcSeedDirectionality(preds, subSelect) {
+    calcSeedDirectionality(preds, seedsPat) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
             const sds = [];
             for (const p of Object.keys(preds)) {
                 const q1 = new QueryBuilder_1.Query()
-                    .select((0, QueryBuilder_1.COUNT)("r", "from"))
-                    .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("r"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("o")), subSelect);
+                    .select((0, QueryBuilder_1.COUNT)("seed", "from"))
+                    .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("seed"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("o")), seedsPat);
                 console.log("XXXXXXXXXXXXXx q1:", q1.toSparql());
                 const from = yield this._runQuery(q1);
                 const q2 = new QueryBuilder_1.Query()
-                    .select((0, QueryBuilder_1.COUNT)("r", "to"))
-                    .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("r")), subSelect);
+                    .select((0, QueryBuilder_1.COUNT)("seed", "to"))
+                    .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("seed")), seedsPat);
                 console.log("XXXXXXXXXXXXXx q2:", q2.toSparql());
                 const to = yield this._runQuery(q2);
                 const fromCount = Number((_a = from[0].get("from")) === null || _a === void 0 ? void 0 : _a.value);
