@@ -9,11 +9,17 @@ import SparqlWebStore from "./stores/SparqlWebStore";
  * @param subSelect The query to select the resources of interest
  * @param options The options for the process
  */
-export async function procGraph(store: SparqlWebStore, subSelect: Query, options: CliOptions) {
-  console.warn('Starting');
-  console.warn('  getting predicates');
+export async function procGraph(
+  store: SparqlWebStore,
+  subSelect: Query,
+  options: CliOptions,
+) {
+  console.warn("Starting");
+  console.warn("  getting predicates");
 
-  const graph = new GraphOperations(store, { showProgBar: !options.noProgressBar });
+  const graph = new GraphOperations(store, {
+    showProgBar: !options.noProgressBar,
+  });
   let basePreds = await graph.getPreds();
   let gm = await graph.globalMetrics(subSelect);
 
@@ -22,22 +28,24 @@ export async function procGraph(store: SparqlWebStore, subSelect: Query, options
   const scov = await graph.calcSubjectCoverage(subSelect);
   const ocov = await graph.calcObjectCoverage(subSelect);
   const bfs = await graph.calcBranchingFactor(basePreds);
+  const dirRatio = await graph.calcPredSeedDirectionRatio(basePreds, subSelect);
 
   for (const [p, basePred] of Object.entries(basePreds)) {
     const s = scov[p] ?? 0;
     const o = ocov[p] ?? 0;
     const bf = bfs[p] ?? 0;
+    const dr = dirRatio[p] ?? 0;
     preds[p] = {
       ...basePred,
       subjCoverage: s,
       objCoverage: o,
-      branchingFactor: bf
+      branchingFactor: bf,
+      seedPredDirRatio: dr,
     };
   }
 
-
   return { globalMetrics: gm, predicates: preds };
-};
+}
 
 /**
  * Convert a list of resources of interest (ROIs) to a select VALUES subquery
@@ -46,10 +54,9 @@ export async function procGraph(store: SparqlWebStore, subSelect: Query, options
  * @returns The subquery
  */
 export function roisToSubQ(rois: string[], roiVar: string) {
-  const roiQ = new Query().select(roiVar)
-    .where(
-      VALUES(rois.map(r => ({ [`?${roiVar}`]: N(r) })))
-    );
+  const roiQ = new Query()
+    .select(roiVar)
+    .where(VALUES(rois.map((r) => ({ [`?${roiVar}`]: N(r) }))));
   return roiQ;
 }
 
@@ -60,9 +67,14 @@ export function roisToSubQ(rois: string[], roiVar: string) {
  * @param a The predicate to use for the class (default: rdf:type)
  * @returns The subquery
  */
-export function classToSubQ(classUri: string, classVar: string, a = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type') {
+export function classToSubQ(
+  classUri: string,
+  classVar: string,
+  a = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+) {
   const classNode = N(classUri);
-  const subq = new Query().select(classVar)
+  const subq = new Query()
+    .select(classVar)
     .where(Q(V(classVar), N(a), classNode));
   return subq;
 }
