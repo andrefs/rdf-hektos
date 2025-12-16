@@ -1,9 +1,9 @@
-import { Query } from './QueryBuilder';
-import EventEmitter from 'events';
-import cliProgress from 'cli-progress';
-import { Bindings, Term } from '@rdfjs/types';
-import SparqlWebStore from './stores/SparqlWebStore';
-import { Quad_Object, Quad_Predicate, Quad_Subject } from 'n3';
+import { Query } from "./QueryBuilder";
+import EventEmitter from "events";
+import cliProgress from "cli-progress";
+import { Bindings, Term } from "@rdfjs/types";
+import SparqlWebStore from "./stores/SparqlWebStore";
+import { Quad_Object, Quad_Predicate, Quad_Subject } from "n3";
 interface GraphOperationsOpts {
     showProgBar?: boolean;
     concurrency?: number;
@@ -44,15 +44,41 @@ declare class GraphOperations extends EventEmitter {
     calcLoops(preds: {
         [key: string]: Predicate;
     }): Promise<Array<[string, number]>>;
+    /**
+     * Calculate the subject coverage for each predicate
+     * @param subSelect The subquery to select the seeds
+     * @returns The subject coverage for each predicate
+     */
     calcSubjectCoverage(subSelect: Query): Promise<{
         [key: string]: number;
     }>;
+    /**
+     * Calculate the object coverage for each predicate
+     * @param subSelect The subquery to select the seeds
+     * @returns The object coverage for each predicate
+     */
     calcObjectCoverage(subSelect: Query): Promise<{
         [key: string]: number;
     }>;
+    /**
+     * Calculate the branching factor for each predicate
+     * @param preds The predicates to calculate the branching factor for
+     * @returns The branching factor for each predicate
+     */
     calcBranchingFactor(preds: {
         [key: string]: BasePredicate;
     }): Promise<{
+        [key: string]: number;
+    }>;
+    /**
+     * Calculate the ration of triples with each predicate where seeds are the subject vs object
+     * @param preds The predicates to calculate the ratio for
+     * @param subSelect The subquery to select the seeds
+     * @returns The ratio of triples with each predicate where seeds are the subject vs object
+     */
+    calcPredSeedDirectionRatio(preds: {
+        [key: string]: BasePredicate;
+    }, subSelect: Query): Promise<{
         [key: string]: number;
     }>;
     globalMetrics(seedQuery: Query): Promise<GlobalMetrics>;
@@ -70,6 +96,7 @@ export interface Predicate extends BasePredicate {
     branchingFactor: number;
     subjCoverage: number;
     objCoverage: number;
+    seedPredDirRatio: number;
 }
 export interface Walk {
     status: string[];

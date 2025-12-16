@@ -25,26 +25,29 @@ const QueryBuilder_1 = require("./QueryBuilder");
  */
 function procGraph(store, subSelect, options) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a, _b, _c;
-        console.warn('Starting');
-        console.warn('  getting predicates');
-        const graph = new GraphOperations_1.default(store, { showProgBar: !options.noProgressBar });
+        var _a, _b, _c, _d;
+        console.warn("Starting");
+        console.warn("  getting predicates");
+        const graph = new GraphOperations_1.default(store, {
+            showProgBar: !options.noProgressBar,
+        });
         let basePreds = yield graph.getPreds();
         let gm = yield graph.globalMetrics(subSelect);
         const preds = {};
         const scov = yield graph.calcSubjectCoverage(subSelect);
         const ocov = yield graph.calcObjectCoverage(subSelect);
         const bfs = yield graph.calcBranchingFactor(basePreds);
+        const dirRatio = yield graph.calcPredSeedDirectionRatio(basePreds, subSelect);
         for (const [p, basePred] of Object.entries(basePreds)) {
             const s = (_a = scov[p]) !== null && _a !== void 0 ? _a : 0;
             const o = (_b = ocov[p]) !== null && _b !== void 0 ? _b : 0;
             const bf = (_c = bfs[p]) !== null && _c !== void 0 ? _c : 0;
-            preds[p] = Object.assign(Object.assign({}, basePred), { subjCoverage: s, objCoverage: o, branchingFactor: bf });
+            const dr = (_d = dirRatio[p]) !== null && _d !== void 0 ? _d : 0;
+            preds[p] = Object.assign(Object.assign({}, basePred), { subjCoverage: s, objCoverage: o, branchingFactor: bf, seedPredDirRatio: dr });
         }
         return { globalMetrics: gm, predicates: preds };
     });
 }
-;
 /**
  * Convert a list of resources of interest (ROIs) to a select VALUES subquery
  * @param rois The list of ROIs
@@ -52,8 +55,9 @@ function procGraph(store, subSelect, options) {
  * @returns The subquery
  */
 function roisToSubQ(rois, roiVar) {
-    const roiQ = new QueryBuilder_1.Query().select(roiVar)
-        .where((0, QueryBuilder_1.VALUES)(rois.map(r => ({ [`?${roiVar}`]: (0, QueryBuilder_1.N)(r) }))));
+    const roiQ = new QueryBuilder_1.Query()
+        .select(roiVar)
+        .where((0, QueryBuilder_1.VALUES)(rois.map((r) => ({ [`?${roiVar}`]: (0, QueryBuilder_1.N)(r) }))));
     return roiQ;
 }
 /**
@@ -63,9 +67,10 @@ function roisToSubQ(rois, roiVar) {
  * @param a The predicate to use for the class (default: rdf:type)
  * @returns The subquery
  */
-function classToSubQ(classUri, classVar, a = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type') {
+function classToSubQ(classUri, classVar, a = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type") {
     const classNode = (0, QueryBuilder_1.N)(classUri);
-    const subq = new QueryBuilder_1.Query().select(classVar)
+    const subq = new QueryBuilder_1.Query()
+        .select(classVar)
         .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)(classVar), (0, QueryBuilder_1.N)(a), classNode));
     return subq;
 }
