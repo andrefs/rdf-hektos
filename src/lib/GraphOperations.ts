@@ -399,7 +399,7 @@ class GraphOperations extends EventEmitter {
     seedsPat: Quad | WhereArg,
   ): Promise<{ [key: string]: number }> {
     const q = new Query()
-      .select("p", COUNT("s", "cov"))
+      .select("p", COUNT("seed", "cov"))
       .where(Q(V("seed"), V("p"), V("o")), seedsPat)
       .groupBy("p");
     const cov = await this._runQuery(q);
@@ -421,8 +421,8 @@ class GraphOperations extends EventEmitter {
     seedsPat: Quad | WhereArg,
   ): Promise<{ [key: string]: number }> {
     const q = new Query()
-      .select("p", COUNT("o", "cov"))
-      .where(Q(V("seed"), V("p"), V("o")), seedsPat)
+      .select("p", COUNT("seed", "cov"))
+      .where(Q(V("s"), V("p"), V("seed")), seedsPat)
       .groupBy("p");
     const cov = await this._runQuery(q);
     return Object.fromEntries(

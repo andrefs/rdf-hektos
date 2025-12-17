@@ -323,7 +323,7 @@ class GraphOperations extends events_1.default {
     calcSubjectCoverage(seedsPat) {
         return __awaiter(this, void 0, void 0, function* () {
             const q = new QueryBuilder_1.Query()
-                .select("p", (0, QueryBuilder_1.COUNT)("s", "cov"))
+                .select("p", (0, QueryBuilder_1.COUNT)("seed", "cov"))
                 .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("seed"), (0, QueryBuilder_1.V)("p"), (0, QueryBuilder_1.V)("o")), seedsPat)
                 .groupBy("p");
             const cov = yield this._runQuery(q);
@@ -345,8 +345,8 @@ class GraphOperations extends events_1.default {
     calcObjectCoverage(seedsPat) {
         return __awaiter(this, void 0, void 0, function* () {
             const q = new QueryBuilder_1.Query()
-                .select("p", (0, QueryBuilder_1.COUNT)("o", "cov"))
-                .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("seed"), (0, QueryBuilder_1.V)("p"), (0, QueryBuilder_1.V)("o")), seedsPat)
+                .select("p", (0, QueryBuilder_1.COUNT)("seed", "cov"))
+                .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.V)("p"), (0, QueryBuilder_1.V)("seed")), seedsPat)
                 .groupBy("p");
             const cov = yield this._runQuery(q);
             return Object.fromEntries(cov.map((c) => {
