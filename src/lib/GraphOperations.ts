@@ -478,13 +478,13 @@ export class GraphOperations extends EventEmitter {
       const q1 = new Query()
         .select(COUNT("seed", "from"))
         .where(Q(V("seed"), N(p), V("o")), seedsPattern);
-      const from = await this._runQuery(q1);
+      const from = await this._runQuery(q1); // subject position
 
       // Get count of triples where seed is object
       const q2 = new Query()
         .select(COUNT("seed", "to"))
         .where(Q(V("s"), N(p), V("seed")), seedsPattern);
-      const to = await this._runQuery(q2);
+      const to = await this._runQuery(q2); // object position
 
       const fromCount = Number(from[0].get("from")?.value);
       const toCount = Number(to[0].get("to")?.value);

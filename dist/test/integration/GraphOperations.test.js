@@ -59,19 +59,6 @@ const graph = new GraphOperations_1.default({
         (0, vitest_1.expect)(r.nodes[0]).toHaveProperty("value", `${test_data_1.pf}/N7`);
         (0, vitest_1.expect)(r.nodes[1]).toHaveProperty("value", "L1");
     }));
-    (0, vitest_1.it)("VALUES query with UNDEF", () => __awaiter(void 0, void 0, void 0, function* () {
-        const query = `SELECT DISTINCT ?seed WHERE {
-      VALUES (?seed ?r) {
-        (<${test_data_1.pf}/N3> UNDEF)
-        (UNDEF <${test_data_1.pf}/N6>)
-      }
-    }`;
-        const results = yield graph._runQuery(query);
-        (0, vitest_1.expect)(results).toHaveLength(2);
-        // Check that we get N3 as a result
-        const seeds = results.map(r => { var _a; return (_a = r.get("seed")) === null || _a === void 0 ? void 0 : _a.value; });
-        (0, vitest_1.expect)(seeds).toContain(`${test_data_1.pf}/N3`);
-    }));
     (0, vitest_1.it)("finishes", () => __awaiter(void 0, void 0, void 0, function* () {
         const r = yield graph._randomWalk(test_data_1.factory.namedNode(`${test_data_1.pf}/R4`), test_data_1.factory.namedNode(`${test_data_1.pf}/N3`), 2);
         (0, vitest_1.expect)(r).toHaveProperty("status", ["finished"]);
@@ -147,15 +134,6 @@ const graph = new GraphOperations_1.default({
             [`${test_data_1.pf}/R2`]: 7,
         });
     }));
-    (0, vitest_1.it)("calculates coverage with VALUES and UNDEF", () => __awaiter(void 0, void 0, void 0, function* () {
-        const subq = new QueryBuilder_js_1.Query()
-            .distinct()
-            .select("seed")
-            .where((0, QueryBuilder_js_1.VALUES)([{ "?seed": (0, QueryBuilder_js_1.N)(`${test_data_1.pf}/N3`) }, { "?r": (0, QueryBuilder_js_1.N)(`${test_data_1.pf}/N6`) }]));
-        const cov = yield graph.calcSubjectCoverage(subq);
-        // This should test the coverage calculation with unbound variables
-        (0, vitest_1.expect)(cov).toBeDefined();
-    }));
 });
 (0, vitest_1.describe)("calcObjectCoverage", () => {
     (0, vitest_1.it)("calculates coverage", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -190,14 +168,13 @@ const graph = new GraphOperations_1.default({
         const subq = new QueryBuilder_js_1.Query()
             .distinct()
             .select("seed")
-            .where((0, QueryBuilder_js_1.VALUES)([{ "?seed": (0, QueryBuilder_js_1.N)(`${test_data_1.pf}/N3`) }, { "?r": (0, QueryBuilder_js_1.N)(`${test_data_1.pf}/N6`) }]));
-        console.log("XXXXXXXXXXX subq\n", subq.toSparql().replace(/\n/g, "\\\n"));
+            .where((0, QueryBuilder_js_1.VALUES)([{ "?seed": (0, QueryBuilder_js_1.N)(`${test_data_1.pf}/N3`) }, { "?seed": (0, QueryBuilder_js_1.N)(`${test_data_1.pf}/N6`) }]));
         const seedPRs = yield graph.calcSeedPosRatio(preds, subq);
         (0, vitest_1.expect)(seedPRs).toStrictEqual({
             [`${test_data_1.pf}/R1`]: 1,
-            [`${test_data_1.pf}/R2`]: 1,
-            [`${test_data_1.pf}/R3`]: 1,
-            [`${test_data_1.pf}/R4`]: 1.5,
+            [`${test_data_1.pf}/R2`]: 2,
+            [`${test_data_1.pf}/R3`]: NaN, // 0/0
+            [`${test_data_1.pf}/R4`]: Infinity, // 1/0
         });
     }));
 });

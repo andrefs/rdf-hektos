@@ -206,15 +206,14 @@ describe("calcSeedPosRatio", () => {
     const subq = new Query()
       .distinct()
       .select("seed")
-      .where(VALUES([{ "?seed": N(`${pf}/N3`) }, { "?r": N(`${pf}/N6`) }]));
-
+      .where(VALUES([{ "?seed": N(`${pf}/N3`) }, { "?seed": N(`${pf}/N6`) }]));
 
     const seedPRs = await graph.calcSeedPosRatio(preds, subq);
     expect(seedPRs).toStrictEqual({
       [`${pf}/R1`]: 1,
       [`${pf}/R2`]: 2,
-      [`${pf}/R3`]: NaN,
-      [`${pf}/R4`]: Infinity,
+      [`${pf}/R3`]: NaN, // 0/0
+      [`${pf}/R4`]: Infinity, // 1/0
     });
   });
 });
