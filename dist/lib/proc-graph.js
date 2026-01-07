@@ -38,13 +38,13 @@ function procGraph(store, subSelect, options) {
         const scov = yield graph.calcSubjectCoverage(subSelect);
         const ocov = yield graph.calcObjectCoverage(subSelect);
         const bfs = yield graph.calcBranchingFactor(basePreds);
-        const seedDir = yield graph.calcSeedDirectionality(basePreds, subSelect);
+        const seedPR = yield graph.calcSeedPosRatio(basePreds, subSelect);
         for (const [p, basePred] of Object.entries(basePreds)) {
             const s = (_a = scov[p]) !== null && _a !== void 0 ? _a : 0;
             const o = (_b = ocov[p]) !== null && _b !== void 0 ? _b : 0;
             const bf = (_c = bfs[p]) !== null && _c !== void 0 ? _c : 0;
-            const sd = (_d = seedDir[p]) !== null && _d !== void 0 ? _d : 0;
-            preds[p] = Object.assign(Object.assign({}, basePred), { subjCoverage: s, objCoverage: o, branchingFactor: bf, seedDirectionality: sd });
+            const spr = (_d = seedPR[p]) !== null && _d !== void 0 ? _d : 0;
+            preds[p] = Object.assign(Object.assign({}, basePred), { subjCoverage: s, objCoverage: o, branchingFactor: bf, seedPosRatio: spr });
         }
         return { globalMetrics: gm, predicates: preds };
     });

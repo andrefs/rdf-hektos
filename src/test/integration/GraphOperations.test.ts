@@ -224,15 +224,15 @@ describe("calcBranchingFactor", () => {
   });
 });
 
-describe("calcSeedDirectionality", () => {
-  it("calculates seed directionality", async () => {
+describe("calcSeedPosRatio", () => {
+  it("calculates seed position ratios", async () => {
     const preds = await graph.getPreds();
     const subq = new Query()
       .select("r")
       .where(VALUES([{ "?r": N(`${pf}/N3`) }, { "?r": N(`${pf}/N6`) }]));
 
-    const seedDirs = await graph.calcSeedDirectionality(preds, subq);
-    expect(seedDirs).toStrictEqual({
+    const seedPRs = await graph.calcSeedPosRatio(preds, subq);
+    expect(seedPRs).toStrictEqual({
       "http://example.org/andrefs/R1": 1,
       "http://example.org/andrefs/R2": 2,
       "http://example.org/andrefs/R3": NaN,

@@ -6,7 +6,8 @@
     "typecheck": "tsc -b tsconfig.json",
     "test": "vitest",
     "build": "tsc",
-    "postbuild": "cp package.json dist/package.json && cp package-lock.json dist/package-lock.json && cd dist && npm install",
+    "docs": "typedoc",
+    "postbuild": "cp package.json dist/package.json && cp package-lock.json dist/package-lock.json && cd dist && npm install && cd .. && npm run docs",
     "proc-graph": "time tsx ./src/bin/proc-graph.ts",
     "graph-to-csv": "time tsx ./src/bin/sum2csv.ts",
     "preversion": "npm run build && git add dist",
@@ -49,6 +50,7 @@
     "@types/node": "22.13.4",
     "n3": "1.23.1",
     "ts-node": "10.9.2",
+    "typedoc": "0.28.15",
     "typescript": "5.7.3"
   }
 }

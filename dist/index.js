@@ -18,4 +18,5 @@ __exportStar(require("./lib/proc-graph"), exports);
 __exportStar(require("./lib/utils"), exports);
 __exportStar(require("./lib/stores/SparqlWebStore"), exports);
 __exportStar(require("./lib/stores"), exports);
+__exportStar(require("./lib/GraphOperations"), exports);
 //# sourceMappingURL=index.js.map

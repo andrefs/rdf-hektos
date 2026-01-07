@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.GraphOperations = void 0;
 const QueryBuilder_1 = require("./QueryBuilder");
 const bluebird_1 = __importDefault(require("bluebird"));
 const events_1 = __importDefault(require("events"));
@@ -93,7 +94,6 @@ class GraphOperations extends events_1.default {
                 .select("p", (0, QueryBuilder_1.COUNT)("p", "total"))
                 .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.V)("p"), (0, QueryBuilder_1.V)("o")))
                 .groupBy("p");
-            console.log("XXXXXXXXXXXXX getPreds", q.toSparql());
             this.emit("preds-starting");
             const res = yield this._runQuery(q);
             this.emit("preds-finished", res.length);
@@ -107,7 +107,6 @@ class GraphOperations extends events_1.default {
                     },
                 ];
             }));
-            console.log("XXXXXXXXXXXXX getPreds:", { preds });
             return preds;
         });
     }
@@ -379,38 +378,32 @@ class GraphOperations extends events_1.default {
         });
     }
     /**
-     * Calculate the seed directionality for each predicate, i.e., the ratio of triples with each predicate where seeds are the
-     * subject vs object
+     * Calculate the seed position ratio for each predicate, i.e., the ratio of triples with each predicate where seeds are the in
+     * the subject vs object position
      * @param preds The predicates to calculate the ratio for
-     * @param seedsPat A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
+     * @param seedsPattern A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
      * @returns The ratio of triples with each predicate where seeds are the subject vs object
      */
-    calcSeedDirectionality(preds, seedsPat) {
+    calcSeedPosRatio(preds, seedsPattern) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
-            const sds = [];
+            const spr = [];
             for (const p of Object.keys(preds)) {
+                // Get count of triples where seed is subject
                 const q1 = new QueryBuilder_1.Query()
                     .select((0, QueryBuilder_1.COUNT)("seed", "from"))
-                    .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("seed"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("o")), seedsPat);
-                console.log("XXXXXXXXXXXXXx q1:", q1.toSparql());
+                    .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("seed"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("o")), seedsPattern);
                 const from = yield this._runQuery(q1);
+                // Get count of triples where seed is object
                 const q2 = new QueryBuilder_1.Query()
                     .select((0, QueryBuilder_1.COUNT)("seed", "to"))
-                    .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("seed")), seedsPat);
-                console.log("XXXXXXXXXXXXXx q2:", q2.toSparql());
+                    .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("seed")), seedsPattern);
                 const to = yield this._runQuery(q2);
                 const fromCount = Number((_a = from[0].get("from")) === null || _a === void 0 ? void 0 : _a.value);
                 const toCount = Number((_b = to[0].get("to")) === null || _b === void 0 ? void 0 : _b.value);
-                console.log("XXXXXXXXXXXXXx", {
-                    p,
-                    fromCount,
-                    toCount,
-                    ratio: fromCount / toCount,
-                });
-                sds.push([p, fromCount / toCount]);
+                spr.push([p, fromCount / toCount]);
             }
-            return Object.fromEntries(sds);
+            return Object.fromEntries(spr);
         });
     }
     globalMetrics(seedQuery) {
@@ -436,5 +429,6 @@ class GraphOperations extends events_1.default {
         });
     }
 }
+exports.GraphOperations = GraphOperations;
 exports.default = GraphOperations;
 //# sourceMappingURL=GraphOperations.js.map

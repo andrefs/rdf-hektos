@@ -52,7 +52,7 @@ interface GraphOperationsOpts {
   concurrency?: number;
 }
 
-class GraphOperations extends EventEmitter {
+export class GraphOperations extends EventEmitter {
   _store: SparqlWebStore;
   _concurrency: number;
   _bars: { [key: string]: cliProgress.SingleBar } = {};
@@ -118,8 +118,6 @@ class GraphOperations extends EventEmitter {
       .where(Q(V("s"), V("p"), V("o")))
       .groupBy("p");
 
-    console.log("XXXXXXXXXXXXX getPreds", q.toSparql());
-
     this.emit("preds-starting");
     const res = await this._runQuery(q);
     this.emit("preds-finished", res.length);
@@ -134,7 +132,6 @@ class GraphOperations extends EventEmitter {
         ];
       }),
     );
-    console.log("XXXXXXXXXXXXX getPreds:", { preds });
     return preds;
   }
 
@@ -324,7 +321,7 @@ class GraphOperations extends EventEmitter {
     const walks: { [key: string]: PredicateWalks } = {};
     console.log(
       `  doing random walks (${Object.keys(preds).length} ` +
-      `preds, ${pctg}% of paths, length ${walkLength})`,
+        `preds, ${pctg}% of paths, length ${walkLength})`,
     );
     for (const p of Object.keys(preds)) {
       this.emit("walks-pred", p);
@@ -460,44 +457,38 @@ class GraphOperations extends EventEmitter {
   }
 
   /**
-   * Calculate the seed directionality for each predicate, i.e., the ratio of triples with each predicate where seeds are the
-   * subject vs object
+   * Calculate the seed position ratio for each predicate, i.e., the ratio of triples with each predicate where seeds are the in
+   * the subject vs object position
    * @param preds The predicates to calculate the ratio for
-   * @param seedsPat A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
+   * @param seedsPattern A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
    * @returns The ratio of triples with each predicate where seeds are the subject vs object
    */
-  async calcSeedDirectionality(
+  async calcSeedPosRatio(
     preds: {
       [key: string]: BasePredicate;
     },
-    seedsPat: Quad | WhereArg,
+    seedsPattern: Quad | WhereArg,
   ): Promise<{ [key: string]: number }> {
-    const sds: [string, number][] = [];
+    const spr: [string, number][] = [];
 
     for (const p of Object.keys(preds)) {
+      // Get count of triples where seed is subject
       const q1 = new Query()
         .select(COUNT("seed", "from"))
-        .where(Q(V("seed"), N(p), V("o")), seedsPat);
-      console.log("XXXXXXXXXXXXXx q1:", q1.toSparql());
+        .where(Q(V("seed"), N(p), V("o")), seedsPattern);
       const from = await this._runQuery(q1);
 
+      // Get count of triples where seed is object
       const q2 = new Query()
         .select(COUNT("seed", "to"))
-        .where(Q(V("s"), N(p), V("seed")), seedsPat);
-      console.log("XXXXXXXXXXXXXx q2:", q2.toSparql());
+        .where(Q(V("s"), N(p), V("seed")), seedsPattern);
       const to = await this._runQuery(q2);
 
       const fromCount = Number(from[0].get("from")?.value);
       const toCount = Number(to[0].get("to")?.value);
-      console.log("XXXXXXXXXXXXXx", {
-        p,
-        fromCount,
-        toCount,
-        ratio: fromCount / toCount,
-      });
-      sds.push([p, fromCount / toCount]);
+      spr.push([p, fromCount / toCount]);
     }
-    return Object.fromEntries(sds);
+    return Object.fromEntries(spr);
   }
 
   async globalMetrics(seedQuery: WhereArg): Promise<GlobalMetrics> {
@@ -549,7 +540,7 @@ export interface Predicate extends BasePredicate {
   branchingFactor: number;
   subjCoverage: number;
   objCoverage: number;
-  seedDirectionality: number;
+  seedPosRatio: number;
 }
 
 export interface Walk {

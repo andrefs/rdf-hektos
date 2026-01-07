@@ -9,7 +9,7 @@ interface GraphOperationsOpts {
     showProgBar?: boolean;
     concurrency?: number;
 }
-declare class GraphOperations extends EventEmitter {
+export declare class GraphOperations extends EventEmitter {
     _store: SparqlWebStore;
     _concurrency: number;
     _bars: {
@@ -72,15 +72,15 @@ declare class GraphOperations extends EventEmitter {
         [key: string]: number;
     }>;
     /**
-     * Calculate the seed directionality for each predicate, i.e., the ratio of triples with each predicate where seeds are the
-     * subject vs object
+     * Calculate the seed position ratio for each predicate, i.e., the ratio of triples with each predicate where seeds are the in
+     * the subject vs object position
      * @param preds The predicates to calculate the ratio for
-     * @param seedsPat A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
+     * @param seedsPattern A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
      * @returns The ratio of triples with each predicate where seeds are the subject vs object
      */
-    calcSeedDirectionality(preds: {
+    calcSeedPosRatio(preds: {
         [key: string]: BasePredicate;
-    }, seedsPat: Quad | WhereArg): Promise<{
+    }, seedsPattern: Quad | WhereArg): Promise<{
         [key: string]: number;
     }>;
     globalMetrics(seedQuery: WhereArg): Promise<GlobalMetrics>;
@@ -98,7 +98,7 @@ export interface Predicate extends BasePredicate {
     branchingFactor: number;
     subjCoverage: number;
     objCoverage: number;
-    seedDirectionality: number;
+    seedPosRatio: number;
 }
 export interface Walk {
     status: string[];
