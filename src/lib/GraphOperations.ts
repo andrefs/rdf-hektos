@@ -158,7 +158,10 @@ export class GraphOperations extends EventEmitter {
     return walks;
   }
 
-  async _runQuery(query: Query | string, invalidateCache?: boolean) {
+  async _runQuery(
+    query: Query | string,
+    invalidateCache?: boolean,
+  ): Promise<Bindings[]> {
     const sparql = typeof query !== "string" ? query.toSparql() : query;
     const stream = await this._store.select(sparql);
     const res = await s2a(stream);
@@ -321,7 +324,7 @@ export class GraphOperations extends EventEmitter {
     const walks: { [key: string]: PredicateWalks } = {};
     console.log(
       `  doing random walks (${Object.keys(preds).length} ` +
-        `preds, ${pctg}% of paths, length ${walkLength})`,
+      `preds, ${pctg}% of paths, length ${walkLength})`,
     );
     for (const p of Object.keys(preds)) {
       this.emit("walks-pred", p);
@@ -391,12 +394,11 @@ export class GraphOperations extends EventEmitter {
    * @param seedsPat A pattern to select the seeds. This can be a VALUES clause, a quad pattern, or a list of either.
    * @returns The subject coverage for each predicate
    */
-  // FIXME this needs a DISTINCT maybe (right now seems to return the same as subject coverage)?
   async calcSubjectCoverage(
     seedsPat: Quad | WhereArg,
   ): Promise<{ [key: string]: number }> {
     const q = new Query()
-      .select("p", COUNT("seed", "cov"))
+      .select("p", COUNT("seed", "cov", "distinct"))
       .where(Q(V("seed"), V("p"), V("o")), seedsPat)
       .groupBy("p");
     const cov = await this._runQuery(q);
@@ -418,7 +420,7 @@ export class GraphOperations extends EventEmitter {
     seedsPat: Quad | WhereArg,
   ): Promise<{ [key: string]: number }> {
     const q = new Query()
-      .select("p", COUNT("seed", "cov"))
+      .select("p", COUNT("seed", "cov", "distinct"))
       .where(Q(V("s"), V("p"), V("seed")), seedsPat)
       .groupBy("p");
     const cov = await this._runQuery(q);

@@ -1,42 +1,16 @@
 import { describe, it, expect } from "vitest";
 import GraphOperations from "../../lib/GraphOperations";
-import N3 from "n3";
-import { QueryEngine } from "@comunica/query-sparql";
 import { N, Q, Query, UNION, V, VALUES } from "../../lib/QueryBuilder.js";
-import { DataFactory } from "rdf-data-factory";
-const factory = new DataFactory();
-const engine = new QueryEngine();
-const NN = factory.namedNode;
-const pf = "http://example.org/andrefs";
-const n3 = new N3.Store();
+import { setupTestGraph, engine, factory, pf } from "./test-data";
 
-n3.addQuad(NN(`${pf}/N1`), NN(`${pf}/R1`), NN(`${pf}/N3`));
-n3.addQuad(NN(`${pf}/N2`), NN(`${pf}/R1`), NN(`${pf}/N1`));
-n3.addQuad(NN(`${pf}/N3`), NN(`${pf}/R1`), NN(`${pf}/N4`));
-n3.addQuad(NN(`${pf}/N4`), NN(`${pf}/R1`), NN(`${pf}/N2`));
-
-n3.addQuad(NN(`${pf}/N4`), NN(`${pf}/R2`), NN(`${pf}/N5`));
-n3.addQuad(NN(`${pf}/N4`), NN(`${pf}/R2`), NN(`${pf}/N6`));
-n3.addQuad(NN(`${pf}/N5`), NN(`${pf}/R2`), NN(`${pf}/N7`));
-n3.addQuad(NN(`${pf}/N5`), NN(`${pf}/R2`), NN(`${pf}/N8`));
-n3.addQuad(NN(`${pf}/N6`), NN(`${pf}/R2`), NN(`${pf}/N9`));
-n3.addQuad(NN(`${pf}/N6`), NN(`${pf}/R2`), NN(`${pf}/N10`));
-n3.addQuad(NN(`${pf}/N8`), NN(`${pf}/R2`), NN(`${pf}/N13`));
-n3.addQuad(NN(`${pf}/N9`), NN(`${pf}/R2`), NN(`${pf}/N14`));
-n3.addQuad(NN(`${pf}/N13`), NN(`${pf}/R2`), NN(`${pf}/N15`));
-n3.addQuad(NN(`${pf}/N14`), NN(`${pf}/R2`), NN(`${pf}/N16`));
-
-n3.addQuad(NN(`${pf}/N7`), NN(`${pf}/R3`), factory.literal("L1"));
-
-n3.addQuad(NN(`${pf}/N3`), NN(`${pf}/R4`), NN(`${pf}/N11`));
-n3.addQuad(NN(`${pf}/N11`), NN(`${pf}/R4`), NN(`${pf}/N12`));
+const n3 = setupTestGraph();
 
 const graph = new GraphOperations({
   select: async (sparql) => {
     const res = await engine.queryBindings(sparql, { sources: [n3] });
     return res;
   },
-  engine: new QueryEngine(),
+  engine: engine,
   source: "source",
 });
 
@@ -182,14 +156,15 @@ describe("calcRandomWalks", () => {
 describe("calcSubjectCoverage", () => {
   it("calculates coverage", async () => {
     const subq = new Query()
-      .select("s")
-      .where(Q(V("s"), N(`${pf}/R2`), V("o")));
+      .distinct()
+      .select("seed")
+      .where(Q(V("seed"), N(`${pf}/R2`), V("o")));
 
     const cov = await graph.calcSubjectCoverage(subq);
 
     expect(cov).toStrictEqual({
-      "http://example.org/andrefs/R1": 2,
-      "http://example.org/andrefs/R2": 16,
+      [`${pf}/R1`]: 1,
+      [`${pf}/R2`]: 7,
     });
   });
 });
@@ -197,14 +172,15 @@ describe("calcSubjectCoverage", () => {
 describe("calcObjectCoverage", () => {
   it("calculates coverage", async () => {
     const subq = new Query()
+      .distinct()
       .select("s")
       .where(Q(V("s"), N(`${pf}/R2`), V("o")));
 
     const cov = await graph.calcObjectCoverage(subq);
 
     expect(cov).toStrictEqual({
-      "http://example.org/andrefs/R1": 2,
-      "http://example.org/andrefs/R2": 16,
+      [`${pf}/R1`]: 1,
+      [`${pf}/R2`]: 10,
     });
   });
 });
@@ -215,10 +191,10 @@ describe("calcBranchingFactor", () => {
     const bfs = await graph.calcBranchingFactor(preds);
     expect(bfs).toMatchInlineSnapshot(`
       {
-        "http://example.org/andrefs/R1": 1,
-        "http://example.org/andrefs/R2": 1.4285714285714286,
-        "http://example.org/andrefs/R3": 1,
-        "http://example.org/andrefs/R4": 1,
+        "${pf}/R1": 1,
+        "${pf}/R2": 1.4285714285714286,
+        "${pf}/R3": 1,
+        "${pf}/R4": 1,
       }
     `);
   });
@@ -228,15 +204,17 @@ describe("calcSeedPosRatio", () => {
   it("calculates seed position ratios", async () => {
     const preds = await graph.getPreds();
     const subq = new Query()
-      .select("r")
-      .where(VALUES([{ "?r": N(`${pf}/N3`) }, { "?r": N(`${pf}/N6`) }]));
+      .distinct()
+      .select("seed")
+      .where(VALUES([{ "?seed": N(`${pf}/N3`) }, { "?r": N(`${pf}/N6`) }]));
+
 
     const seedPRs = await graph.calcSeedPosRatio(preds, subq);
     expect(seedPRs).toStrictEqual({
-      "http://example.org/andrefs/R1": 1,
-      "http://example.org/andrefs/R2": 2,
-      "http://example.org/andrefs/R3": NaN,
-      "http://example.org/andrefs/R4": Infinity,
+      [`${pf}/R1`]: 1,
+      [`${pf}/R2`]: 2,
+      [`${pf}/R3`]: NaN,
+      [`${pf}/R4`]: Infinity,
     });
   });
 });
