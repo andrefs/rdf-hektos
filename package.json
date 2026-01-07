@@ -10,6 +10,7 @@
     "postbuild": "cp package.json dist/package.json && cp package-lock.json dist/package-lock.json && cd dist && npm install && cd .. && npm run docs",
     "proc-graph": "time tsx ./src/bin/proc-graph.ts",
     "graph-to-csv": "time tsx ./src/bin/sum2csv.ts",
+    "test:integr:repl": "tsx ./src/test/integration/repl.ts",
     "preversion": "npm run build && git add dist",
     "version": "git commit -m 'Build: update dist before version bump'",
     "postversion": "git push && git push --tags"
