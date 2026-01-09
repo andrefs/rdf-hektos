@@ -154,10 +154,22 @@ const graph = new GraphOperations_1.default({
         const bfs = yield graph.calcBranchingFactor(preds);
         (0, vitest_1.expect)(bfs).toMatchInlineSnapshot(`
       {
-        "${test_data_1.pf}/R1": 1,
-        "${test_data_1.pf}/R2": 1.4285714285714286,
-        "${test_data_1.pf}/R3": 1,
-        "${test_data_1.pf}/R4": 1,
+        "http://example.org/andrefs/hektos-test/R1": {
+          "obj": 4,
+          "subj": 4,
+        },
+        "http://example.org/andrefs/hektos-test/R2": {
+          "obj": 7,
+          "subj": 10,
+        },
+        "http://example.org/andrefs/hektos-test/R3": {
+          "obj": 1,
+          "subj": 1,
+        },
+        "http://example.org/andrefs/hektos-test/R4": {
+          "obj": 2,
+          "subj": 2,
+        },
       }
     `);
     }));
@@ -170,12 +182,26 @@ const graph = new GraphOperations_1.default({
             .select("seed")
             .where((0, QueryBuilder_js_1.VALUES)([{ "?seed": (0, QueryBuilder_js_1.N)(`${test_data_1.pf}/N3`) }, { "?seed": (0, QueryBuilder_js_1.N)(`${test_data_1.pf}/N6`) }]));
         const seedPRs = yield graph.calcSeedPosRatio(preds, subq);
-        (0, vitest_1.expect)(seedPRs).toStrictEqual({
-            [`${test_data_1.pf}/R1`]: 1,
-            [`${test_data_1.pf}/R2`]: 2,
-            [`${test_data_1.pf}/R3`]: NaN, // 0/0
-            [`${test_data_1.pf}/R4`]: Infinity, // 1/0
-        });
+        (0, vitest_1.expect)(seedPRs).toMatchInlineSnapshot(`
+      {
+        "http://example.org/andrefs/hektos-test/R1": {
+          "obj": 1,
+          "subj": 1,
+        },
+        "http://example.org/andrefs/hektos-test/R2": {
+          "obj": 1,
+          "subj": 2,
+        },
+        "http://example.org/andrefs/hektos-test/R3": {
+          "obj": 0,
+          "subj": 0,
+        },
+        "http://example.org/andrefs/hektos-test/R4": {
+          "obj": 0,
+          "subj": 1,
+        },
+      }
+    `);
     }));
 });
 (0, vitest_1.describe)("globalMetrics", () => {

@@ -371,7 +371,13 @@ class GraphOperations extends events_1.default {
                     .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("o"))));
                 const nrCount = (_a = res[0].get("nonRoots")) === null || _a === void 0 ? void 0 : _a.value;
                 const nlCount = (_b = res[0].get("nonLeaves")) === null || _b === void 0 ? void 0 : _b.value;
-                bfs.push([p, Number(nrCount) / Number(nlCount)]);
+                bfs.push([
+                    p,
+                    {
+                        subj: Number(nrCount),
+                        obj: Number(nlCount),
+                    },
+                ]);
             }
             return Object.fromEntries(bfs);
         });
@@ -390,17 +396,23 @@ class GraphOperations extends events_1.default {
             for (const p of Object.keys(preds)) {
                 // Get count of triples where seed is subject
                 const q1 = new QueryBuilder_1.Query()
-                    .select((0, QueryBuilder_1.COUNT)("seed", "from"))
+                    .select((0, QueryBuilder_1.COUNT)("seed", "subjCount"))
                     .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("seed"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("o")), seedsPattern);
                 const from = yield this._runQuery(q1); // subject position
                 // Get count of triples where seed is object
                 const q2 = new QueryBuilder_1.Query()
-                    .select((0, QueryBuilder_1.COUNT)("seed", "to"))
+                    .select((0, QueryBuilder_1.COUNT)("seed", "objCount"))
                     .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("seed")), seedsPattern);
                 const to = yield this._runQuery(q2); // object position
-                const fromCount = Number((_a = from[0].get("from")) === null || _a === void 0 ? void 0 : _a.value);
-                const toCount = Number((_b = to[0].get("to")) === null || _b === void 0 ? void 0 : _b.value);
-                spr.push([p, fromCount / toCount]);
+                const fromCount = Number((_a = from[0].get("subjCount")) === null || _a === void 0 ? void 0 : _a.value);
+                const toCount = Number((_b = to[0].get("objCount")) === null || _b === void 0 ? void 0 : _b.value);
+                spr.push([
+                    p,
+                    {
+                        subj: fromCount,
+                        obj: toCount,
+                    },
+                ]);
             }
             return Object.fromEntries(spr);
         });

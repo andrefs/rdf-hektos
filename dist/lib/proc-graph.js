@@ -43,8 +43,14 @@ function procGraph(store, subSelect, options) {
             const s = (_a = scov[p]) !== null && _a !== void 0 ? _a : 0;
             const o = (_b = ocov[p]) !== null && _b !== void 0 ? _b : 0;
             const bf = (_c = bfs[p]) !== null && _c !== void 0 ? _c : 0;
-            const spr = (_d = seedPR[p]) !== null && _d !== void 0 ? _d : 0;
-            preds[p] = Object.assign(Object.assign({}, basePred), { subjCoverage: s, objCoverage: o, branchingFactor: bf, seedPosRatio: spr });
+            const spr = (_d = seedPR[p]) !== null && _d !== void 0 ? _d : [0, 0];
+            preds[p] = Object.assign(Object.assign({}, basePred), { subjCoverage: s, objCoverage: o, branchingFactor: {
+                    subj: bf.subj,
+                    obj: bf.obj,
+                }, seedPosRatio: {
+                    subj: spr.subj,
+                    obj: spr.obj,
+                } });
         }
         return { globalMetrics: gm, predicates: preds };
     });

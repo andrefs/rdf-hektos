@@ -1,6 +1,6 @@
 {
   "name": "rdf-hektos",
-  "version": "0.9.1",
+  "version": "0.12.0",
   "description": "Extract a property summary from an RDF graph",
   "scripts": {
     "typecheck": "tsc -b tsconfig.json",

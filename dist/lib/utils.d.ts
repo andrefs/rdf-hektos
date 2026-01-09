@@ -1,4 +1,4 @@
-import { GlobalMetrics, Predicate } from './GraphOperations';
+import { GlobalMetrics, Predicate } from "./GraphOperations";
 interface PredicateSummary {
     [key: string]: any;
     ratio?: number;
@@ -17,13 +17,13 @@ export declare const summMetrics: (preds: {
 }, globalMetrics: GlobalMetrics) => {
     [key: string]: PredicateSummary;
 };
-export declare const flattenObj: (obj: FlattableObject, parentKey?: (string | null), res?: {
+export declare const flattenObj: (obj: FlattableObject, parentKey?: string | null, res?: {
     [key: string]: any;
 }) => {
     [key: string]: any;
 };
 type FlattableObject = {
-    [key: string]: (number | string | FlattableObject);
+    [key: string]: number | string | FlattableObject;
 };
 export declare const flattenObjValues: (obj: FlattableObject) => {
     [key: string]: any;

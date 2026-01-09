@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.prettyMatrix = exports.ppMatrix = exports.flattenObjValues = exports.flattenObj = exports.summMetrics = void 0;
 const fs_1 = require("fs");
-;
 //export const summPreds = (preds: { [key: string]: Predicate }) => {
 //  const res: { [key: string]: PredicateSummary } = {};
 //  for (const p of Object.keys(preds)) {
@@ -46,14 +45,18 @@ const summMetrics = (preds, globalMetrics) => {
     const res = {};
     for (const p of Object.keys(preds)) {
         res[p] = {};
-        res[p].coverage = (((_a = preds[p].subjCoverage) !== null && _a !== void 0 ? _a : 0) + ((_b = preds[p].objCoverage) !== null && _b !== void 0 ? _b : 0)) / globalMetrics.totalSeeds;
+        res[p].coverage =
+            (((_a = preds[p].subjCoverage) !== null && _a !== void 0 ? _a : 0) + ((_b = preds[p].objCoverage) !== null && _b !== void 0 ? _b : 0)) /
+                globalMetrics.totalSeeds;
         res[p].totalSeeds = globalMetrics.totalSeeds;
         res[p].subjCoverage = preds[p].subjCoverage;
         res[p].objCoverage = preds[p].objCoverage;
-        res[p].branchingFactor = preds[p].branchingFactor;
-        res[p].normBranchingFactor = preds[p].branchingFactor < 1 ?
-            1 / preds[p].branchingFactor :
-            preds[p].branchingFactor;
+        res[p].branchingFactor =
+            preds[p].branchingFactor.subj / preds[p].branchingFactor.obj;
+        res[p].normBranchingFactor =
+            res[p].branchingFactor < 1
+                ? 1 / res[p].branchingFactor
+                : res[p].branchingFactor;
     }
     return res;
 };
@@ -62,7 +65,9 @@ const flattenObj = (obj, parentKey = null, res = {}) => {
     for (let key in obj) {
         const value = obj[key];
         const predName = parentKey ? parentKey + "." + key : key;
-        if (typeof value === 'number' || typeof value === 'string' || Array.isArray(value)) {
+        if (typeof value === "number" ||
+            typeof value === "string" ||
+            Array.isArray(value)) {
             res[predName] = obj[key];
             continue;
         }
@@ -72,10 +77,11 @@ const flattenObj = (obj, parentKey = null, res = {}) => {
 };
 exports.flattenObj = flattenObj;
 const flattenObjValues = (obj) => {
-    return Object.keys(obj)
-        .reduce((previous, key) => {
+    return Object.keys(obj).reduce((previous, key) => {
         const value = obj[key];
-        if (typeof value === 'number' || typeof value === 'string' || Array.isArray(value)) {
+        if (typeof value === "number" ||
+            typeof value === "string" ||
+            Array.isArray(value)) {
             previous[key] = value;
             return previous;
         }
@@ -102,15 +108,15 @@ const prettyMatrix = (data) => {
             keys[k] = true;
         }
     }
-    table.push(['Predicate', ...Object.keys(keys)]);
+    table.push(["Predicate", ...Object.keys(keys)]);
     for (const [pred, info] of Object.entries(data)) {
         const row = [pred];
         for (const k of table[0].slice(1)) {
-            row.push(info[k] || '');
+            row.push(info[k] || "");
         }
         table.push(row);
     }
-    return table.map(x => x.join('\t')).join('\n');
+    return table.map((x) => x.join("\t")).join("\n");
 };
 exports.prettyMatrix = prettyMatrix;
 //# sourceMappingURL=utils.js.map

@@ -9,6 +9,14 @@ interface GraphOperationsOpts {
     showProgBar?: boolean;
     concurrency?: number;
 }
+interface SeedPos {
+    subj: number;
+    obj: number;
+}
+interface Branching {
+    subj: number;
+    obj: number;
+}
 export declare class GraphOperations extends EventEmitter {
     _store: SparqlWebStore;
     _concurrency: number;
@@ -69,7 +77,7 @@ export declare class GraphOperations extends EventEmitter {
     calcBranchingFactor(preds: {
         [key: string]: BasePredicate;
     }): Promise<{
-        [key: string]: number;
+        [key: string]: Branching;
     }>;
     /**
      * Calculate the seed position ratio for each predicate, i.e., the ratio of triples with each predicate where seeds are the in
@@ -81,7 +89,7 @@ export declare class GraphOperations extends EventEmitter {
     calcSeedPosRatio(preds: {
         [key: string]: BasePredicate;
     }, seedsPattern: Quad | WhereArg): Promise<{
-        [key: string]: number;
+        [key: string]: SeedPos;
     }>;
     globalMetrics(seedQuery: WhereArg): Promise<GlobalMetrics>;
 }
@@ -95,10 +103,16 @@ export interface Predicate extends BasePredicate {
         [key: string]: Walk;
     };
     ratio?: number;
-    branchingFactor: number;
     subjCoverage: number;
     objCoverage: number;
-    seedPosRatio: number;
+    branchingFactor: {
+        subj: number;
+        obj: number;
+    };
+    seedPosRatio: {
+        subj: number;
+        obj: number;
+    };
 }
 export interface Walk {
     status: string[];
