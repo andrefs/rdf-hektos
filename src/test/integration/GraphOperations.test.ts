@@ -191,10 +191,22 @@ describe("calcBranchingFactor", () => {
     const bfs = await graph.calcBranchingFactor(preds);
     expect(bfs).toMatchInlineSnapshot(`
       {
-        "${pf}/R1": 1,
-        "${pf}/R2": 1.4285714285714286,
-        "${pf}/R3": 1,
-        "${pf}/R4": 1,
+        "http://example.org/andrefs/hektos-test/R1": {
+          "obj": 4,
+          "subj": 4,
+        },
+        "http://example.org/andrefs/hektos-test/R2": {
+          "obj": 7,
+          "subj": 10,
+        },
+        "http://example.org/andrefs/hektos-test/R3": {
+          "obj": 1,
+          "subj": 1,
+        },
+        "http://example.org/andrefs/hektos-test/R4": {
+          "obj": 2,
+          "subj": 2,
+        },
       }
     `);
   });
@@ -209,12 +221,26 @@ describe("calcSeedPosRatio", () => {
       .where(VALUES([{ "?seed": N(`${pf}/N3`) }, { "?seed": N(`${pf}/N6`) }]));
 
     const seedPRs = await graph.calcSeedPosRatio(preds, subq);
-    expect(seedPRs).toStrictEqual({
-      [`${pf}/R1`]: 1,
-      [`${pf}/R2`]: 2,
-      [`${pf}/R3`]: NaN, // 0/0
-      [`${pf}/R4`]: Infinity, // 1/0
-    });
+    expect(seedPRs).toMatchInlineSnapshot(`
+      {
+        "http://example.org/andrefs/hektos-test/R1": {
+          "obj": 1,
+          "subj": 1,
+        },
+        "http://example.org/andrefs/hektos-test/R2": {
+          "obj": 1,
+          "subj": 2,
+        },
+        "http://example.org/andrefs/hektos-test/R3": {
+          "obj": 0,
+          "subj": 0,
+        },
+        "http://example.org/andrefs/hektos-test/R4": {
+          "obj": 0,
+          "subj": 1,
+        },
+      }
+    `);
   });
 });
 

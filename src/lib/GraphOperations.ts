@@ -52,6 +52,16 @@ interface GraphOperationsOpts {
   concurrency?: number;
 }
 
+interface SeedPos {
+  subj: number;
+  obj: number;
+}
+
+interface Branching {
+  subj: number;
+  obj: number;
+}
+
 export class GraphOperations extends EventEmitter {
   _store: SparqlWebStore;
   _concurrency: number;
@@ -439,8 +449,9 @@ export class GraphOperations extends EventEmitter {
    */
   async calcBranchingFactor(preds: {
     [key: string]: BasePredicate;
-  }): Promise<{ [key: string]: number }> {
-    const bfs: [string, number][] = [];
+  }): Promise<{ [key: string]: Branching }> {
+    const bfs = [];
+
     for (const p of Object.keys(preds)) {
       const res = await this._runQuery(
         new Query()
@@ -452,7 +463,13 @@ export class GraphOperations extends EventEmitter {
       );
       const nrCount = res[0].get("nonRoots")?.value;
       const nlCount = res[0].get("nonLeaves")?.value;
-      bfs.push([p, Number(nrCount) / Number(nlCount)]);
+      bfs.push([
+        p,
+        {
+          subj: Number(nrCount),
+          obj: Number(nlCount),
+        },
+      ]);
     }
 
     return Object.fromEntries(bfs);
@@ -470,25 +487,31 @@ export class GraphOperations extends EventEmitter {
       [key: string]: BasePredicate;
     },
     seedsPattern: Quad | WhereArg,
-  ): Promise<{ [key: string]: number }> {
-    const spr: [string, number][] = [];
+  ): Promise<{ [key: string]: SeedPos }> {
+    const spr = [];
 
     for (const p of Object.keys(preds)) {
       // Get count of triples where seed is subject
       const q1 = new Query()
-        .select(COUNT("seed", "from"))
+        .select(COUNT("seed", "subjCount"))
         .where(Q(V("seed"), N(p), V("o")), seedsPattern);
       const from = await this._runQuery(q1); // subject position
 
       // Get count of triples where seed is object
       const q2 = new Query()
-        .select(COUNT("seed", "to"))
+        .select(COUNT("seed", "objCount"))
         .where(Q(V("s"), N(p), V("seed")), seedsPattern);
       const to = await this._runQuery(q2); // object position
 
-      const fromCount = Number(from[0].get("from")?.value);
-      const toCount = Number(to[0].get("to")?.value);
-      spr.push([p, fromCount / toCount]);
+      const fromCount = Number(from[0].get("subjCount")?.value);
+      const toCount = Number(to[0].get("objCount")?.value);
+      spr.push([
+        p,
+        {
+          subj: fromCount,
+          obj: toCount,
+        },
+      ]);
     }
     return Object.fromEntries(spr);
   }
@@ -539,10 +562,16 @@ export interface Predicate extends BasePredicate {
   sampledWalks?: number;
   walks?: { [key: string]: Walk };
   ratio?: number;
-  branchingFactor: number;
   subjCoverage: number;
   objCoverage: number;
-  seedPosRatio: number;
+  branchingFactor: {
+    subj: number;
+    obj: number;
+  };
+  seedPosRatio: {
+    subj: number;
+    obj: number;
+  };
 }
 
 export interface Walk {

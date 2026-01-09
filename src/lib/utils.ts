@@ -1,17 +1,17 @@
-import { promises as fs } from 'fs';
-import { GlobalMetrics, Predicate } from './GraphOperations';
+import { promises as fs } from "fs";
+import { GlobalMetrics, Predicate } from "./GraphOperations";
 
 interface PredicateSummary {
-  [key: string]: any,
-  ratio?: number,
-  count?: number,
-  subjCoverage?: number,
-  objCoverage?: number,
-  sampledWalks?: number,
-  branchingFactor?: number,
-  walks?: { [key: string]: number },
-  avgLen?: number
-};
+  [key: string]: any;
+  ratio?: number;
+  count?: number;
+  subjCoverage?: number;
+  objCoverage?: number;
+  sampledWalks?: number;
+  branchingFactor?: number;
+  walks?: { [key: string]: number };
+  avgLen?: number;
+}
 
 //export const summPreds = (preds: { [key: string]: Predicate }) => {
 //  const res: { [key: string]: PredicateSummary } = {};
@@ -43,30 +43,42 @@ interface PredicateSummary {
 //  return res;
 //};
 
-export const summMetrics = (preds: { [key: string]: Predicate }, globalMetrics: GlobalMetrics) => {
+export const summMetrics = (
+  preds: { [key: string]: Predicate },
+  globalMetrics: GlobalMetrics,
+) => {
   const res: { [key: string]: PredicateSummary } = {};
   for (const p of Object.keys(preds)) {
     res[p] = {};
-    res[p].coverage = ((preds[p].subjCoverage ?? 0) + (preds[p].objCoverage ?? 0)) / globalMetrics.totalSeeds;
+    res[p].coverage =
+      ((preds[p].subjCoverage ?? 0) + (preds[p].objCoverage ?? 0)) /
+      globalMetrics.totalSeeds;
     res[p].totalSeeds = globalMetrics.totalSeeds;
     res[p].subjCoverage = preds[p].subjCoverage;
     res[p].objCoverage = preds[p].objCoverage;
-    res[p].branchingFactor = preds[p].branchingFactor;
-    res[p].normBranchingFactor = preds[p].branchingFactor < 1 ?
-      1 / preds[p].branchingFactor :
-      preds[p].branchingFactor;
-
+    res[p].branchingFactor =
+      preds[p].branchingFactor.subj / preds[p].branchingFactor.obj;
+    res[p].normBranchingFactor =
+      res[p].branchingFactor < 1
+        ? 1 / res[p].branchingFactor
+        : res[p].branchingFactor;
   }
   return res;
 };
 
-
-
-export const flattenObj = (obj: FlattableObject, parentKey: (string | null) = null, res: { [key: string]: any } = {}) => {
+export const flattenObj = (
+  obj: FlattableObject,
+  parentKey: string | null = null,
+  res: { [key: string]: any } = {},
+) => {
   for (let key in obj) {
     const value = obj[key];
     const predName = parentKey ? parentKey + "." + key : key;
-    if (typeof value === 'number' || typeof value === 'string' || Array.isArray(value)) {
+    if (
+      typeof value === "number" ||
+      typeof value === "string" ||
+      Array.isArray(value)
+    ) {
       res[predName] = obj[key];
       continue;
     }
@@ -75,33 +87,45 @@ export const flattenObj = (obj: FlattableObject, parentKey: (string | null) = nu
   return res;
 };
 
-type NestedObject = (string | number | Array<NestedObject> | { [key: string]: NestedObject })
+type NestedObject =
+  | string
+  | number
+  | Array<NestedObject>
+  | { [key: string]: NestedObject };
 
-type FlattableObject = { [key: string]: (number | string | FlattableObject) };
+type FlattableObject = { [key: string]: number | string | FlattableObject };
 
 export const flattenObjValues = (obj: FlattableObject) => {
-  return Object.keys(obj)
-    .reduce((previous, key) => {
+  return Object.keys(obj).reduce(
+    (previous, key) => {
       const value = obj[key];
-      if (typeof value === 'number' || typeof value === 'string' || Array.isArray(value)) {
+      if (
+        typeof value === "number" ||
+        typeof value === "string" ||
+        Array.isArray(value)
+      ) {
         previous[key] = value;
         return previous;
       }
       previous[key] = flattenObj(value);
       return previous;
-    }, {} as { [key: string]: any });
+    },
+    {} as { [key: string]: any },
+  );
 };
 
-export const ppMatrix = async (data: { [key: string]: any }, outputFile: string) => {
+export const ppMatrix = async (
+  data: { [key: string]: any },
+  outputFile: string,
+) => {
   const m = prettyMatrix(data);
   if (outputFile) {
-    console.warn(`Saving output to ${outputFile}`)
+    console.warn(`Saving output to ${outputFile}`);
     await fs.writeFile(outputFile, m);
     return;
   }
   console.log(m);
 };
-
 
 export const prettyMatrix = (data: { [key: string]: any }): string => {
   const table: string[][] = [];
@@ -111,16 +135,14 @@ export const prettyMatrix = (data: { [key: string]: any }): string => {
       keys[k] = true;
     }
   }
-  table.push(['Predicate', ...Object.keys(keys)]);
+  table.push(["Predicate", ...Object.keys(keys)]);
   for (const [pred, info] of Object.entries(data)) {
     const row = [pred];
     for (const k of table[0].slice(1)) {
-      row.push(info[k] || '');
+      row.push(info[k] || "");
     }
     table.push(row);
   }
 
-
-  return table.map(x => x.join('\t')).join('\n');
+  return table.map((x) => x.join("\t")).join("\n");
 };
-

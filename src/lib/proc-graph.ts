@@ -34,13 +34,19 @@ export async function procGraph(
     const s = scov[p] ?? 0;
     const o = ocov[p] ?? 0;
     const bf = bfs[p] ?? 0;
-    const spr = seedPR[p] ?? 0;
+    const spr = seedPR[p] ?? [0, 0];
     preds[p] = {
       ...basePred,
       subjCoverage: s,
       objCoverage: o,
-      branchingFactor: bf,
-      seedPosRatio: spr,
+      branchingFactor: {
+        subj: bf.subj,
+        obj: bf.obj,
+      },
+      seedPosRatio: {
+        subj: spr.subj,
+        obj: spr.obj,
+      },
     };
   }
 
