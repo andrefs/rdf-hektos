@@ -307,6 +307,12 @@ export class GraphOperations extends EventEmitter {
     return { status, nodes: path };
   }
 
+  /**
+   * Select random subjects for a given predicate
+   * @param p The predicate
+   * @param howMany How many subjects to select
+   * @returns The selected subjects
+   */
   async _randSelectSubjects(p: Term, howMany: number): Promise<Term[]> {
     const q = new Query()
       .distinct()

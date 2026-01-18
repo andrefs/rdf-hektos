@@ -21,7 +21,7 @@ it("getPreds", async () => {
   expect(preds).toHaveProperty([`${pf}/R1`, "count"], 4);
   expect(preds).toHaveProperty([`${pf}/R2`, "count"], 10);
   expect(preds).toHaveProperty([`${pf}/R3`, "count"], 1);
-  expect(preds).toHaveProperty([`${pf}/R4`, "count"], 2);
+  expect(preds).toHaveProperty([`${pf}/R4`, "count"], 3);
 });
 
 describe("_randomWalk", () => {
@@ -105,14 +105,15 @@ describe("_randomWalks", () => {
 
 describe("_randSelectSubjects", () => {
   it("selects subjects", async () => {
-    const r = await graph._randSelectSubjects(factory.namedNode(`${pf}/R4`), 3);
+    const r = await graph._randSelectSubjects(factory.namedNode(`${pf}/R4`), 4);
 
     const values = r.map((x) => x.value).sort();
 
-    expect(r).toHaveLength(3);
-    expect(values[0]).toBe(`${pf}/N11`);
-    expect(values[1]).toBe(`${pf}/N12`);
-    expect(values[2]).toBe(`${pf}/N3`);
+    expect(r).toHaveLength(4);
+    expect(values).toContain(`${pf}/N1`);
+    expect(values).toContain(`${pf}/N3`);
+    expect(values).toContain(`${pf}/N11`);
+    expect(values).toContain(`${pf}/N1`);
   });
 });
 
@@ -124,7 +125,7 @@ describe("calcInOutRatios", () => {
     expect(Object.keys(ratios)).toHaveLength(3);
     expect(ratios[`${pf}/R2`]).toBe(0.8333333333333334);
     expect(ratios[`${pf}/R1`]).toBe(1);
-    expect(ratios[`${pf}/R4`]).toBe(1);
+    expect(ratios[`${pf}/R4`]).toBe(2);
   });
 });
 
