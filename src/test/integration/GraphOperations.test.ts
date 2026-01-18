@@ -196,8 +196,8 @@ describe("calcBranchingFactor", () => {
           "subj": 4,
         },
         "http://example.org/andrefs/hektos-test/R2": {
-          "obj": 7,
-          "subj": 10,
+          "obj": 10,
+          "subj": 7,
         },
         "http://example.org/andrefs/hektos-test/R3": {
           "obj": 1,
@@ -205,7 +205,7 @@ describe("calcBranchingFactor", () => {
         },
         "http://example.org/andrefs/hektos-test/R4": {
           "obj": 2,
-          "subj": 2,
+          "subj": 3,
         },
       }
     `);

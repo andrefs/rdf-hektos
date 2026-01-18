@@ -33,6 +33,7 @@ export function setupTestGraph(): N3.Store {
 
   n3.addQuad(NN(`${pf}/N3`), NN(`${pf}/R4`), NN(`${pf}/N11`));
   n3.addQuad(NN(`${pf}/N11`), NN(`${pf}/R4`), NN(`${pf}/N12`));
+  n3.addQuad(NN(`${pf}/N12`), NN(`${pf}/R4`), NN(`${pf}/N11`));
 
   return n3;
 }

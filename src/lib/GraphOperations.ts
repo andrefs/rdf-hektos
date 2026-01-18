@@ -453,21 +453,22 @@ export class GraphOperations extends EventEmitter {
     const bfs = [];
 
     for (const p of Object.keys(preds)) {
-      const res = await this._runQuery(
-        new Query()
-          .select(
-            COUNT("s", "nonLeaves", "distinct"),
-            COUNT("o", "nonRoots", "distinct"),
-          )
-          .where(Q(V("s"), N(p), V("o"))),
-      );
-      const nrCount = res[0].get("nonRoots")?.value;
-      const nlCount = res[0].get("nonLeaves")?.value;
+      const q1 = new Query()
+        .select(COUNT("s", "subjects", "distinct"))
+        .where(Q(V("s"), N(p), V("o")));
+      const res1 = await this._runQuery(q1);
+      const subsCount = res1[0].get("subjects")?.value;
+
+      const q2 = new Query()
+        .select(COUNT("o", "objects", "distinct"))
+        .where(Q(V("s"), N(p), V("o")));
+      const res2 = await this._runQuery(q2);
+      const obsCount = res2[0].get("objects")?.value;
       bfs.push([
         p,
         {
-          subj: Number(nrCount),
-          obj: Number(nlCount),
+          subj: Number(subsCount),
+          obj: Number(obsCount),
         },
       ]);
     }
