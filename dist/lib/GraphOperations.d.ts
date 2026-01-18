@@ -39,6 +39,12 @@ export declare class GraphOperations extends EventEmitter {
         status: string[];
         nodes: Term[];
     }>;
+    /**
+     * Select random subjects for a given predicate
+     * @param p The predicate
+     * @param howMany How many subjects to select
+     * @returns The selected subjects
+     */
     _randSelectSubjects(p: Term, howMany: number): Promise<Term[]>;
     calcRandomWalks(preds: {
         [key: string]: BasePredicate;

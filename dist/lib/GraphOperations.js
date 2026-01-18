@@ -233,6 +233,12 @@ class GraphOperations extends events_1.default {
             return { status, nodes: path };
         });
     }
+    /**
+     * Select random subjects for a given predicate
+     * @param p The predicate
+     * @param howMany How many subjects to select
+     * @returns The selected subjects
+     */
     _randSelectSubjects(p, howMany) {
         return __awaiter(this, void 0, void 0, function* () {
             const q = new QueryBuilder_1.Query()
@@ -366,16 +372,21 @@ class GraphOperations extends events_1.default {
             var _a, _b;
             const bfs = [];
             for (const p of Object.keys(preds)) {
-                const res = yield this._runQuery(new QueryBuilder_1.Query()
-                    .select((0, QueryBuilder_1.COUNT)("s", "nonLeaves", "distinct"), (0, QueryBuilder_1.COUNT)("o", "nonRoots", "distinct"))
-                    .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("o"))));
-                const nrCount = (_a = res[0].get("nonRoots")) === null || _a === void 0 ? void 0 : _a.value;
-                const nlCount = (_b = res[0].get("nonLeaves")) === null || _b === void 0 ? void 0 : _b.value;
+                const q1 = new QueryBuilder_1.Query()
+                    .select((0, QueryBuilder_1.COUNT)("s", "subjects", "distinct"))
+                    .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("o")));
+                const res1 = yield this._runQuery(q1);
+                const subsCount = (_a = res1[0].get("subjects")) === null || _a === void 0 ? void 0 : _a.value;
+                const q2 = new QueryBuilder_1.Query()
+                    .select((0, QueryBuilder_1.COUNT)("o", "objects", "distinct"))
+                    .where((0, QueryBuilder_1.Q)((0, QueryBuilder_1.V)("s"), (0, QueryBuilder_1.N)(p), (0, QueryBuilder_1.V)("o")));
+                const res2 = yield this._runQuery(q2);
+                const obsCount = (_b = res2[0].get("objects")) === null || _b === void 0 ? void 0 : _b.value;
                 bfs.push([
                     p,
                     {
-                        subj: Number(nrCount),
-                        obj: Number(nlCount),
+                        subj: Number(subsCount),
+                        obj: Number(obsCount),
                     },
                 ]);
             }

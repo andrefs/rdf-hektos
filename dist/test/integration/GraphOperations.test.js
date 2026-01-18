@@ -31,7 +31,7 @@ const graph = new GraphOperations_1.default({
     (0, vitest_1.expect)(preds).toHaveProperty([`${test_data_1.pf}/R1`, "count"], 4);
     (0, vitest_1.expect)(preds).toHaveProperty([`${test_data_1.pf}/R2`, "count"], 10);
     (0, vitest_1.expect)(preds).toHaveProperty([`${test_data_1.pf}/R3`, "count"], 1);
-    (0, vitest_1.expect)(preds).toHaveProperty([`${test_data_1.pf}/R4`, "count"], 2);
+    (0, vitest_1.expect)(preds).toHaveProperty([`${test_data_1.pf}/R4`, "count"], 3);
 }));
 (0, vitest_1.describe)("_randomWalk", () => {
     (0, vitest_1.it)("finds loop", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -84,12 +84,13 @@ const graph = new GraphOperations_1.default({
 });
 (0, vitest_1.describe)("_randSelectSubjects", () => {
     (0, vitest_1.it)("selects subjects", () => __awaiter(void 0, void 0, void 0, function* () {
-        const r = yield graph._randSelectSubjects(test_data_1.factory.namedNode(`${test_data_1.pf}/R4`), 3);
+        const r = yield graph._randSelectSubjects(test_data_1.factory.namedNode(`${test_data_1.pf}/R4`), 4);
         const values = r.map((x) => x.value).sort();
-        (0, vitest_1.expect)(r).toHaveLength(3);
-        (0, vitest_1.expect)(values[0]).toBe(`${test_data_1.pf}/N11`);
-        (0, vitest_1.expect)(values[1]).toBe(`${test_data_1.pf}/N12`);
-        (0, vitest_1.expect)(values[2]).toBe(`${test_data_1.pf}/N3`);
+        (0, vitest_1.expect)(r).toHaveLength(4);
+        (0, vitest_1.expect)(values).toContain(`${test_data_1.pf}/N1`);
+        (0, vitest_1.expect)(values).toContain(`${test_data_1.pf}/N3`);
+        (0, vitest_1.expect)(values).toContain(`${test_data_1.pf}/N11`);
+        (0, vitest_1.expect)(values).toContain(`${test_data_1.pf}/N1`);
     }));
 });
 (0, vitest_1.describe)("calcInOutRatios", () => {
@@ -99,7 +100,7 @@ const graph = new GraphOperations_1.default({
         (0, vitest_1.expect)(Object.keys(ratios)).toHaveLength(3);
         (0, vitest_1.expect)(ratios[`${test_data_1.pf}/R2`]).toBe(0.8333333333333334);
         (0, vitest_1.expect)(ratios[`${test_data_1.pf}/R1`]).toBe(1);
-        (0, vitest_1.expect)(ratios[`${test_data_1.pf}/R4`]).toBe(1);
+        (0, vitest_1.expect)(ratios[`${test_data_1.pf}/R4`]).toBe(2);
     }));
 });
 (0, vitest_1.describe)("calcRandomWalks", () => {
@@ -159,8 +160,8 @@ const graph = new GraphOperations_1.default({
           "subj": 4,
         },
         "http://example.org/andrefs/hektos-test/R2": {
-          "obj": 7,
-          "subj": 10,
+          "obj": 10,
+          "subj": 7,
         },
         "http://example.org/andrefs/hektos-test/R3": {
           "obj": 1,
@@ -168,7 +169,7 @@ const graph = new GraphOperations_1.default({
         },
         "http://example.org/andrefs/hektos-test/R4": {
           "obj": 2,
-          "subj": 2,
+          "subj": 3,
         },
       }
     `);

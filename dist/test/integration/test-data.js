@@ -34,6 +34,7 @@ function setupTestGraph() {
     n3.addQuad((0, exports.NN)(`${exports.pf}/N7`), (0, exports.NN)(`${exports.pf}/R3`), exports.factory.literal("L1"));
     n3.addQuad((0, exports.NN)(`${exports.pf}/N3`), (0, exports.NN)(`${exports.pf}/R4`), (0, exports.NN)(`${exports.pf}/N11`));
     n3.addQuad((0, exports.NN)(`${exports.pf}/N11`), (0, exports.NN)(`${exports.pf}/R4`), (0, exports.NN)(`${exports.pf}/N12`));
+    n3.addQuad((0, exports.NN)(`${exports.pf}/N1`), (0, exports.NN)(`${exports.pf}/R4`), (0, exports.NN)(`${exports.pf}/N11`));
     return n3;
 }
 //# sourceMappingURL=test-data.js.map
